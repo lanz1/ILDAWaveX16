@@ -393,6 +393,19 @@ static void send_broadcast(void) {
 }
 
 static void accept_client(void) {
+    // Use select() with timeout to check for pending connections (j4cDAC pattern)
+    fd_set read_fds;
+    FD_ZERO(&read_fds);
+    FD_SET(s_listen_socket, &read_fds);
+    
+    struct timeval tv = { .tv_sec = 0, .tv_usec = 100000 }; // 100ms timeout
+    
+    int ret = select(s_listen_socket + 1, &read_fds, NULL, NULL, &tv);
+    if (ret <= 0) {
+        return; // Timeout or error - yield and try again
+    }
+    
+    // Socket is ready - accept() won't block
     struct sockaddr_in client_addr;
     socklen_t addr_len = sizeof(client_addr);
     

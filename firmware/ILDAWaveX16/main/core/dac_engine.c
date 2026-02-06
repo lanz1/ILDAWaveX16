@@ -86,6 +86,9 @@ static void dac_task(void* arg) {
             }
         }
         
+        // Yield after batch to prevent watchdog timeout
+        taskYIELD();
+        
         // Report timing stats every second
         uint32_t now_ms = xTaskGetTickCount() * portTICK_PERIOD_MS;
         if (now_ms - last_report_time >= 1000) {

@@ -42,6 +42,7 @@ static EventGroupHandle_t s_wifi_event_group;
 #define WIFI_CONNECTED_BIT BIT0
 
 static bool s_sta_connected = false;
+static esp_netif_t* s_ap_netif = NULL;  // For dynamic AP
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                                int32_t event_id, void* event_data) {
@@ -60,6 +61,14 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
         ESP_LOGI(TAG, "Connected! IP: " IPSTR, IP2STR(&event->ip_info.ip));
         s_sta_connected = true;
         xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+        
+        // Stop AP when connected
+        if (s_ap_netif) {
+            ESP_LOGI(TAG, "Stopping AP (STA connected)");
+            esp_wifi_set_mode(WIFI_MODE_STA);
+            esp_netif_destroy(s_ap_netif);
+            s_ap_netif = NULL;
+        }
     }
 }
 
@@ -116,7 +125,6 @@ static void wifi_init(void) {
     
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
-    esp_netif_create_default_wifi_ap();
     esp_netif_create_default_wifi_sta();
     
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
@@ -126,6 +134,9 @@ static void wifi_init(void) {
                                                         &wifi_event_handler, NULL, NULL));
     ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP,
                                                         &wifi_event_handler, NULL, NULL));
+    
+    // AP-only mode for best streaming performance
+    s_ap_netif = esp_netif_create_default_wifi_ap();
     
     wifi_config_t ap_config = {
         .ap = {
@@ -138,39 +149,18 @@ static void wifi_init(void) {
         },
     };
     
-    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &ap_config));
     ESP_ERROR_CHECK(esp_wifi_start());
     esp_wifi_set_ps(WIFI_PS_NONE);
     
-    ESP_LOGI(TAG, "WiFi AP: %s (http://192.168.4.1)", WIFI_AP_SSID);
-    
-    nvs_handle_t nvs;
-    if (nvs_open("wifi", NVS_READONLY, &nvs) == ESP_OK) {
-        char ssid[33] = {0};
-        char pass[64] = {0};
-        size_t len = sizeof(ssid);
-        if (nvs_get_str(nvs, "ssid", ssid, &len) == ESP_OK && strlen(ssid) > 0) {
-            len = sizeof(pass);
-            nvs_get_str(nvs, "pass", pass, &len);
-            nvs_close(nvs);
-            
-            ESP_LOGI(TAG, "Auto-connecting to: %s", ssid);
-            wifi_config_t sta_config = {0};
-            strncpy((char*)sta_config.sta.ssid, ssid, sizeof(sta_config.sta.ssid) - 1);
-            strncpy((char*)sta_config.sta.password, pass, sizeof(sta_config.sta.password) - 1);
-            esp_wifi_set_config(WIFI_IF_STA, &sta_config);
-            esp_wifi_connect();
-        } else {
-            nvs_close(nvs);
-        }
-    }
+    ESP_LOGI(TAG, "WiFi AP-only: %s (http://192.168.4.1)", WIFI_AP_SSID);
 }
 
 static void network_task(void* arg) {
     while (1) {
         etherdream_server_loop();
-        // No delay - select() already yields
+        taskYIELD();  // Let watchdog run
     }
 }
 
