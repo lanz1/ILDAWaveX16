@@ -7,6 +7,7 @@
 #include "driver/spi_master.h"
 #include "driver/gpio.h"
 #include "esp_log.h"
+#include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
@@ -200,31 +201,35 @@ static inline void dac_write_fast(uint8_t reg, uint16_t value) {
 }
 
 void dac_output_point(const laser_point_t* point) {
-    spi_device_acquire_bus(s_spi, portMAX_DELAY);
     if (!point || !s_spi) return;
-
+    
+    spi_device_acquire_bus(s_spi, portMAX_DELAY);
+    
     uint16_t x = (uint16_t)((int32_t)point->x + 32768);
     uint16_t y = (uint16_t)((int32_t)point->y + 32768);
-
-    uint16_t r = (point->flags & POINT_FLAG_BLANK) ? 0 : point->r;
-    uint16_t g = (point->flags & POINT_FLAG_BLANK) ? 0 : point->g;
-    uint16_t b = (point->flags & POINT_FLAG_BLANK) ? 0 : point->b;
-
+    
+    bool blank = (point->flags & POINT_FLAG_BLANK);
+    uint16_t r = blank ? 0 : point->r;
+    uint16_t g = blank ? 0 : point->g;
+    uint16_t b = blank ? 0 : point->b;
+    
     if (g_config.brightness < 100) {
         r = (uint16_t)(((uint32_t)r * g_config.brightness) / 100);
         g = (uint16_t)(((uint32_t)g * g_config.brightness) / 100);
         b = (uint16_t)(((uint32_t)b * g_config.brightness) / 100);
     }
-
+    
     if (g_config.x_invert) x = 65535 - x;
     if (g_config.y_invert) y = 65535 - y;
     if (g_config.xy_swap) {
         uint16_t tmp = x; x = y; y = tmp;
     }
     if (g_config.color_invert) {
-        r = 65535 - r; g = 65535 - g; b = 65535 - b;
+        r = 65535 - r;
+        g = 65535 - g;
+        b = 65535 - b;
     }
-
+    
     dac_write_fast(DAC_REG_DAC0 + DAC_CH_X, x);
     dac_write_fast(DAC_REG_DAC0 + DAC_CH_Y, y);
     dac_write_fast(DAC_REG_DAC0 + DAC_CH_RED, r);
@@ -232,6 +237,72 @@ void dac_output_point(const laser_point_t* point) {
     dac_write_fast(DAC_REG_DAC0 + DAC_CH_BLUE, b);
     dac_write_fast(DAC_REG_TRIGGER, 0x0010);
     
+    spi_device_release_bus(s_spi);
+}
+
+void dac_output_batch_timed(const laser_point_t* points, size_t count, uint32_t period_us, int64_t* next_time) {
+    if (!points || count == 0 || !s_spi || !next_time) return;
+    
+    // Acquire bus once for entire batch
+    spi_device_acquire_bus(s_spi, portMAX_DELAY);
+    
+    // Cache config checks outside loop
+    bool do_brightness = (g_config.brightness < 100);
+    uint32_t brightness = g_config.brightness;
+    bool x_inv = g_config.x_invert;
+    bool y_inv = g_config.y_invert;
+    bool xy_swap = g_config.xy_swap;
+    bool color_inv = g_config.color_invert;
+    
+    for (size_t i = 0; i < count; i++) {
+        // Wait for precise point timing
+        while (esp_timer_get_time() < *next_time) {
+            // busy-wait for precise timing (critical section, bus already locked)
+        }
+        
+        const laser_point_t* point = &points[i];
+        
+        // Fast conversions
+        uint16_t x = (uint16_t)((int32_t)point->x + 32768);
+        uint16_t y = (uint16_t)((int32_t)point->y + 32768);
+        
+        bool blank = (point->flags & POINT_FLAG_BLANK);
+        uint16_t r = blank ? 0 : point->r;
+        uint16_t g = blank ? 0 : point->g;
+        uint16_t b = blank ? 0 : point->b;
+        
+        // Apply brightness (single check per batch)
+        if (do_brightness) {
+            r = (uint16_t)(((uint32_t)r * brightness) / 100);
+            g = (uint16_t)(((uint32_t)g * brightness) / 100);
+            b = (uint16_t)(((uint32_t)b * brightness) / 100);
+        }
+        
+        // Apply geometry transforms
+        if (x_inv) x = 65535 - x;
+        if (y_inv) y = 65535 - y;
+        if (xy_swap) {
+            uint16_t tmp = x; x = y; y = tmp;
+        }
+        if (color_inv) {
+            r = 65535 - r;
+            g = 65535 - g;
+            b = 65535 - b;
+        }
+        
+        // 6 SPI transactions without bus release
+        dac_write_fast(DAC_REG_DAC0 + DAC_CH_X, x);
+        dac_write_fast(DAC_REG_DAC0 + DAC_CH_Y, y);
+        dac_write_fast(DAC_REG_DAC0 + DAC_CH_RED, r);
+        dac_write_fast(DAC_REG_DAC0 + DAC_CH_GREEN, g);
+        dac_write_fast(DAC_REG_DAC0 + DAC_CH_BLUE, b);
+        dac_write_fast(DAC_REG_TRIGGER, 0x0010);
+        
+        // Update next point time
+        *next_time += period_us;
+    }
+    
+    // Release bus once
     spi_device_release_bus(s_spi);
 }
 

@@ -7,6 +7,7 @@ idf_component_register(
         "core/dac_engine.c"
         "input/etherdream_server.c"
         "web/http_server.c"
+        "web/ota_handler.c"
     INCLUDE_DIRS 
         "."
     REQUIRES
@@ -18,4 +19,5 @@ idf_component_register(
         json
         fatfs
         sdmmc
+        app_update
 )

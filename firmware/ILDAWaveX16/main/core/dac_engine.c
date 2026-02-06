@@ -58,32 +58,18 @@ static void dac_task(void* arg) {
             continue;
         }
         
-        // Output each point in batch at precise scan rate
-        for (size_t i = 0; i < n; i++) {
-            // Wait until next point time
-            int64_t wait = next_point_time - esp_timer_get_time();
-            if (wait > 1000) {
-                vTaskDelay(1);
-            }
-            while (esp_timer_get_time() < next_point_time) {
-                // busy-wait for precise timing
-            }
-            
-            // Measure SPI output time
-            uint64_t start = esp_timer_get_time();
-            dac_output_point(&batch[i]);
-            uint64_t end = esp_timer_get_time();
-            
-            total_output_time += (end - start);
-            point_count++;
-            
-            next_point_time += period_us;
-            
-            // Prevent drift
-            int64_t now = esp_timer_get_time();
-            if (next_point_time < now - 1000) {
-                next_point_time = now;
-            }
+        // Output batch with precise timing and single SPI lock
+        uint64_t batch_start = esp_timer_get_time();
+        dac_output_batch_timed(batch, n, period_us, &next_point_time);
+        uint64_t batch_end = esp_timer_get_time();
+        
+        total_output_time += (batch_end - batch_start);
+        point_count += n;
+        
+        // Prevent drift
+        int64_t now = esp_timer_get_time();
+        if (next_point_time < now - 1000) {
+            next_point_time = now;
         }
         
         // Yield after batch to prevent watchdog timeout

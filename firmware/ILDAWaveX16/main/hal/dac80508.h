@@ -69,6 +69,16 @@ esp_err_t dac_read_register(uint8_t reg, uint16_t* value);
 void dac_output_point(const laser_point_t* point);
 
 /**
+ * @brief Output a batch of laser points with single SPI bus lock
+ * Highly optimized for real-time streaming - acquires bus once for entire batch
+ * @param points Array of laser points
+ * @param count Number of points to output
+ * @param period_us Microseconds between each point (for precise scan rate timing)
+ * @param next_time Pointer to next point time (updated by function)
+ */
+void dac_output_batch_timed(const laser_point_t* points, size_t count, uint32_t period_us, int64_t* next_time);
+
+/**
  * @brief Output a test pattern to verify DAC operation
  * @param pattern_id 0=center, 1=square, 2=circle, 3=full-scale ramp, 4=channel-walk
  */

@@ -4,6 +4,7 @@
  */
 
 #include "http_server.h"
+#include "ota_handler.h"
 #include "config.h"
 #include "core/dac_engine.h"
 #include "core/frame_buffer.h"
@@ -323,6 +324,9 @@ esp_err_t http_server_start(void) {
     
     httpd_uri_t hotspot_uri = { .uri = "/hotspot-detect.html", .method = HTTP_GET, .handler = captive_handler };
     httpd_register_uri_handler(s_server, &hotspot_uri);
+    
+    // Register OTA handlers
+    ota_handler_register(s_server);
     
     ESP_LOGI(TAG, "HTTP on port %d", HTTP_PORT);
     return ESP_OK;
