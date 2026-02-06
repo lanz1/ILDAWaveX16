@@ -51,7 +51,7 @@ extern "C" {
 #define SCAN_RATE_DEFAULT_HZ 30000
 #define SCAN_RATE_MAX_HZ    100000
 
-#define FRAME_BUFFER_SIZE   3600
+#define FRAME_BUFFER_SIZE   4096
 
 #define DAC_SPI_HOST        SPI3_HOST
 #define DAC_SPI_FREQ_HZ     50000000
@@ -63,7 +63,7 @@ extern "C" {
 #define CORE_DAC            1
 #define CORE_SERVICES       0
 #define TASK_PRIORITY_DAC   (configMAX_PRIORITIES - 1)
-#define TASK_PRIORITY_EDREAM 10
+#define TASK_PRIORITY_EDREAM 18
 
 // =============================================================================
 // Laser Point (Ether Dream format)

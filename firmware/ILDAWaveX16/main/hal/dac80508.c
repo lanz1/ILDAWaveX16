@@ -200,6 +200,7 @@ static inline void dac_write_fast(uint8_t reg, uint16_t value) {
 }
 
 void dac_output_point(const laser_point_t* point) {
+    spi_device_acquire_bus(s_spi, portMAX_DELAY);
     if (!point || !s_spi) return;
 
     uint16_t x = (uint16_t)((int32_t)point->x + 32768);
@@ -224,8 +225,6 @@ void dac_output_point(const laser_point_t* point) {
         r = 65535 - r; g = 65535 - g; b = 65535 - b;
     }
 
-    spi_device_acquire_bus(s_spi, portMAX_DELAY);
-    
     dac_write_fast(DAC_REG_DAC0 + DAC_CH_X, x);
     dac_write_fast(DAC_REG_DAC0 + DAC_CH_Y, y);
     dac_write_fast(DAC_REG_DAC0 + DAC_CH_RED, r);

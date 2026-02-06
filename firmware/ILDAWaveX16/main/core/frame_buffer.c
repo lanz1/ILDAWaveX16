@@ -1,20 +1,27 @@
 /**
  * @file frame_buffer.c
- * @brief Lock-free SPSC ring buffer for laser points
+ * @brief Ring buffer for laser points (based on Stanley's PointRingBuffer)
+ * 
+ * Uses portMUX spinlock for thread-safe access.
+ * Supports batch read (up to 512 points) for efficient DAC output.
  */
 
 #include "frame_buffer.h"
 #include <string.h>
-#include <stdatomic.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/portmacro.h"
 
 static laser_point_t buffer[FRAME_BUFFER_SIZE];
-static atomic_size_t head = 0;  // Written by producer
-static atomic_size_t tail = 0;  // Written by consumer
+static volatile size_t head = 0;
+static volatile size_t tail = 0;
+static portMUX_TYPE spinlock = portMUX_INITIALIZER_UNLOCKED;
 
 esp_err_t frame_buffer_init(void)
 {
-    atomic_store(&head, 0);
-    atomic_store(&tail, 0);
+    portENTER_CRITICAL(&spinlock);
+    head = 0;
+    tail = 0;
+    portEXIT_CRITICAL(&spinlock);
     memset(buffer, 0, sizeof(buffer));
     return ESP_OK;
 }
@@ -22,64 +29,65 @@ esp_err_t frame_buffer_init(void)
 size_t frame_buffer_write(const laser_point_t* points, size_t count)
 {
     if (!points || count == 0) return 0;
-    
-    size_t h = atomic_load_explicit(&head, memory_order_relaxed);
-    size_t t = atomic_load_explicit(&tail, memory_order_acquire);
-    
+
     size_t written = 0;
+    portENTER_CRITICAL(&spinlock);
     for (size_t i = 0; i < count; i++) {
-        size_t next_h = (h + 1) % FRAME_BUFFER_SIZE;
-        if (next_h == t) {
-            // Buffer full
-            break;
-        }
-        buffer[h] = points[i];
-        h = next_h;
+        size_t next = (head + 1) % FRAME_BUFFER_SIZE;
+        if (next == tail) break;  // full
+        buffer[head] = points[i];
+        head = next;
         written++;
     }
-    
-    atomic_store_explicit(&head, h, memory_order_release);
+    portEXIT_CRITICAL(&spinlock);
     return written;
 }
 
-size_t frame_buffer_read(laser_point_t* point)
+size_t frame_buffer_read(laser_point_t* points, size_t max)
 {
-    if (!point) return 0;
-    
-    size_t h = atomic_load_explicit(&head, memory_order_acquire);
-    size_t t = atomic_load_explicit(&tail, memory_order_relaxed);
-    
-    if (h == t) {
-        point->x = 0;
-        point->y = 0;
-        point->r = 0;
-        point->g = 0;
-        point->b = 0;
-        point->user1 = 0;
-        point->user2 = 0;
-        point->flags = POINT_FLAG_BLANK;
-        return 0;
+    if (!points || max == 0) return 0;
+
+    size_t count = 0;
+    portENTER_CRITICAL(&spinlock);
+    while (count < max && tail != head) {
+        points[count] = buffer[tail];
+        tail = (tail + 1) % FRAME_BUFFER_SIZE;
+        count++;
     }
-    
-    *point = buffer[t];
-    atomic_store_explicit(&tail, (t + 1) % FRAME_BUFFER_SIZE, memory_order_release);
-    return 1;
+    portEXIT_CRITICAL(&spinlock);
+    return count;
+}
+
+bool frame_buffer_can_fit(size_t count)
+{
+    size_t free_space;
+    portENTER_CRITICAL(&spinlock);
+    if (head >= tail)
+        free_space = FRAME_BUFFER_SIZE - (head - tail) - 1;
+    else
+        free_space = tail - head - 1;
+    portEXIT_CRITICAL(&spinlock);
+    return count <= free_space;
 }
 
 size_t frame_buffer_level(void)
 {
-    size_t h = atomic_load_explicit(&head, memory_order_acquire);
-    size_t t = atomic_load_explicit(&tail, memory_order_acquire);
-    
-    if (h >= t) {
+    size_t h, t;
+    portENTER_CRITICAL(&spinlock);
+    h = head;
+    t = tail;
+    portEXIT_CRITICAL(&spinlock);
+
+    if (h >= t)
         return h - t;
-    } else {
+    else
         return FRAME_BUFFER_SIZE - t + h;
-    }
 }
 
 void frame_buffer_clear(void)
 {
-    atomic_store(&head, 0);
-    atomic_store(&tail, 0);
+    portENTER_CRITICAL(&spinlock);
+    head = 0;
+    tail = 0;
+    portEXIT_CRITICAL(&spinlock);
 }

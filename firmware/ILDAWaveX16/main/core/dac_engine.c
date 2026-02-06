@@ -1,6 +1,6 @@
 /**
  * @file dac_engine.c
- * @brief DAC output engine
+ * @brief DAC output engine (optimized with batch read and permanent SPI lock)
  */
 
 #include "dac_engine.h"
@@ -18,53 +18,84 @@ static TaskHandle_t s_task = NULL;
 static volatile bool s_running = false;
 static volatile uint32_t s_scan_rate = SCAN_RATE_DEFAULT_HZ;
 
-static laser_point_t s_last_point = {0};
-static bool s_has_last = false;
+#define DAC_BATCH_SIZE 128
+
+static const laser_point_t REST_POINT = {
+    .x = 0, .y = 0, .r = 0, .g = 0, .b = 0,
+    .user1 = 0, .user2 = 0, .flags = POINT_FLAG_BLANK
+};
 
 static void dac_task(void* arg) {
     ESP_LOGI(TAG, "Task on Core %d", xPortGetCoreID());
     
-    laser_point_t pt;
+    laser_point_t batch[DAC_BATCH_SIZE];
     int64_t next_point_time = esp_timer_get_time();
-    uint32_t period_us = 1000000 / s_scan_rate;
+    uint32_t period_us;
+    
+    // Timing measurements
+    uint64_t total_output_time = 0;
+    uint32_t point_count = 0;
+    uint32_t last_report_time = 0;
     
     while (1) {
         if (!s_running) {
+            dac_output_point((laser_point_t*)&REST_POINT);
             vTaskDelay(pdMS_TO_TICKS(10));
             next_point_time = esp_timer_get_time();
             continue;
         }
         
-        // Wait until next point time
-        int64_t now = esp_timer_get_time();
-        int64_t wait = next_point_time - now;
+        period_us = 1000000 / s_scan_rate;
         
-        if (wait > 0) {
+        // Batch read from buffer
+        size_t n = frame_buffer_read(batch, DAC_BATCH_SIZE);
+        
+        if (n == 0) {
+            // Buffer empty - output rest point, yield
+            dac_output_point((laser_point_t*)&REST_POINT);
+            vTaskDelay(1);
+            next_point_time = esp_timer_get_time();
+            continue;
+        }
+        
+        // Output each point in batch at precise scan rate
+        for (size_t i = 0; i < n; i++) {
+            // Wait until next point time
+            int64_t wait = next_point_time - esp_timer_get_time();
             if (wait > 1000) {
                 vTaskDelay(1);
             }
             while (esp_timer_get_time() < next_point_time) {
+                // busy-wait for precise timing
+            }
+            
+            // Measure SPI output time
+            uint64_t start = esp_timer_get_time();
+            dac_output_point(&batch[i]);
+            uint64_t end = esp_timer_get_time();
+            
+            total_output_time += (end - start);
+            point_count++;
+            
+            next_point_time += period_us;
+            
+            // Prevent drift
+            int64_t now = esp_timer_get_time();
+            if (next_point_time < now - 1000) {
+                next_point_time = now;
             }
         }
         
-        // Output point
-        if (frame_buffer_read(&pt)) {
-            dac_output_point(&pt);
-            s_last_point = pt;
-            s_has_last = true;
-        } else {
-            // Buffer empty
-            if (s_has_last) {
-                dac_output_point(&s_last_point);
+        // Report timing stats every second
+        uint32_t now_ms = xTaskGetTickCount() * portTICK_PERIOD_MS;
+        if (now_ms - last_report_time >= 1000) {
+            if (point_count > 0) {
+                ESP_LOGI(TAG, "Avg SPI time: %llu us/pt | Points: %lu | Buffer: %zu",
+                         total_output_time / point_count, point_count, frame_buffer_level());
+                total_output_time = 0;
+                point_count = 0;
             }
-        }
-        
-        period_us = 1000000 / s_scan_rate;
-        next_point_time += period_us;
-        
-        now = esp_timer_get_time();
-        if (next_point_time < now - 1000) {
-            next_point_time = now;
+            last_report_time = now_ms;
         }
     }
 }

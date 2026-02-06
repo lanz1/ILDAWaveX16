@@ -170,7 +170,7 @@ static void wifi_init(void) {
 static void network_task(void* arg) {
     while (1) {
         etherdream_server_loop();
-        vTaskDelay(pdMS_TO_TICKS(1));
+        // No delay - select() already yields
     }
 }
 
