@@ -51,7 +51,7 @@ extern "C" {
 #define SCAN_RATE_DEFAULT_HZ 30000
 #define SCAN_RATE_MAX_HZ    100000
 
-#define FRAME_BUFFER_SIZE   1800
+#define FRAME_BUFFER_SIZE   3600
 
 #define DAC_SPI_HOST        SPI3_HOST
 #define DAC_SPI_FREQ_HZ     50000000

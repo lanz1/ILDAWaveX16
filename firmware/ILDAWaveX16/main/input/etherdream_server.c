@@ -170,11 +170,11 @@ static uint8_t s_rx_buf[TCP_RX_BUF_SIZE];
 
 static void fill_status(etherdream_status_t* status);
 static void send_response(int sock, uint8_t resp_code, uint8_t cmd_byte);
-static void process_tcp_data(int sock, uint8_t* data, size_t len);
+// static void process_tcp_data(int sock, uint8_t* data, size_t len);  // unused
 static void handle_prepare(int sock);
 static void handle_begin(int sock, const etherdream_begin_cmd_t* cmd);
 static void handle_queue_rate(int sock, const etherdream_queue_rate_cmd_t* cmd);
-static void handle_data(int sock, const uint8_t* data, size_t len);
+// static void handle_data(int sock, const uint8_t* data, size_t len);  // unused
 static void handle_stop(int sock);
 static void handle_estop(int sock);
 static void handle_clear_estop(int sock);
@@ -243,8 +243,6 @@ esp_err_t etherdream_server_init(void) {
 }
 
 esp_err_t etherdream_server_start(void) {
-    esp_err_t ret;
-    
     ESP_LOGI(TAG, "Starting Ether Dream TCP server on port %d...", ETHERDREAM_TCP_PORT);
     
     s_listen_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -460,11 +458,16 @@ static size_t s_data_point_buf_len = 0;
 static laser_point_t s_point_batch[POINT_BATCH_SIZE];
 static size_t s_batch_count = 0;
 
-static void flush_point_batch(void) {
+// Buffer thresholds for flow control
+#define BUFFER_HIGH_THRESHOLD   (FRAME_BUFFER_SIZE * 95 / 100)  // 95%
+
+static size_t flush_point_batch(void) {
     if (s_batch_count > 0) {
-        frame_buffer_write(s_point_batch, s_batch_count);
+        size_t written = frame_buffer_write(s_point_batch, s_batch_count);
         s_batch_count = 0;
+        return written;
     }
+    return 0;
 }
 
 static void add_point_to_batch(const etherdream_point_t* ep) {
@@ -800,10 +803,7 @@ static void handle_queue_rate(int sock, const etherdream_queue_rate_cmd_t* cmd) 
     send_response(sock, RESP_ACK, CMD_QUEUE_RATE);
 }
 
-static void handle_data(int sock, const uint8_t* data, size_t len) {
-    // This is handled by the state machine in feed_rx_data
-    // Not called directly
-}
+// Removed handle_data - handled in feed_rx_data state machine
 
 static void handle_stop(int sock) {
     ESP_LOGI(TAG, "CMD: Stop");
