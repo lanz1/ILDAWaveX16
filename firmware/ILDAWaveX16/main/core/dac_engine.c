@@ -18,7 +18,7 @@ static TaskHandle_t s_task = NULL;
 static volatile bool s_running = false;
 static volatile uint32_t s_scan_rate = SCAN_RATE_DEFAULT_HZ;
 
-#define DAC_BATCH_SIZE 128
+#define DAC_BATCH_SIZE 256  // Increased for less lock contention
 
 static const laser_point_t REST_POINT = {
     .x = 0, .y = 0, .r = 0, .g = 0, .b = 0,
@@ -115,7 +115,7 @@ esp_err_t dac_engine_init(void) {
     BaseType_t task_ret = xTaskCreatePinnedToCore(
         dac_task,
         "dac",
-        4096,
+        8192,  // Increased for 256pt batch (3KB) + function calls
         NULL,
         configMAX_PRIORITIES - 1,
         &s_task,
