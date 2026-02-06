@@ -35,8 +35,8 @@ extern "C" {
 #define WIFI_AP_CHANNEL     6
 #define WIFI_AP_MAX_CONN    4
 
-#define WIFI_STA_SSID       "MikroTik-2A4D9D"
-#define WIFI_STA_PASS       "porcodio"
+#define WIFI_STA_SSID       ""
+#define WIFI_STA_PASS       ""
 
 #define ETHERDREAM_TCP_PORT 7765
 #define ETHERDREAM_UDP_PORT 7654

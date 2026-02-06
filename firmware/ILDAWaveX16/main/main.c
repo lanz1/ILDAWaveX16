@@ -38,27 +38,81 @@ system_config_t g_config = {
 
 system_status_t g_status = {0};
 
-static EventGroupHandle_t wifi_event_group;
+static EventGroupHandle_t s_wifi_event_group;
 #define WIFI_CONNECTED_BIT BIT0
+
+static bool s_sta_connected = false;
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                                int32_t event_id, void* event_data) {
     if (event_base == WIFI_EVENT) {
         if (event_id == WIFI_EVENT_STA_START) {
-            esp_wifi_connect();
+            ESP_LOGI(TAG, "WiFi STA started");
         } else if (event_id == WIFI_EVENT_STA_DISCONNECTED) {
-            xEventGroupClearBits(wifi_event_group, WIFI_CONNECTED_BIT);
-            esp_wifi_connect();
+            s_sta_connected = false;
+            xEventGroupClearBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+            ESP_LOGW(TAG, "WiFi disconnected");
+        } else if (event_id == WIFI_EVENT_AP_STACONNECTED) {
+            ESP_LOGI(TAG, "Client connected to AP");
         }
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t* event = (ip_event_got_ip_t*)event_data;
-        ESP_LOGI(TAG, "IP: " IPSTR, IP2STR(&event->ip_info.ip));
-        xEventGroupSetBits(wifi_event_group, WIFI_CONNECTED_BIT);
+        ESP_LOGI(TAG, "Connected! IP: " IPSTR, IP2STR(&event->ip_info.ip));
+        s_sta_connected = true;
+        xEventGroupSetBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
     }
 }
 
+bool wifi_save_credentials(const char* ssid, const char* password) {
+    nvs_handle_t nvs;
+    esp_err_t err = nvs_open("wifi", NVS_READWRITE, &nvs);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to open NVS");
+        return false;
+    }
+    
+    nvs_set_str(nvs, "ssid", ssid);
+    nvs_set_str(nvs, "pass", password);
+    nvs_commit(nvs);
+    nvs_close(nvs);
+    
+    ESP_LOGI(TAG, "Saved WiFi: %s", ssid);
+    return true;
+}
+
+bool wifi_connect_to(const char* ssid, const char* password) {
+    ESP_LOGI(TAG, "Connecting to: %s", ssid);
+    
+    wifi_config_t sta_config = {0};
+    strncpy((char*)sta_config.sta.ssid, ssid, sizeof(sta_config.sta.ssid) - 1);
+    strncpy((char*)sta_config.sta.password, password, sizeof(sta_config.sta.password) - 1);
+    
+    xEventGroupClearBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
+    
+    esp_wifi_disconnect();
+    esp_wifi_set_config(WIFI_IF_STA, &sta_config);
+    esp_wifi_connect();
+    
+    EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
+        WIFI_CONNECTED_BIT,
+        pdFALSE, pdFALSE, pdMS_TO_TICKS(15000));
+    
+    if (bits & WIFI_CONNECTED_BIT) {
+        wifi_save_credentials(ssid, password);
+        ESP_LOGI(TAG, "WiFi connected successfully");
+        return true;
+    }
+    
+    ESP_LOGW(TAG, "WiFi connection failed");
+    return false;
+}
+
+bool wifi_is_connected(void) {
+    return s_sta_connected;
+}
+
 static void wifi_init(void) {
-    wifi_event_group = xEventGroupCreate();
+    s_wifi_event_group = xEventGroupCreate();
     
     ESP_ERROR_CHECK(esp_netif_init());
     ESP_ERROR_CHECK(esp_event_loop_create_default());
@@ -84,38 +138,33 @@ static void wifi_init(void) {
         },
     };
     
-    wifi_config_t sta_config = {0};
-    bool sta_configured = false;
-    
-    nvs_handle_t nvs;
-    if (nvs_open("wifi", NVS_READONLY, &nvs) == ESP_OK) {
-        size_t len = sizeof(sta_config.sta.ssid);
-        if (nvs_get_str(nvs, "ssid", (char*)sta_config.sta.ssid, &len) == ESP_OK &&
-            strlen((char*)sta_config.sta.ssid) > 0) {
-            len = sizeof(sta_config.sta.password);
-            nvs_get_str(nvs, "pass", (char*)sta_config.sta.password, &len);
-            sta_configured = true;
-        }
-        nvs_close(nvs);
-    }
-    
-    if (!sta_configured && strlen(WIFI_STA_SSID) > 0) {
-        strncpy((char*)sta_config.sta.ssid, WIFI_STA_SSID, sizeof(sta_config.sta.ssid) - 1);
-        strncpy((char*)sta_config.sta.password, WIFI_STA_PASS, sizeof(sta_config.sta.password) - 1);
-        sta_configured = true;
-    }
-    
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_APSTA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &ap_config));
-    
-    if (sta_configured) {
-        ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &sta_config));
-    }
-    
     ESP_ERROR_CHECK(esp_wifi_start());
     esp_wifi_set_ps(WIFI_PS_NONE);
     
-    ESP_LOGI(TAG, "WiFi AP: %s", WIFI_AP_SSID);
+    ESP_LOGI(TAG, "WiFi AP: %s (http://192.168.4.1)", WIFI_AP_SSID);
+    
+    nvs_handle_t nvs;
+    if (nvs_open("wifi", NVS_READONLY, &nvs) == ESP_OK) {
+        char ssid[33] = {0};
+        char pass[64] = {0};
+        size_t len = sizeof(ssid);
+        if (nvs_get_str(nvs, "ssid", ssid, &len) == ESP_OK && strlen(ssid) > 0) {
+            len = sizeof(pass);
+            nvs_get_str(nvs, "pass", pass, &len);
+            nvs_close(nvs);
+            
+            ESP_LOGI(TAG, "Auto-connecting to: %s", ssid);
+            wifi_config_t sta_config = {0};
+            strncpy((char*)sta_config.sta.ssid, ssid, sizeof(sta_config.sta.ssid) - 1);
+            strncpy((char*)sta_config.sta.password, pass, sizeof(sta_config.sta.password) - 1);
+            esp_wifi_set_config(WIFI_IF_STA, &sta_config);
+            esp_wifi_connect();
+        } else {
+            nvs_close(nvs);
+        }
+    }
 }
 
 static void network_task(void* arg) {
