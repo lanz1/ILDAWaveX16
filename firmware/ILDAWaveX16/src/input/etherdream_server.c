@@ -21,8 +21,6 @@ static const char* TAG = "EDREAM";
 // Ether Dream Protocol Constants
 // =============================================================================
 
-#define ETHERDREAM_TCP_PORT         7765
-#define ETHERDREAM_UDP_PORT         7654
 #define ETHERDREAM_MAX_POINT_RATE   100000
 #define ETHERDREAM_HW_REVISION      2
 #define ETHERDREAM_SW_REVISION      2

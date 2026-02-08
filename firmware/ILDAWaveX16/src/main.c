@@ -29,7 +29,6 @@ static const char* TAG = "MAIN";
 system_config_t g_config = {
     .scan_rate_hz = SCAN_RATE_DEFAULT_HZ,
     .brightness = 100,
-    .repeat_last_frame = true,
     .color_invert = false,
     .xy_swap = false,
     .x_invert = false,

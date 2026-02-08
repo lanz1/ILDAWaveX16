@@ -32,11 +32,6 @@ static void dac_task(void* arg) {
     int64_t next_point_time = esp_timer_get_time();
     uint32_t period_us;
     
-    // Timing measurements
-    uint64_t total_output_time = 0;
-    uint32_t point_count = 0;
-    uint32_t last_report_time = 0;
-    
     while (1) {
         if (!s_running) {
             dac_output_point((laser_point_t*)&REST_POINT);
@@ -59,12 +54,7 @@ static void dac_task(void* arg) {
         }
         
         // Output batch with precise timing and single SPI lock
-        uint64_t batch_start = esp_timer_get_time();
         dac_output_batch_timed(batch, n, period_us, &next_point_time);
-        uint64_t batch_end = esp_timer_get_time();
-        
-        total_output_time += (batch_end - batch_start);
-        point_count += n;
         
         // Prevent drift
         int64_t now = esp_timer_get_time();
@@ -74,18 +64,6 @@ static void dac_task(void* arg) {
         
         // Yield after batch to prevent watchdog timeout
         taskYIELD();
-        
-        // Report timing stats every second
-        uint32_t now_ms = xTaskGetTickCount() * portTICK_PERIOD_MS;
-        if (now_ms - last_report_time >= 1000) {
-            if (point_count > 0) {
-                ESP_LOGI(TAG, "Avg SPI time: %llu us/pt | Points: %lu | Buffer: %zu",
-                         total_output_time / point_count, point_count, frame_buffer_level());
-                total_output_time = 0;
-                point_count = 0;
-            }
-            last_report_time = now_ms;
-        }
     }
 }
 

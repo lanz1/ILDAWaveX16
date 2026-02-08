@@ -26,7 +26,7 @@ esp_err_t sd_card_init(void) {
     };
     
     sdmmc_host_t host = SDSPI_HOST_DEFAULT();
-    host.slot = SPI3_HOST;
+    host.slot = SD_SPI_HOST;
     
     spi_bus_config_t bus_cfg = {
         .mosi_io_num = PIN_SD_MOSI,

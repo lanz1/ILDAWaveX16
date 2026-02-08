@@ -19,12 +19,12 @@ extern "C" {
 #define PIN_DAC_CS          10
 #define PIN_DAC_MOSI        11
 #define PIN_DAC_SCK         12
-#define PIN_DAC_MISO        13
+#define PIN_DAC_MISO        9
 
-#define PIN_SD_CS           21
-#define PIN_SD_MOSI         35
-#define PIN_SD_SCK          36
-#define PIN_SD_MISO         37
+#define PIN_SD_CS           13
+#define PIN_SD_MOSI         14
+#define PIN_SD_SCK          15
+#define PIN_SD_MISO         16
 
 // =============================================================================
 // Network
@@ -35,13 +35,9 @@ extern "C" {
 #define WIFI_AP_CHANNEL     6
 #define WIFI_AP_MAX_CONN    4
 
-#define WIFI_STA_SSID       ""
-#define WIFI_STA_PASS       ""
-
 #define ETHERDREAM_TCP_PORT 7765
 #define ETHERDREAM_UDP_PORT 7654
 #define HTTP_PORT           80
-#define WS_PORT             81
 
 // =============================================================================
 // DAC / Timing
@@ -51,18 +47,16 @@ extern "C" {
 #define SCAN_RATE_DEFAULT_HZ 30000
 #define SCAN_RATE_MAX_HZ    100000
 
-#define FRAME_BUFFER_SIZE   4096
+#define FRAME_BUFFER_SIZE   8192
 
 #define DAC_SPI_HOST        SPI3_HOST
-#define DAC_SPI_FREQ_HZ     50000000
+#define SD_SPI_HOST         SPI2_HOST
 
 // =============================================================================
 // FreeRTOS
 // =============================================================================
 
-#define CORE_DAC            1
 #define CORE_SERVICES       0
-#define TASK_PRIORITY_DAC   (configMAX_PRIORITIES - 1)
 #define TASK_PRIORITY_EDREAM 18
 
 // =============================================================================
@@ -89,7 +83,6 @@ typedef struct {
 typedef struct {
     uint32_t scan_rate_hz;
     uint8_t brightness;
-    bool repeat_last_frame;
     bool color_invert;
     bool xy_swap;
     bool x_invert;

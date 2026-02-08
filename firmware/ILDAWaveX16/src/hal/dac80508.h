@@ -78,23 +78,6 @@ void dac_output_point(const laser_point_t* point);
  */
 void dac_output_batch_timed(const laser_point_t* points, size_t count, uint32_t period_us, int64_t* next_time);
 
-/**
- * @brief Output a test pattern to verify DAC operation
- * @param pattern_id 0=center, 1=square, 2=circle, 3=full-scale ramp, 4=channel-walk
- */
-void dac_test_pattern(uint8_t pattern_id);
-
-/**
- * @brief Set all DAC channels to a specific value (for testing)
- * @param value 16-bit value to write to all channels
- */
-void dac_set_all(uint16_t value);
-
-/**
- * @brief Dump all DAC registers to log for debugging
- */
-void dac_debug_dump(void);
-
 #ifdef __cplusplus
 }
 #endif
