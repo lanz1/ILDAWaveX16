@@ -32,7 +32,7 @@ extern "C" {
 
 #define WIFI_AP_SSID        "ILDAWaveX16"
 #define WIFI_AP_PASS        "lasershow"
-#define WIFI_AP_CHANNEL     6
+#define WIFI_AP_CHANNEL     1
 #define WIFI_AP_MAX_CONN    4
 
 #define ETHERDREAM_TCP_PORT 7765
@@ -44,7 +44,7 @@ extern "C" {
 // =============================================================================
 
 #define SCAN_RATE_MIN_HZ    1000
-#define SCAN_RATE_DEFAULT_HZ 30000
+#define SCAN_RATE_DEFAULT_HZ 10000
 #define SCAN_RATE_MAX_HZ    100000
 
 #define FRAME_BUFFER_SIZE   8192

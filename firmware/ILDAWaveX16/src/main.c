@@ -20,6 +20,7 @@ void vPortCleanUpTCB(void *pxTCB) { (void)pxTCB; }
 
 #include "config.h"
 #include "core/dac_engine.h"
+#include "hal/dac_timer.h"
 #include "core/frame_buffer.h"
 #include "input/etherdream_server.h"
 #include "web/http_server.h"
@@ -126,7 +127,11 @@ static void wifi_init(void) {
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     esp_netif_create_default_wifi_sta();
     
+    // Ottimizzazioni per bassa latenza
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    cfg.ampdu_rx_enable = 0;        // Disabilita AMPDU RX - riduce latenza
+    cfg.ampdu_tx_enable = 0;        // Disabilita AMPDU TX - riduce latenza
+    cfg.nvs_enable = 0;             // Non salvare config in NVS (più veloce)
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
     
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID,
@@ -145,15 +150,29 @@ static void wifi_init(void) {
             .channel = WIFI_AP_CHANNEL,
             .authmode = WIFI_AUTH_WPA2_PSK,
             .max_connection = WIFI_AP_MAX_CONN,
+            .beacon_interval = 100,         // Beacon ogni 100ms (default)
         },
     };
     
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &ap_config));
+    
+    // Start WiFi FIRST (required before set_protocol, set_bandwidth, set_max_tx_power)
     ESP_ERROR_CHECK(esp_wifi_start());
+    
+    // Disabilita power saving (CRITICO per bassa latenza)
     esp_wifi_set_ps(WIFI_PS_NONE);
     
-    ESP_LOGI(TAG, "WiFi AP-only: %s (http://192.168.4.1)", WIFI_AP_SSID);
+    // Protocollo: 802.11b/g/n
+    esp_wifi_set_protocol(WIFI_IF_AP, WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N);
+    
+    // Larghezza canale: 20MHz (più stabile, meno interferenze)
+    esp_wifi_set_bandwidth(WIFI_IF_AP, WIFI_BW_HT20);
+    
+    // Potenza TX massima (migliore SNR = meno retransmit)
+    esp_wifi_set_max_tx_power(80);  // 20dBm (max)
+    
+    ESP_LOGI(TAG, "WiFi AP-only: %s ch%d 20MHz (http://192.168.4.1)", WIFI_AP_SSID, WIFI_AP_CHANNEL);
 }
 
 static void network_task(void* arg) {
@@ -175,7 +194,10 @@ void app_main(void) {
     ESP_ERROR_CHECK(ret);
     
     wifi_init();
-    dac_engine_init();
+    
+    // Use hardware-timed DAC output (GPTimer + SPI queue)
+    dac_timer_init();
+    
     etherdream_server_init();
     etherdream_server_start();
     http_server_init();
@@ -184,17 +206,17 @@ void app_main(void) {
     // Network task on Core 0
     xTaskCreatePinnedToCore(network_task, "net", 8192, NULL, TASK_PRIORITY_EDREAM, NULL, CORE_SERVICES);
     
-    // Start DAC
-    dac_engine_start();
+    // Start DAC timer
+    dac_timer_start();
     
     ESP_LOGI(TAG, "Ready - AP: %s, TCP: %d", WIFI_AP_SSID, ETHERDREAM_TCP_PORT);
     
     // Simple status loop
     while (1) {
-        g_status.running = dac_engine_is_running();
+        g_status.running = dac_timer_is_running();
         g_status.ed_connected = etherdream_server_is_connected();
         g_status.buffer_level = frame_buffer_level();
-        g_status.current_scan_rate = dac_engine_get_scan_rate();
+        g_status.current_scan_rate = dac_timer_get_scan_rate();
         g_status.ed_point_rate = etherdream_server_get_point_rate();
         g_status.free_heap = esp_get_free_heap_size();
         

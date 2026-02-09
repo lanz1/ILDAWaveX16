@@ -6,6 +6,7 @@
 #include "dac_engine.h"
 #include "frame_buffer.h"
 #include "hal/dac80508.h"
+#include "hal/dac_timer.h"
 #include "config.h"
 #include "esp_timer.h"
 #include "esp_log.h"
@@ -117,6 +118,9 @@ esp_err_t dac_engine_set_scan_rate(uint32_t rate_hz) {
 
     s_scan_rate = rate_hz;
     g_config.scan_rate_hz = rate_hz;
+    
+    // Update the hardware timer rate
+    dac_timer_set_scan_rate(rate_hz);
     
     ESP_LOGI(TAG, "Rate set to %lu pps", (unsigned long)rate_hz);
     return ESP_OK;

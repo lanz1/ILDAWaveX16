@@ -2,7 +2,7 @@ idf_component_register(
     SRCS 
         "main.c"
         "hal/dac80508.c"
-        "hal/sd_card.c"
+        "hal/dac_timer.c"
         "core/frame_buffer.c"
         "core/dac_engine.c"
         "input/etherdream_server.c"
