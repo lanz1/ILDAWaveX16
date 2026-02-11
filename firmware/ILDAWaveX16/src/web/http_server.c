@@ -6,7 +6,7 @@
 #include "http_server.h"
 #include "ota_handler.h"
 #include "config.h"
-#include "core/dac_engine.h"
+#include "hal/dac_timer.h"
 #include "core/frame_buffer.h"
 #include "input/etherdream_server.h"
 #include "esp_http_server.h"

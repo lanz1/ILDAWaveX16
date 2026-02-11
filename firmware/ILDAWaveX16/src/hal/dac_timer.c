@@ -35,6 +35,7 @@ static const char* TAG = "DAC_TIMER";
 // Hardware resources
 static gptimer_handle_t s_timer = NULL;
 static TaskHandle_t s_task = NULL;
+static SemaphoreHandle_t s_init_done = NULL;  // Signal from Core 1 that timer ISR is installed
 static volatile bool s_running = false;
 static volatile bool s_playback_active = false;  // Gate: only drain frame_buffer when true
 static volatile uint32_t s_scan_rate = SCAN_RATE_DEFAULT_HZ;
@@ -99,10 +100,53 @@ static bool IRAM_ATTR timer_isr_callback(gptimer_handle_t timer,
 
 // Buffer refill task - keeps ISR buffer full
 // CRITICAL: Must be very fast - no delays when buffer needs filling!
+// NOTE: This task runs on Core 1. It also creates the GPTimer here so
+// the ISR is registered on Core 1, keeping DAC SPI and timer on same core.
 static void dac_refill_task(void* arg)
 {
     ESP_LOGI(TAG, "Refill task started on Core %d", xPortGetCoreID());
     
+    // === Create GPTimer on Core 1 so ISR runs here ===
+    gptimer_config_t timer_cfg = {
+        .clk_src = GPTIMER_CLK_SRC_DEFAULT,
+        .direction = GPTIMER_COUNT_UP,
+        .resolution_hz = 1000000,
+        .intr_priority = 1,
+    };
+    
+    esp_err_t ret = gptimer_new_timer(&timer_cfg, &s_timer);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to create timer on Core 1: %s", esp_err_to_name(ret));
+        xSemaphoreGive(s_init_done);
+        vTaskDelete(NULL);
+        return;
+    }
+    
+    gptimer_event_callbacks_t cbs = {
+        .on_alarm = timer_isr_callback,
+    };
+    ret = gptimer_register_event_callbacks(s_timer, &cbs, NULL);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to register timer callback");
+        xSemaphoreGive(s_init_done);
+        vTaskDelete(NULL);
+        return;
+    }
+    
+    ret = gptimer_enable(s_timer);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to enable timer");
+        xSemaphoreGive(s_init_done);
+        vTaskDelete(NULL);
+        return;
+    }
+    
+    ESP_LOGI(TAG, "GPTimer ISR installed on Core %d", xPortGetCoreID());
+    
+    // Signal to dac_timer_init() that we're ready
+    xSemaphoreGive(s_init_done);
+    
+    // === Normal refill loop ===
     static laser_point_t temp_batch[REFILL_MAX_BATCH];
     
     s_last_log_time = esp_timer_get_time();
@@ -233,36 +277,15 @@ esp_err_t dac_timer_init(void)
         return ret;
     }
     
-    gptimer_config_t timer_cfg = {
-        .clk_src = GPTIMER_CLK_SRC_DEFAULT,
-        .direction = GPTIMER_COUNT_UP,
-        .resolution_hz = 1000000,
-        .intr_priority = 1,
-    };
-    
-    ret = gptimer_new_timer(&timer_cfg, &s_timer);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to create timer: %s", esp_err_to_name(ret));
-        return ret;
+    // Create semaphore for synchronizing with Core 1 timer init
+    s_init_done = xSemaphoreCreateBinary();
+    if (!s_init_done) {
+        ESP_LOGE(TAG, "Failed to create init semaphore");
+        return ESP_ERR_NO_MEM;
     }
     
-    gptimer_event_callbacks_t cbs = {
-        .on_alarm = timer_isr_callback,
-    };
-    ret = gptimer_register_event_callbacks(s_timer, &cbs, NULL);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to register timer callback");
-        return ret;
-    }
-    
-    ret = gptimer_enable(s_timer);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to enable timer");
-        return ret;
-    }
-    
-    // Pin refill task to Core 1 (same as timer ISR) with high priority
-    // This avoids contention with WiFi stack on Core 0
+    // Launch refill task on Core 1 — it will create the GPTimer there
+    // so the ISR is pinned to Core 1 (same core as refill + SPI)
     BaseType_t task_ret = xTaskCreatePinnedToCore(
         dac_refill_task,
         "dac_refill",
@@ -270,15 +293,30 @@ esp_err_t dac_timer_init(void)
         NULL,
         configMAX_PRIORITIES - 2,  // Very high priority
         &s_task,
-        1  // Core 1 - away from WiFi
+        CORE_REALTIME  // Core 1 - away from WiFi
     );
     
     if (task_ret != pdPASS) {
         ESP_LOGE(TAG, "Failed to create refill task");
+        vSemaphoreDelete(s_init_done);
         return ESP_ERR_NO_MEM;
     }
     
-    ESP_LOGI(TAG, "Initialized: ISR buffer=%d, refill threshold=%d", ISR_BUFFER_SIZE, REFILL_THRESHOLD);
+    // Wait for Core 1 to finish timer setup
+    if (xSemaphoreTake(s_init_done, pdMS_TO_TICKS(1000)) != pdTRUE) {
+        ESP_LOGE(TAG, "Timeout waiting for Core 1 timer init");
+        return ESP_ERR_TIMEOUT;
+    }
+    vSemaphoreDelete(s_init_done);
+    s_init_done = NULL;
+    
+    if (!s_timer) {
+        ESP_LOGE(TAG, "Timer creation on Core 1 failed");
+        return ESP_FAIL;
+    }
+    
+    ESP_LOGI(TAG, "Initialized: ISR buffer=%d, refill threshold=%d (ISR+refill on Core 1)", 
+             ISR_BUFFER_SIZE, REFILL_THRESHOLD);
     return ESP_OK;
 }
 

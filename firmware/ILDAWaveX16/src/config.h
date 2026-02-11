@@ -56,8 +56,9 @@ extern "C" {
 // FreeRTOS
 // =============================================================================
 
-#define CORE_SERVICES       0
-#define TASK_PRIORITY_EDREAM 18
+#define CORE_SERVICES       0       // WiFi + LWIP + network + HTTP
+#define CORE_REALTIME       1       // DAC refill + GPTimer ISR
+#define TASK_PRIORITY_EDREAM 19      // Above LWIP tcpip_task (18)
 
 // =============================================================================
 // Laser Point (Ether Dream format)

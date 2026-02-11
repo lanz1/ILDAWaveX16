@@ -19,7 +19,6 @@
 void vPortCleanUpTCB(void *pxTCB) { (void)pxTCB; }
 
 #include "config.h"
-#include "core/dac_engine.h"
 #include "hal/dac_timer.h"
 #include "core/frame_buffer.h"
 #include "input/etherdream_server.h"

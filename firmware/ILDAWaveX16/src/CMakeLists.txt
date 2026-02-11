@@ -4,7 +4,6 @@ idf_component_register(
         "hal/dac80508.c"
         "hal/dac_timer.c"
         "core/frame_buffer.c"
-        "core/dac_engine.c"
         "input/etherdream_server.c"
         "web/http_server.c"
         "web/ota_handler.c"

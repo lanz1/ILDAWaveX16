@@ -5,7 +5,6 @@
 
 #include "etherdream_server.h"
 #include "core/frame_buffer.h"
-#include "core/dac_engine.h"
 #include "hal/dac_timer.h"
 #include "config.h"
 #include "esp_log.h"
@@ -63,11 +62,12 @@ static const char* TAG = "EDREAM";
 // DAC point control field
 #define POINT_CONTROL_RATE_CHANGE   0x8000
 
-// Buffer capacity reported to clients - MUST match what EtherDream clients expect.
+// Buffer capacity reported to clients.
 // The client calculates: space = capacity - fullness, then sends min(space, batch_size).
-// We report 1799 (same as original EtherDream hardware) even though our internal
-// buffer is 8192. The extra space is hidden safety margin.
-#define ETHERDREAM_BUFFER_CAPACITY  1799
+// We report our REAL buffer capacity so the client never artificially throttles.
+// Original EtherDream had 1799 which caused sawtooth starvation on our 8192 buffer
+// because the client would stop sending at 1800+ real level.
+#define ETHERDREAM_BUFFER_CAPACITY  (FRAME_BUFFER_SIZE - 1)   // 8191
 
 // Rate change queue
 #define RATE_QUEUE_SIZE     16
@@ -230,23 +230,12 @@ static void fill_status(etherdream_status_t* status) {
     status->playback_flags = s_playback_flags;
     status->source_flags = 0;
     
-    // FLOW CONTROL: Report buffer_fullness in the client's coordinate system.
-    //
-    // We report buffer_capacity = 1799 (same as original EtherDream).
-    // Client calculates: space = 1799 - fullness, sends min(space, batch) points.
-    //
-    // Our REAL buffer is 8192 points. Mapping:
-    //   real 0..1799  → fullness = real level (client sees room, sends data)
-    //   real 1800+    → fullness = 1799 (client sees "full", pauses)
-    //
-    // This way the client keeps topping up to ~1799 with small frequent batches,
-    // while our extra 6393 slots act as invisible safety margin against underruns.
+    // FLOW CONTROL: Report real buffer level directly.
+    // capacity = 8191, so client calculates: space = 8191 - fullness
+    // This gives the client the true picture and prevents artificial throttling.
     size_t real_level = frame_buffer_level();
-    if (real_level >= ETHERDREAM_BUFFER_CAPACITY) {
-        status->buffer_fullness = ETHERDREAM_BUFFER_CAPACITY;
-    } else {
-        status->buffer_fullness = (uint16_t)real_level;
-    }
+    status->buffer_fullness = (uint16_t)(real_level > ETHERDREAM_BUFFER_CAPACITY 
+                                         ? ETHERDREAM_BUFFER_CAPACITY : real_level);
     
     status->point_rate = (s_playback_state == PLAYBACK_PLAYING) ? s_point_rate : 0;
     status->point_count = s_point_count;
@@ -373,12 +362,9 @@ void etherdream_server_loop(void) {
             if (s_points_received > 0) {
                 s_measured_pps = (s_points_received * 1000) / elapsed_ms;
                 size_t real_level = frame_buffer_level();
-                uint16_t reported = (real_level >= ETHERDREAM_BUFFER_CAPACITY) 
-                                    ? ETHERDREAM_BUFFER_CAPACITY : (uint16_t)real_level;
-                ESP_LOGI(TAG, "RX:%lu pts/s | BUF:%zu/%d (report %u/%d) | rate:%lu | lwm:%u",
+                ESP_LOGI(TAG, "RX:%lu pts/s | BUF:%zu/%d | rate:%lu | lwm:%u",
                          (unsigned long)s_measured_pps,
                          real_level, FRAME_BUFFER_SIZE,
-                         reported, ETHERDREAM_BUFFER_CAPACITY,
                          (unsigned long)s_point_rate,
                          s_client_low_water);
             }
@@ -525,7 +511,7 @@ static uint16_t s_data_points_received = 0;
 static uint8_t s_data_point_buf[18];    // Buffer for one point (18 bytes)
 static size_t s_data_point_buf_len = 0;
 
-#define POINT_BATCH_SIZE    64
+#define POINT_BATCH_SIZE    512
 static laser_point_t s_point_batch[POINT_BATCH_SIZE];
 static size_t s_batch_count = 0;
 
@@ -561,7 +547,7 @@ static void add_point_to_batch(const etherdream_point_t* ep) {
             uint32_t new_rate = rate_queue_pop();
             if (new_rate >= SCAN_RATE_MIN_HZ && new_rate <= SCAN_RATE_MAX_HZ) {
                 s_point_rate = new_rate;
-                dac_engine_set_scan_rate(new_rate);
+                dac_timer_set_scan_rate(new_rate);
                 ESP_LOGD(TAG, "Rate change: %lu pps", (unsigned long)new_rate);
             }
         }
@@ -743,7 +729,9 @@ static void feed_rx_data(int sock, const uint8_t* data, size_t len) {
             }
             
             case RX_STATE_DATA_POINTS: {
-                while (pos < len && s_data_points_received < s_data_npoints) {
+                // First: finish any partial point from previous recv
+                while (pos < len && s_data_point_buf_len > 0 && 
+                       s_data_points_received < s_data_npoints) {
                     size_t point_need = 18 - s_data_point_buf_len;
                     size_t avail = len - pos;
                     size_t copy = (avail < point_need) ? avail : point_need;
@@ -760,6 +748,31 @@ static void feed_rx_data(int sock, const uint8_t* data, size_t len) {
                         s_point_count++;
                         s_data_point_buf_len = 0;
                     }
+                }
+                
+                // BULK: process complete points directly from recv buffer
+                // No memcpy needed - cast directly from data buffer
+                size_t remaining_points = s_data_npoints - s_data_points_received;
+                size_t avail_bytes = len - pos;
+                size_t complete_points = avail_bytes / 18;
+                if (complete_points > remaining_points)
+                    complete_points = remaining_points;
+                
+                for (size_t i = 0; i < complete_points; i++) {
+                    etherdream_point_t* ep = (etherdream_point_t*)&data[pos];
+                    add_point_to_batch(ep);
+                    pos += 18;
+                    s_data_points_received++;
+                    s_points_received++;
+                    s_point_count++;
+                }
+                
+                // Leftover partial point bytes -> save for next recv
+                if (s_data_points_received < s_data_npoints && pos < len) {
+                    size_t leftover = len - pos;
+                    memcpy(s_data_point_buf, &data[pos], leftover);
+                    s_data_point_buf_len = leftover;
+                    pos = len;
                 }
                 
                 if (s_data_points_received >= s_data_npoints) {
@@ -848,7 +861,7 @@ static void handle_begin(int sock, const etherdream_begin_cmd_t* cmd) {
     s_playback_flags |= 0x01;
     
     // Set DAC scan rate and enable point flow
-    dac_engine_set_scan_rate(rate);
+    dac_timer_set_scan_rate(rate);
     dac_timer_set_playback_active(true);
     
     ESP_LOGI(TAG, "Playing @ %lu pps (low_water=%u, buf=%zu)", 

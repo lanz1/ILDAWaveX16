@@ -35,22 +35,36 @@ size_t frame_buffer_write(const laser_point_t* points, size_t count)
 {
     if (!points || count == 0) return 0;
 
-    size_t written = 0;
     size_t h = atomic_load_explicit(&head, memory_order_relaxed);
     size_t t = atomic_load_explicit(&tail, memory_order_acquire);  // Sync with consumer
     
-    for (size_t i = 0; i < count; i++) {
-        size_t next = (h + 1) % FRAME_BUFFER_SIZE;
-        if (next == t) break;  // Buffer full
-        
-        buffer[h] = points[i];
-        h = next;
-        written++;
+    // Calculate available space
+    size_t free_space;
+    if (h >= t)
+        free_space = FRAME_BUFFER_SIZE - 1 - (h - t);
+    else
+        free_space = t - h - 1;
+    
+    size_t to_write = (count < free_space) ? count : free_space;
+    if (to_write == 0) return 0;
+    
+    // Bulk copy using memcpy - handle wrap-around
+    size_t first_chunk = FRAME_BUFFER_SIZE - h;
+    if (first_chunk > to_write) first_chunk = to_write;
+    
+    memcpy(&buffer[h], points, first_chunk * sizeof(laser_point_t));
+    
+    if (to_write > first_chunk) {
+        // Wrap around to beginning
+        memcpy(&buffer[0], &points[first_chunk], (to_write - first_chunk) * sizeof(laser_point_t));
     }
     
+    // Advance head
+    size_t new_head = (h + to_write) % FRAME_BUFFER_SIZE;
+    
     // Publish new head position to consumer
-    atomic_store_explicit(&head, h, memory_order_release);
-    return written;
+    atomic_store_explicit(&head, new_head, memory_order_release);
+    return to_write;
 }
 
 // Consumer function - called from dac_refill_task (Core 1)
@@ -58,19 +72,36 @@ size_t frame_buffer_read(laser_point_t* points, size_t max)
 {
     if (!points || max == 0) return 0;
 
-    size_t count = 0;
     size_t t = atomic_load_explicit(&tail, memory_order_relaxed);
     size_t h = atomic_load_explicit(&head, memory_order_acquire);  // Sync with producer
     
-    while (count < max && t != h) {
-        points[count] = buffer[t];
-        t = (t + 1) % FRAME_BUFFER_SIZE;
-        count++;
+    // Calculate available data
+    size_t available;
+    if (h >= t)
+        available = h - t;
+    else
+        available = FRAME_BUFFER_SIZE - t + h;
+    
+    size_t to_read = (max < available) ? max : available;
+    if (to_read == 0) return 0;
+    
+    // Bulk copy using memcpy - handle wrap-around
+    size_t first_chunk = FRAME_BUFFER_SIZE - t;
+    if (first_chunk > to_read) first_chunk = to_read;
+    
+    memcpy(points, &buffer[t], first_chunk * sizeof(laser_point_t));
+    
+    if (to_read > first_chunk) {
+        // Wrap around from beginning
+        memcpy(&points[first_chunk], &buffer[0], (to_read - first_chunk) * sizeof(laser_point_t));
     }
     
+    // Advance tail
+    size_t new_tail = (t + to_read) % FRAME_BUFFER_SIZE;
+    
     // Publish new tail position to producer
-    atomic_store_explicit(&tail, t, memory_order_release);
-    return count;
+    atomic_store_explicit(&tail, new_tail, memory_order_release);
+    return to_read;
 }
 
 bool frame_buffer_can_fit(size_t count)
