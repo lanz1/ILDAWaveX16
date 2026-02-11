@@ -6,7 +6,6 @@
 #include "etherdream_server.h"
 #include "core/frame_buffer.h"
 #include "core/dac_engine.h"
-#include "hal/dac_timer.h"
 #include "config.h"
 #include "esp_log.h"
 #include "esp_mac.h"
@@ -63,11 +62,8 @@ static const char* TAG = "EDREAM";
 // DAC point control field
 #define POINT_CONTROL_RATE_CHANGE   0x8000
 
-// Buffer capacity reported to clients - MUST match what EtherDream clients expect.
-// The client calculates: space = capacity - fullness, then sends min(space, batch_size).
-// We report 1799 (same as original EtherDream hardware) even though our internal
-// buffer is 8192. The extra space is hidden safety margin.
-#define ETHERDREAM_BUFFER_CAPACITY  1799
+// Buffer capacity reported to clients
+#define ETHERDREAM_BUFFER_CAPACITY  (FRAME_BUFFER_SIZE - 1)
 
 // Rate change queue
 #define RATE_QUEUE_SIZE     16
@@ -170,14 +166,6 @@ static uint32_t s_meter_last_time = 0;
 #define TCP_RX_BUF_SIZE     (3 + 1000 * 18 + 16)
 static uint8_t s_rx_buf[TCP_RX_BUF_SIZE];
 
-// Client's low_water_mark from begin command (500-3000, typically 1700)
-// This tells us the client's target buffer level.
-static uint16_t s_client_low_water = 0;
-
-// E-STOP rate limiting
-static uint32_t s_estop_count = 0;
-static uint32_t s_estop_last_log_ms = 0;
-
 static void fill_status(etherdream_status_t* status);
 static void send_response(int sock, uint8_t resp_code, uint8_t cmd_byte);
 // static void process_tcp_data(int sock, uint8_t* data, size_t len);  // unused
@@ -229,25 +217,7 @@ static void fill_status(etherdream_status_t* status) {
     status->light_engine_flags = s_light_engine_flags;
     status->playback_flags = s_playback_flags;
     status->source_flags = 0;
-    
-    // FLOW CONTROL: Report buffer_fullness in the client's coordinate system.
-    //
-    // We report buffer_capacity = 1799 (same as original EtherDream).
-    // Client calculates: space = 1799 - fullness, sends min(space, batch) points.
-    //
-    // Our REAL buffer is 8192 points. Mapping:
-    //   real 0..1799  → fullness = real level (client sees room, sends data)
-    //   real 1800+    → fullness = 1799 (client sees "full", pauses)
-    //
-    // This way the client keeps topping up to ~1799 with small frequent batches,
-    // while our extra 6393 slots act as invisible safety margin against underruns.
-    size_t real_level = frame_buffer_level();
-    if (real_level >= ETHERDREAM_BUFFER_CAPACITY) {
-        status->buffer_fullness = ETHERDREAM_BUFFER_CAPACITY;
-    } else {
-        status->buffer_fullness = (uint16_t)real_level;
-    }
-    
+    status->buffer_fullness = (uint16_t)frame_buffer_level();
     status->point_rate = (s_playback_state == PLAYBACK_PLAYING) ? s_point_rate : 0;
     status->point_count = s_point_count;
 }
@@ -360,63 +330,28 @@ void etherdream_server_loop(void) {
     
     uint32_t now = xTaskGetTickCount() * portTICK_PERIOD_MS;
     
-    // --- Broadcast every second ---
     if (s_broadcast_socket >= 0 && (now - s_last_broadcast_time >= BROADCAST_INTERVAL_MS)) {
         send_broadcast();
         s_last_broadcast_time = now;
     }
     
-    // --- Rate meter (every 1s) ---
-    if (now - s_meter_last_time >= RATE_METER_INTERVAL_MS) {
-        uint32_t elapsed_ms = now - s_meter_last_time;
-        if (elapsed_ms > 0) {
-            if (s_points_received > 0) {
-                s_measured_pps = (s_points_received * 1000) / elapsed_ms;
-                size_t real_level = frame_buffer_level();
-                uint16_t reported = (real_level >= ETHERDREAM_BUFFER_CAPACITY) 
-                                    ? ETHERDREAM_BUFFER_CAPACITY : (uint16_t)real_level;
-                ESP_LOGI(TAG, "RX:%lu pts/s | BUF:%zu/%d (report %u/%d) | rate:%lu | lwm:%u",
-                         (unsigned long)s_measured_pps,
-                         real_level, FRAME_BUFFER_SIZE,
-                         reported, ETHERDREAM_BUFFER_CAPACITY,
-                         (unsigned long)s_point_rate,
-                         s_client_low_water);
-            }
-            s_points_received = 0;
-        }
-        if (!s_connected) s_measured_pps = 0;
-        s_meter_last_time = now;
-    }
-    
-    // --- Single select() for ALL sockets ---
-    fd_set rfds;
-    FD_ZERO(&rfds);
-    
-    int maxfd = s_listen_socket;
-    if (s_listen_socket >= 0) {
-        FD_SET(s_listen_socket, &rfds);
-    }
-    
-    if (s_client_socket >= 0) {
-        FD_SET(s_client_socket, &rfds);
-        if (s_client_socket > maxfd) maxfd = s_client_socket;
-    }
-    
-    // Adaptive timeout: 1ms when playing (responsive), 50ms when idle (save CPU)
-    uint32_t timeout_us = (s_playback_state == PLAYBACK_PLAYING) ? 1000 : 50000;
-    struct timeval tv = { .tv_sec = 0, .tv_usec = timeout_us };
-    
-    int ret = select(maxfd + 1, &rfds, NULL, NULL, &tv);
-    if (ret <= 0) return;  // Timeout or error
-    
-    // --- Accept new connection ---
-    if (s_listen_socket >= 0 && FD_ISSET(s_listen_socket, &rfds)) {
+    if (s_client_socket < 0 && s_listen_socket >= 0) {
         accept_client();
     }
     
-    // --- Handle client data ---
-    if (s_client_socket >= 0 && FD_ISSET(s_client_socket, &rfds)) {
+    if (s_client_socket >= 0) {
         handle_client();
+    }
+    
+    if (now - s_meter_last_time >= RATE_METER_INTERVAL_MS) {
+        uint32_t elapsed_ms = now - s_meter_last_time;
+        if (elapsed_ms > 0 && s_points_received > 0) {
+            s_measured_pps = (s_points_received * 1000) / elapsed_ms;
+        } else if (!s_connected) {
+            s_measured_pps = 0;
+        }
+        s_points_received = 0;
+        s_meter_last_time = now;
     }
 }
 
@@ -456,7 +391,19 @@ static void send_broadcast(void) {
 }
 
 static void accept_client(void) {
-    // Non-blocking accept - called only when select() says listen socket is ready
+    // Use select() with timeout to check for pending connections (j4cDAC pattern)
+    fd_set read_fds;
+    FD_ZERO(&read_fds);
+    FD_SET(s_listen_socket, &read_fds);
+    
+    struct timeval tv = { .tv_sec = 0, .tv_usec = 100000 }; // 100ms timeout
+    
+    int ret = select(s_listen_socket + 1, &read_fds, NULL, NULL, &tv);
+    if (ret <= 0) {
+        return; // Timeout or error - yield and try again
+    }
+    
+    // Socket is ready - accept() won't block
     struct sockaddr_in client_addr;
     socklen_t addr_len = sizeof(client_addr);
     
@@ -465,46 +412,39 @@ static void accept_client(void) {
         return;
     }
     
+    ESP_LOGI(TAG, "Client connected from %s:%d",
+             inet_ntoa(client_addr.sin_addr),
+             ntohs(client_addr.sin_port));
+    
     // Reject if we already have a client
     if (s_client_socket >= 0) {
-        ESP_LOGW(TAG, "Rejecting - already connected");
+        ESP_LOGW(TAG, "Rejecting connection - already have a client");
         close(new_sock);
         return;
     }
     
-    ESP_LOGI(TAG, "Client from %s:%d",
-             inet_ntoa(client_addr.sin_addr),
-             ntohs(client_addr.sin_port));
-    
     s_client_socket = new_sock;
     s_connected = true;
     
-    // TCP_NODELAY: crucial for responsive ACKs
     int nodelay = 1;
     setsockopt(s_client_socket, IPPROTO_TCP, TCP_NODELAY, &nodelay, sizeof(nodelay));
     
-    // Non-blocking for select() integration
     int flags = fcntl(s_client_socket, F_GETFL, 0);
     fcntl(s_client_socket, F_SETFL, flags | O_NONBLOCK);
     
-    // Large receive buffer for batch data
     int rcvbuf = 65536;
     setsockopt(s_client_socket, SOL_SOCKET, SO_RCVBUF, &rcvbuf, sizeof(rcvbuf));
     
-    // Reset all protocol state for new client
     s_playback_state = PLAYBACK_IDLE;
-    s_light_engine_state = LE_READY;
-    s_light_engine_flags = 0;
-    s_playback_flags = 0;
     s_point_count = 0;
     s_point_rate = 0;
-    s_client_low_water = 0;
-    s_estop_count = 0;
+    s_playback_flags = 0;
     rate_queue_clear();
     frame_buffer_clear();
     
-    // Protocol: on connection, DAC immediately sends status like a ping ACK
     send_response(s_client_socket, RESP_ACK, CMD_PING);
+    
+    ESP_LOGI(TAG, "Sent hello response to client");
 }
 
 typedef enum {
@@ -574,7 +514,6 @@ static void add_point_to_batch(const etherdream_point_t* ep) {
 }
 
 static void close_client(void) {
-    dac_timer_set_playback_active(false);  // Stop draining buffer
     if (s_client_socket >= 0) {
         close(s_client_socket);
         s_client_socket = -1;
@@ -821,8 +760,7 @@ static void handle_prepare(int sock) {
 }
 
 static void handle_begin(int sock, const etherdream_begin_cmd_t* cmd) {
-    // Extract low_water_mark - this is the client's target buffer level (500-3000)
-    s_client_low_water = cmd->low_water_mark;
+    ESP_LOGD(TAG, "CMD: Begin (rate=%lu)", (unsigned long)cmd->point_rate);
     
     if (s_playback_state != PLAYBACK_PREPARED) {
         send_response(sock, RESP_NAK_INVAL, CMD_BEGIN);
@@ -847,12 +785,10 @@ static void handle_begin(int sock, const etherdream_begin_cmd_t* cmd) {
     s_playback_state = PLAYBACK_PLAYING;
     s_playback_flags |= 0x01;
     
-    // Set DAC scan rate and enable point flow
+    // Set DAC scan rate
     dac_engine_set_scan_rate(rate);
-    dac_timer_set_playback_active(true);
     
-    ESP_LOGI(TAG, "Playing @ %lu pps (low_water=%u, buf=%zu)", 
-             (unsigned long)rate, s_client_low_water, frame_buffer_level());
+    ESP_LOGI(TAG, "Playback state -> Playing at %lu pps", (unsigned long)rate);
     send_response(sock, RESP_ACK, CMD_BEGIN);
 }
 
@@ -888,7 +824,6 @@ static void handle_stop(int sock) {
         return;
     }
     
-    dac_timer_set_playback_active(false);  // Stop draining buffer
     s_playback_state = PLAYBACK_IDLE;
     s_playback_flags &= ~0x01;
     s_point_rate = 0;
@@ -898,7 +833,8 @@ static void handle_stop(int sock) {
 }
 
 static void handle_estop(int sock) {
-    dac_timer_set_playback_active(false);  // Stop draining buffer
+    ESP_LOGW(TAG, "CMD: Emergency Stop");
+    
     s_light_engine_state = LE_ESTOP;
     s_light_engine_flags |= 0x01;
     s_playback_state = PLAYBACK_IDLE;
@@ -907,19 +843,6 @@ static void handle_estop(int sock) {
     s_point_rate = 0;
     
     frame_buffer_clear();
-    
-    // Rate-limit E-STOP logging to avoid console flood
-    s_estop_count++;
-    uint32_t now = xTaskGetTickCount() * portTICK_PERIOD_MS;
-    if (now - s_estop_last_log_ms >= 1000) {
-        if (s_estop_count > 1) {
-            ESP_LOGW(TAG, "E-STOP (x%lu in last sec)", (unsigned long)s_estop_count);
-        } else {
-            ESP_LOGW(TAG, "E-STOP");
-        }
-        s_estop_count = 0;
-        s_estop_last_log_ms = now;
-    }
     
     send_response(sock, RESP_ACK, CMD_ESTOP_0);
 }

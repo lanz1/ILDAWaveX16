@@ -32,7 +32,7 @@ extern "C" {
 
 #define WIFI_AP_SSID        "ILDAWaveX16"
 #define WIFI_AP_PASS        "lasershow"
-#define WIFI_AP_CHANNEL     1
+#define WIFI_AP_CHANNEL     6
 #define WIFI_AP_MAX_CONN    4
 
 #define ETHERDREAM_TCP_PORT 7765

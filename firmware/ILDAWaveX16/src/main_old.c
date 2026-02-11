@@ -21,6 +21,7 @@ void vPortCleanUpTCB(void *pxTCB) { (void)pxTCB; }
 #include "config.h"
 #include "core/dac_engine.h"
 #include "hal/dac_timer.h"
+#include "hal/w5500_eth.h"
 #include "core/frame_buffer.h"
 #include "input/etherdream_server.h"
 #include "web/http_server.h"
@@ -39,10 +40,22 @@ system_config_t g_config = {
 system_status_t g_status = {0};
 
 static EventGroupHandle_t s_wifi_event_group;
+static EventGroupHandle_t s_network_event_group;
 #define WIFI_CONNECTED_BIT BIT0
+#define ETH_GOT_IP_BIT     BIT0
 
 static bool s_sta_connected = false;
+static bool s_eth_connected = false;
 static esp_netif_t* s_ap_netif = NULL;  // For dynamic AP
+
+// Called by W5500 driver when Ethernet gets IP via DHCP
+static void eth_got_ip_callback(void) {
+    ESP_LOGI(TAG, "ETH Got IP via DHCP");
+    s_eth_connected = true;
+    if (s_network_event_group) {
+        xEventGroupSetBits(s_network_event_group, ETH_GOT_IP_BIT);
+    }
+}
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                                int32_t event_id, void* event_data) {
@@ -54,11 +67,7 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
             xEventGroupClearBits(s_wifi_event_group, WIFI_CONNECTED_BIT);
             ESP_LOGW(TAG, "WiFi disconnected");
         } else if (event_id == WIFI_EVENT_AP_STACONNECTED) {
-            wifi_event_ap_staconnected_t* event = (wifi_event_ap_staconnected_t*)event_data;
-            ESP_LOGI(TAG, "Client connected to AP (AID=%d)", event->aid);
-        } else if (event_id == WIFI_EVENT_AP_STADISCONNECTED) {
-            wifi_event_ap_stadisconnected_t* event = (wifi_event_ap_stadisconnected_t*)event_data;
-            ESP_LOGW(TAG, "Client disconnected from AP (AID=%d, reason=%d)", event->aid, event->reason);
+            ESP_LOGI(TAG, "Client connected to AP");
         }
     } else if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP) {
         ip_event_got_ip_t* event = (ip_event_got_ip_t*)event_data;
@@ -125,16 +134,17 @@ bool wifi_is_connected(void) {
 }
 
 static void wifi_init(void) {
+    ESP_LOGI(TAG, "Starting WiFi AP as fallback...");
+    
     s_wifi_event_group = xEventGroupCreate();
     
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    // netif and event loop already initialized in app_main
     esp_netif_create_default_wifi_sta();
     
     // Ottimizzazioni per bassa latenza
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    cfg.ampdu_rx_enable = 0;        // Disabilita AMPDU - risparmia RAM
-    cfg.ampdu_tx_enable = 0;
+    cfg.ampdu_rx_enable = 0;        // Disabilita AMPDU RX - riduce latenza
+    cfg.ampdu_tx_enable = 0;        // Disabilita AMPDU TX - riduce latenza
     cfg.nvs_enable = 0;             // Non salvare config in NVS (più veloce)
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
     
@@ -154,36 +164,29 @@ static void wifi_init(void) {
             .channel = WIFI_AP_CHANNEL,
             .authmode = WIFI_AUTH_WPA2_PSK,
             .max_connection = WIFI_AP_MAX_CONN,
-            .beacon_interval = 100,         // Beacon ogni 100ms (default)
+            .beacon_interval = 100,
         },
     };
     
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &ap_config));
-    
-    // Start WiFi FIRST (required before set_protocol, set_bandwidth, set_max_tx_power)
     ESP_ERROR_CHECK(esp_wifi_start());
     
-    // Disabilita power saving (CRITICO per bassa latenza)
+    // Disabilita power saving
     esp_wifi_set_ps(WIFI_PS_NONE);
-    
-    // Protocollo: 802.11b/g/n
     esp_wifi_set_protocol(WIFI_IF_AP, WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N);
-    
-    // Larghezza canale: 20MHz (più stabile, meno interferenze)
     esp_wifi_set_bandwidth(WIFI_IF_AP, WIFI_BW_HT20);
+    esp_wifi_set_max_tx_power(80);
     
-    // Potenza TX massima (migliore SNR = meno retransmit)
-    esp_wifi_set_max_tx_power(80);  // 20dBm (max)
-    
-    ESP_LOGI(TAG, "WiFi AP-only: %s ch%d 20MHz (http://192.168.4.1)", WIFI_AP_SSID, WIFI_AP_CHANNEL);
+    ESP_LOGI(TAG, "WiFi AP: %s (http://192.168.4.1)", WIFI_AP_SSID);
 }
 
 static void network_task(void* arg) {
     while (1) {
-        // select() inside server_loop handles blocking with adaptive timeout
-        // (1ms playing, 50ms idle) - no busy loop needed
         etherdream_server_loop();
+        // Must use vTaskDelay to feed watchdog (IDLE task needs to run)
+        // 1 tick = 1ms at 1000Hz tick rate - acceptable latency for ACK
+        vTaskDelay(1);
     }
 }
 
@@ -198,7 +201,49 @@ void app_main(void) {
     }
     ESP_ERROR_CHECK(ret);
     
-    wifi_init();
+    // Initialize network stack (required before Ethernet or WiFi)
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    
+    // Event group for Ethernet IP wait
+    s_network_event_group = xEventGroupCreate();
+    
+    // ==========================================================================
+    // ETHERNET FIRST - WiFi only as fallback
+    // ==========================================================================
+    
+    // Set callback BEFORE init so we catch the IP event
+    w5500_eth_set_got_ip_callback(eth_got_ip_callback);
+    
+    ret = w5500_eth_init();
+    if (ret == ESP_OK) {
+        w5500_eth_start();
+        ESP_LOGI(TAG, "Ethernet initialized - waiting for DHCP (10s timeout)...");
+        
+        // Wait up to 10 seconds for Ethernet to get IP
+        EventBits_t bits = xEventGroupWaitBits(
+            s_network_event_group,
+            ETH_GOT_IP_BIT,
+            pdFALSE,
+            pdFALSE,
+            pdMS_TO_TICKS(10000)
+        );
+        
+        if (bits & ETH_GOT_IP_BIT) {
+            ESP_LOGI(TAG, "Ethernet connected - WiFi disabled for low latency");
+            // Do NOT initialize WiFi - Ethernet is primary
+        } else {
+            ESP_LOGW(TAG, "Ethernet no IP after 10s - starting WiFi AP as fallback");
+            wifi_init();
+        }
+    } else {
+        ESP_LOGW(TAG, "Ethernet init failed (0x%x) - WiFi AP only", ret);
+        wifi_init();
+    }
+    
+    // ==========================================================================
+    // Application services
+    // ==========================================================================
     
     // Use hardware-timed DAC output (GPTimer + SPI queue)
     dac_timer_init();
@@ -214,7 +259,12 @@ void app_main(void) {
     // Start DAC timer
     dac_timer_start();
     
-    ESP_LOGI(TAG, "Ready - AP: %s, TCP: %d", WIFI_AP_SSID, ETHERDREAM_TCP_PORT);
+    // Show available interfaces
+    if (s_eth_connected) {
+        ESP_LOGI(TAG, "Ready - ETH (DHCP), TCP: %d", ETHERDREAM_TCP_PORT);
+    } else {
+        ESP_LOGI(TAG, "Ready - AP: %s, TCP: %d", WIFI_AP_SSID, ETHERDREAM_TCP_PORT);
+    }
     
     // Simple status loop
     while (1) {

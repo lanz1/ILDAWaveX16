@@ -74,6 +74,23 @@ uint32_t dac_timer_get_scan_rate(void);
  */
 bool dac_timer_is_running(void);
 
+/**
+ * @brief Set playback active gate
+ * 
+ * When false, the refill task will NOT read from frame_buffer,
+ * allowing the buffer to accumulate points during PREPARED state.
+ * When true, points flow from frame_buffer → ISR buffer → DAC.
+ * 
+ * @param active true to enable point flow, false to gate it
+ */
+void dac_timer_set_playback_active(bool active);
+
+/**
+ * @brief Check if playback is active
+ * @return true if point flow is enabled
+ */
+bool dac_timer_is_playback_active(void);
+
 #ifdef __cplusplus
 }
 #endif

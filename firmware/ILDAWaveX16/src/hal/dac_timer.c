@@ -36,6 +36,7 @@ static const char* TAG = "DAC_TIMER";
 static gptimer_handle_t s_timer = NULL;
 static TaskHandle_t s_task = NULL;
 static volatile bool s_running = false;
+static volatile bool s_playback_active = false;  // Gate: only drain frame_buffer when true
 static volatile uint32_t s_scan_rate = SCAN_RATE_DEFAULT_HZ;
 
 // ISR ring buffer - written by task, read by ISR
@@ -111,6 +112,28 @@ static void dac_refill_task(void* arg)
     while (1) {
         if (!s_running) {
             vTaskDelay(pdMS_TO_TICKS(10));
+            continue;
+        }
+        
+        // GATE: Only drain frame_buffer into ISR buffer when playback is active.
+        // During PREPARED state, the client is filling the buffer — we must NOT
+        // consume those points or the client can never accumulate enough to start.
+        if (!s_playback_active) {
+            idle_loops++;
+            if (idle_loops > 100) {
+                vTaskDelay(1);
+                idle_loops = 0;
+            } else {
+                taskYIELD();
+            }
+            
+            // Still log stats
+            int64_t now_idle = esp_timer_get_time();
+            if (now_idle - s_last_log_time >= 1000000) {
+                s_points_output = 0;
+                last_underruns = s_isr_underruns;
+                s_last_log_time = now_idle;
+            }
             continue;
         }
         
@@ -335,4 +358,19 @@ uint32_t dac_timer_get_scan_rate(void)
 bool dac_timer_is_running(void)
 {
     return s_running;
+}
+
+void dac_timer_set_playback_active(bool active)
+{
+    if (active && !s_playback_active) {
+        // Transitioning to active: clear ISR buffer for clean start
+        s_isr_head = 0;
+        s_isr_tail = 0;
+    }
+    s_playback_active = active;
+}
+
+bool dac_timer_is_playback_active(void)
+{
+    return s_playback_active;
 }

@@ -150,9 +150,28 @@ static esp_err_t wifi_handler(httpd_req_t* req) {
     return ESP_OK;
 }
 
-static esp_err_t captive_handler(httpd_req_t* req) {
+// Captive portal: trick devices into thinking there IS internet.
+// Android checks /generate_204 and expects HTTP 204.
+// iOS/macOS check /hotspot-detect.html and expect "Success".
+// Windows checks /connecttest.txt and /ncsi.txt.
+static esp_err_t captive_204_handler(httpd_req_t* req) {
+    // Android: expects HTTP 204 No Content
+    httpd_resp_set_status(req, "204 No Content");
+    httpd_resp_send(req, NULL, 0);
+    return ESP_OK;
+}
+
+static esp_err_t captive_success_handler(httpd_req_t* req) {
+    // iOS/macOS: expects body containing "Success"
     httpd_resp_set_type(req, "text/html");
-    httpd_resp_send(req, CAPTIVE_HTML, strlen(CAPTIVE_HTML));
+    httpd_resp_sendstr(req, "<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY></HTML>");
+    return ESP_OK;
+}
+
+static esp_err_t captive_ncsi_handler(httpd_req_t* req) {
+    // Windows NCSI: expects 200 OK with text body
+    httpd_resp_set_type(req, "text/plain");
+    httpd_resp_sendstr(req, "Microsoft NCSI");
     return ESP_OK;
 }
 
@@ -299,7 +318,7 @@ esp_err_t http_server_start(void) {
     httpd_config_t config = HTTPD_DEFAULT_CONFIG();
     config.stack_size = 8192;
     config.core_id = CORE_SERVICES;
-    config.max_uri_handlers = 10;
+    config.max_uri_handlers = 16;
     
     esp_err_t ret = httpd_start(&s_server, &config);
     if (ret != ESP_OK) return ret;
@@ -319,11 +338,21 @@ esp_err_t http_server_start(void) {
     httpd_uri_t connect_uri = { .uri = "/api/wifi/connect", .method = HTTP_POST, .handler = wifi_connect_handler };
     httpd_register_uri_handler(s_server, &connect_uri);
     
-    httpd_uri_t captive_uri = { .uri = "/generate_204", .method = HTTP_GET, .handler = captive_handler };
-    httpd_register_uri_handler(s_server, &captive_uri);
-    
-    httpd_uri_t hotspot_uri = { .uri = "/hotspot-detect.html", .method = HTTP_GET, .handler = captive_handler };
+    // Captive portal: respond correctly to each platform's connectivity check
+    // Android
+    httpd_uri_t gen204_uri = { .uri = "/generate_204", .method = HTTP_GET, .handler = captive_204_handler };
+    httpd_register_uri_handler(s_server, &gen204_uri);
+    // iOS / macOS
+    httpd_uri_t hotspot_uri = { .uri = "/hotspot-detect.html", .method = HTTP_GET, .handler = captive_success_handler };
     httpd_register_uri_handler(s_server, &hotspot_uri);
+    // Windows NCSI
+    httpd_uri_t ncsi_uri = { .uri = "/connecttest.txt", .method = HTTP_GET, .handler = captive_ncsi_handler };
+    httpd_register_uri_handler(s_server, &ncsi_uri);
+    httpd_uri_t ncsi2_uri = { .uri = "/ncsi.txt", .method = HTTP_GET, .handler = captive_ncsi_handler };
+    httpd_register_uri_handler(s_server, &ncsi2_uri);
+    // Additional Apple check
+    httpd_uri_t apple_uri = { .uri = "/library/test/success.html", .method = HTTP_GET, .handler = captive_success_handler };
+    httpd_register_uri_handler(s_server, &apple_uri);
     
     // Register OTA handlers
     ota_handler_register(s_server);
