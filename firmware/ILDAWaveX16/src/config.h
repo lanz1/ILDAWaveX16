@@ -21,11 +21,6 @@ extern "C" {
 #define PIN_DAC_SCK         12
 #define PIN_DAC_MISO        9
 
-#define PIN_SD_CS           13
-#define PIN_SD_MOSI         14
-#define PIN_SD_SCK          15
-#define PIN_SD_MISO         16
-
 // =============================================================================
 // Network
 // =============================================================================
@@ -50,7 +45,6 @@ extern "C" {
 #define FRAME_BUFFER_SIZE   8192
 
 #define DAC_SPI_HOST        SPI3_HOST
-#define SD_SPI_HOST         SPI2_HOST
 
 // =============================================================================
 // FreeRTOS
@@ -83,11 +77,6 @@ typedef struct {
 
 typedef struct {
     uint32_t scan_rate_hz;
-    uint8_t brightness;
-    bool color_invert;
-    bool xy_swap;
-    bool x_invert;
-    bool y_invert;
 } system_config_t;
 
 typedef struct {
@@ -95,7 +84,6 @@ typedef struct {
     bool ed_connected;
     uint32_t buffer_level;
     uint32_t current_scan_rate;
-    uint64_t points_rendered;
     uint32_t ed_point_rate;
     uint32_t free_heap;
 } system_status_t;

@@ -2,7 +2,7 @@
  * @file frame_buffer.h
  * @brief Ring buffer for laser points (based on Stanley's PointRingBuffer)
  * 
- * Uses portMUX spinlock for thread-safe access.
+ * Uses atomic operations for lock-free thread-safe access (single producer, single consumer).
  * Supports batch read (up to 512 points) for efficient DAC output.
  */
 

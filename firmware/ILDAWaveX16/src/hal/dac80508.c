@@ -222,26 +222,6 @@ esp_err_t dac_write_register(uint8_t reg, uint16_t value) {
     return spi_device_polling_transmit(s_spi, &trans);
 }
 
-esp_err_t dac_read_register(uint8_t reg, uint16_t* value) {
-    if (!s_spi || !value) return ESP_ERR_INVALID_ARG;
-    
-    // DAC80508 read: send reg with R/W bit set, then read back
-    uint8_t tx[4] = { (uint8_t)(reg | 0x80), 0, 0, 0 };
-    uint8_t rx[4] = {0};
-    
-    spi_transaction_t trans = {
-        .length = 24,
-        .tx_buffer = tx,
-        .rx_buffer = rx,
-    };
-    
-    esp_err_t ret = spi_device_polling_transmit(s_spi, &trans);
-    if (ret == ESP_OK) {
-        *value = ((uint16_t)rx[1] << 8) | rx[2];
-    }
-    return ret;
-}
-
 static inline void dac_write_fast(uint8_t reg, uint16_t value) {
     uint8_t tx[4] = { reg, (uint8_t)(value >> 8), (uint8_t)value, 0 };
     spi_transaction_t trans = { .length = 24, .tx_buffer = tx };
@@ -277,60 +257,6 @@ void dac_output_point(const laser_point_t* point) {
         dac_write_fast(DAC_REG_DAC0 + DAC_CH_GREEN, g);
         dac_write_fast(DAC_REG_DAC0 + DAC_CH_BLUE, b);
         dac_write_fast(DAC_REG_TRIGGER, 0x0010);
-        spi_device_release_bus(s_spi);
-    }
-}
-
-void dac_output_batch_timed(const laser_point_t* points, size_t count, uint32_t period_us, int64_t* next_time) {
-    if (!points || count == 0 || !s_spi || !next_time) return;
-    
-    // Acquire bus once for entire batch when using driver
-    bool use_direct = s_direct_spi_ready;
-    if (!use_direct) {
-        spi_device_acquire_bus(s_spi, portMAX_DELAY);
-    }
-    
-    for (size_t i = 0; i < count; i++) {
-        // Wait for precise point timing
-        while (esp_timer_get_time() < *next_time) {
-            // busy-wait for precise timing
-        }
-        
-        const laser_point_t* point = &points[i];
-        
-        // Conversione signed→unsigned (no altre trasformazioni per max performance)
-        uint16_t x = (uint16_t)((int32_t)point->x + 32768);
-        uint16_t y = (uint16_t)((int32_t)point->y + 32768);
-        
-        // Blanking
-        bool blank = (point->flags & POINT_FLAG_BLANK);
-        uint16_t r = blank ? 0 : point->r;
-        uint16_t g = blank ? 0 : point->g;
-        uint16_t b = blank ? 0 : point->b;
-        
-        if (use_direct) {
-            // Direct SPI writes (~1µs each = ~6µs total)
-            dac_write_direct(DAC_REG_DAC0 + DAC_CH_X, x);
-            dac_write_direct(DAC_REG_DAC0 + DAC_CH_Y, y);
-            dac_write_direct(DAC_REG_DAC0 + DAC_CH_RED, r);
-            dac_write_direct(DAC_REG_DAC0 + DAC_CH_GREEN, g);
-            dac_write_direct(DAC_REG_DAC0 + DAC_CH_BLUE, b);
-            dac_write_direct(DAC_REG_TRIGGER, 0x0010);
-        } else {
-            // Driver SPI writes (~4-5µs each with bus held)
-            dac_write_fast(DAC_REG_DAC0 + DAC_CH_X, x);
-            dac_write_fast(DAC_REG_DAC0 + DAC_CH_Y, y);
-            dac_write_fast(DAC_REG_DAC0 + DAC_CH_RED, r);
-            dac_write_fast(DAC_REG_DAC0 + DAC_CH_GREEN, g);
-            dac_write_fast(DAC_REG_DAC0 + DAC_CH_BLUE, b);
-            dac_write_fast(DAC_REG_TRIGGER, 0x0010);
-        }
-        
-        // Update next point time
-        *next_time += period_us;
-    }
-    
-    if (!use_direct) {
         spi_device_release_bus(s_spi);
     }
 }

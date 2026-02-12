@@ -3,8 +3,9 @@
  * @brief Hardware-timed DAC output using GPTimer
  * 
  * This module provides precise, hardware-timed laser point output.
- * It uses a GPTimer ISR to signal a semaphore at the scan rate frequency,
- * and a high-priority task that outputs points via queued SPI transactions.
+ * It uses a GPTimer ISR that fires at the scan rate frequency.
+ * A high-priority refill task on Core 1 keeps the ISR buffer fed
+ * from the frame buffer.
  * 
  * Replaces the busy-wait approach in dac_engine for better timing precision
  * and reduced CPU usage.

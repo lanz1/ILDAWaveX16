@@ -75,9 +75,6 @@ static const char* TAG = "EDREAM";
 // Broadcast interval
 #define BROADCAST_INTERVAL_MS   1000
 
-// Connection timeout
-#define CONNECTION_TIMEOUT_MS   5000
-
 // =============================================================================
 // Ether Dream Protocol Structures (packed, little-endian)
 // =============================================================================
@@ -178,13 +175,23 @@ static uint16_t s_client_low_water = 0;
 static uint32_t s_estop_count = 0;
 static uint32_t s_estop_last_log_ms = 0;
 
+#if LOG_PERF
+// Network perf profiling
+static uint32_t s_net_recv_time_sum = 0;   // Total recv+parse time (µs)
+static uint32_t s_net_recv_time_max = 0;   // Max recv+parse time (µs)
+static uint32_t s_net_recv_count = 0;      // Number of recv calls
+static uint32_t s_net_recv_bytes_sum = 0;  // Total bytes received
+static uint32_t s_net_select_wait_sum = 0; // Total select wait time (µs)
+static uint32_t s_net_select_count = 0;    // Number of select calls
+static uint32_t s_net_loop_count = 0;      // Total loop iterations
+static int64_t s_net_perf_last_time = 0;   // Last perf log time
+#endif
+
 static void fill_status(etherdream_status_t* status);
 static void send_response(int sock, uint8_t resp_code, uint8_t cmd_byte);
-// static void process_tcp_data(int sock, uint8_t* data, size_t len);  // unused
 static void handle_prepare(int sock);
 static void handle_begin(int sock, const etherdream_begin_cmd_t* cmd);
 static void handle_queue_rate(int sock, const etherdream_queue_rate_cmd_t* cmd);
-// static void handle_data(int sock, const uint8_t* data, size_t len);  // unused
 static void handle_stop(int sock);
 static void handle_estop(int sock);
 static void handle_clear_estop(int sock);
@@ -355,18 +362,19 @@ void etherdream_server_loop(void) {
         s_last_broadcast_time = now;
     }
     
-    // --- Rate meter (every 1s) ---
-    if (now - s_meter_last_time >= RATE_METER_INTERVAL_MS) {
+    // --- Rate meter ---
+    if (now - s_meter_last_time >= (RATE_METER_INTERVAL_MS * 2)) {
         uint32_t elapsed_ms = now - s_meter_last_time;
         if (elapsed_ms > 0) {
             if (s_points_received > 0) {
                 s_measured_pps = (s_points_received * 1000) / elapsed_ms;
+#if LOG_RX_METER
                 size_t real_level = frame_buffer_level();
-                ESP_LOGI(TAG, "RX:%lu pts/s | BUF:%zu/%d | rate:%lu | lwm:%u",
+                ESP_LOGI(TAG, "RX:%lu pts/s | BUF:%zu/%d | rate:%lu",
                          (unsigned long)s_measured_pps,
                          real_level, FRAME_BUFFER_SIZE,
-                         (unsigned long)s_point_rate,
-                         s_client_low_water);
+                         (unsigned long)s_point_rate);
+#endif
             }
             s_points_received = 0;
         }
@@ -392,7 +400,42 @@ void etherdream_server_loop(void) {
     uint32_t timeout_us = (s_playback_state == PLAYBACK_PLAYING) ? 1000 : 50000;
     struct timeval tv = { .tv_sec = 0, .tv_usec = timeout_us };
     
+#if LOG_PERF
+    int64_t select_start = esp_timer_get_time();
+#endif
     int ret = select(maxfd + 1, &rfds, NULL, NULL, &tv);
+#if LOG_PERF
+    uint32_t select_elapsed = (uint32_t)(esp_timer_get_time() - select_start);
+    s_net_select_wait_sum += select_elapsed;
+    s_net_select_count++;
+    s_net_loop_count++;
+    
+    // Perf log every 5 seconds
+    {
+        int64_t now_perf = esp_timer_get_time();
+        if (s_net_perf_last_time == 0) s_net_perf_last_time = now_perf;
+        if (now_perf - s_net_perf_last_time >= 5000000) {
+            uint32_t recv_avg = (s_net_recv_count > 0) ? (s_net_recv_time_sum / s_net_recv_count) : 0;
+            uint32_t recv_max = s_net_recv_time_max;
+            uint32_t bytes_avg = (s_net_recv_count > 0) ? (s_net_recv_bytes_sum / s_net_recv_count) : 0;
+            uint32_t sel_avg = (s_net_select_count > 0) ? (s_net_select_wait_sum / s_net_select_count) : 0;
+            
+            ESP_LOGI(TAG, "PERF NET: recv avg=%luus max=%luus bytes=%lu cnt=%lu | select avg=%luus loops=%lu",
+                     (unsigned long)recv_avg, (unsigned long)recv_max,
+                     (unsigned long)bytes_avg, (unsigned long)s_net_recv_count,
+                     (unsigned long)sel_avg, (unsigned long)s_net_loop_count);
+            
+            s_net_recv_time_sum = 0;
+            s_net_recv_time_max = 0;
+            s_net_recv_count = 0;
+            s_net_recv_bytes_sum = 0;
+            s_net_select_wait_sum = 0;
+            s_net_select_count = 0;
+            s_net_loop_count = 0;
+            s_net_perf_last_time = now_perf;
+        }
+    }
+#endif
     if (ret <= 0) return;  // Timeout or error
     
     // --- Accept new connection ---
@@ -514,9 +557,6 @@ static size_t s_data_point_buf_len = 0;
 #define POINT_BATCH_SIZE    512
 static laser_point_t s_point_batch[POINT_BATCH_SIZE];
 static size_t s_batch_count = 0;
-
-// Buffer thresholds for flow control
-#define BUFFER_HIGH_THRESHOLD   (FRAME_BUFFER_SIZE * 95 / 100)  // 95%
 
 static size_t flush_point_batch(void) {
     if (s_batch_count > 0) {
@@ -795,10 +835,20 @@ static void feed_rx_data(int sock, const uint8_t* data, size_t len) {
 }
 
 static void handle_client(void) {
+#if LOG_PERF
+    int64_t recv_start = esp_timer_get_time();
+#endif
     ssize_t len = recv(s_client_socket, s_rx_buf, sizeof(s_rx_buf), 0);
     
     if (len > 0) {
         feed_rx_data(s_client_socket, s_rx_buf, len);
+#if LOG_PERF
+        uint32_t recv_elapsed = (uint32_t)(esp_timer_get_time() - recv_start);
+        s_net_recv_time_sum += recv_elapsed;
+        s_net_recv_count++;
+        s_net_recv_bytes_sum += len;
+        if (recv_elapsed > s_net_recv_time_max) s_net_recv_time_max = recv_elapsed;
+#endif
     } else if (len == 0) {
         close_client();
     } else {
@@ -890,8 +940,6 @@ static void handle_queue_rate(int sock, const etherdream_queue_rate_cmd_t* cmd) 
     
     send_response(sock, RESP_ACK, CMD_QUEUE_RATE);
 }
-
-// Removed handle_data - handled in feed_rx_data state machine
 
 static void handle_stop(int sock) {
     ESP_LOGI(TAG, "CMD: Stop");

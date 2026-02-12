@@ -54,29 +54,11 @@ esp_err_t dac_init(void);
 esp_err_t dac_write_register(uint8_t reg, uint16_t value);
 
 /**
- * @brief Read a DAC register
- * @param reg Register address (0x00-0x0F)
- * @param value Output: 16-bit value read
- * @return ESP_OK on success
- */
-esp_err_t dac_read_register(uint8_t reg, uint16_t* value);
-
-/**
  * @brief Output a laser point to the correct DAC channels
  * Maps X→OUT6, Y→OUT7, R→OUT5, G→OUT4, B→OUT3
  * @param point Pointer to laser point
  */
 void dac_output_point(const laser_point_t* point);
-
-/**
- * @brief Output a batch of laser points with single SPI bus lock
- * Highly optimized for real-time streaming - acquires bus once for entire batch
- * @param points Array of laser points
- * @param count Number of points to output
- * @param period_us Microseconds between each point (for precise scan rate timing)
- * @param next_time Pointer to next point time (updated by function)
- */
-void dac_output_batch_timed(const laser_point_t* points, size_t count, uint32_t period_us, int64_t* next_time);
 
 #ifdef __cplusplus
 }
