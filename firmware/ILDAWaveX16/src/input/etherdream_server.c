@@ -64,10 +64,12 @@ static const char* TAG = "EDREAM";
 
 // Buffer capacity reported to clients.
 // The client calculates: space = capacity - fullness, then sends min(space, batch_size).
-// We report our REAL buffer capacity so the client never artificially throttles.
-// Original EtherDream had 1799 which caused sawtooth starvation on our 8192 buffer
-// because the client would stop sending at 1800+ real level.
-#define ETHERDREAM_BUFFER_CAPACITY  (FRAME_BUFFER_SIZE - 1)   // 8191
+// Must match the original Ether Dream value (1799) because client pacing algorithms
+// (libetherdream, MadMapper, etc.) target ~1700 buffer level and sleep based on
+// (fullness - 1700). With capacity=8191, the client fills to 4000+ then sleeps
+// for 200ms, causing buffer drain to 0 and underruns ("ping-pong").
+// Our real 8192-point buffer is a hidden safety net the client doesn't see.
+#define ETHERDREAM_BUFFER_CAPACITY  1799
 
 // Rate change queue
 #define RATE_QUEUE_SIZE     16
@@ -185,9 +187,25 @@ static uint32_t s_net_select_wait_sum = 0; // Total select wait time (µs)
 static uint32_t s_net_select_count = 0;    // Number of select calls
 static uint32_t s_net_loop_count = 0;      // Total loop iterations
 static int64_t s_net_perf_last_time = 0;   // Last perf log time
+// Detailed send timing
+static uint32_t s_net_send_time_sum = 0;   // Total send() time (µs) 
+static uint32_t s_net_send_time_max = 0;   // Max send() time (µs)
+static uint32_t s_net_send_count = 0;      // Number of send() calls
+// Inter-batch gap: time between last ACK send and next recv with data
+static uint32_t s_net_gap_time_sum = 0;    // Total gap time (µs)
+static uint32_t s_net_gap_time_max = 0;    // Max gap time (µs)
+static uint32_t s_net_gap_count = 0;       // Number of gaps measured
+static int64_t s_net_last_send_time = 0;   // Timestamp of last send() completion
 #endif
 
+// Response batching - accumulate responses and send in one TCP segment
+// Reduces SPI transactions to W5500 when client pipelines commands
+#define RESP_BATCH_MAX  16
+static etherdream_response_t s_resp_batch[RESP_BATCH_MAX];
+static size_t s_resp_batch_count = 0;
+
 static void fill_status(etherdream_status_t* status);
+static void flush_responses(int sock);
 static void send_response(int sock, uint8_t resp_code, uint8_t cmd_byte);
 static void handle_prepare(int sock);
 static void handle_begin(int sock, const etherdream_begin_cmd_t* cmd);
@@ -237,24 +255,70 @@ static void fill_status(etherdream_status_t* status) {
     status->playback_flags = s_playback_flags;
     status->source_flags = 0;
     
-    // FLOW CONTROL: Report real buffer level directly.
-    // capacity = 8191, so client calculates: space = 8191 - fullness
-    // This gives the client the true picture and prevents artificial throttling.
+    // FLOW CONTROL: Report real buffer level WITHOUT capping.
+    // Client calculates: space = capacity(1799) - fullness.
+    // If fullness > 1799, space is negative → client won't send more.
+    // But client estimates drain via: expected_used = elapsed * point_rate.
+    // Since real drain matches point_rate, client's estimation is accurate,
+    // and it resumes sending when expected_fullness ≈ 1700.
+    // Capping at 1799 would HIDE the drain, breaking the client's pacing.
+    // Our real 8192 buffer gives ~400ms extra headroom the client doesn't see.
     size_t real_level = frame_buffer_level();
-    status->buffer_fullness = (uint16_t)(real_level > ETHERDREAM_BUFFER_CAPACITY 
-                                         ? ETHERDREAM_BUFFER_CAPACITY : real_level);
+    status->buffer_fullness = (uint16_t)(real_level > 0xFFFF ? 0xFFFF : real_level);
     
     status->point_rate = (s_playback_state == PLAYBACK_PLAYING) ? s_point_rate : 0;
     status->point_count = s_point_count;
 }
 
-static void send_response(int sock, uint8_t resp_code, uint8_t cmd_byte) {
-    etherdream_response_t resp;
-    resp.response = resp_code;
-    resp.command = cmd_byte;
-    fill_status(&resp.status);
+static void flush_responses(int sock) {
+    if (s_resp_batch_count == 0 || sock < 0) return;
     
-    send(sock, &resp, sizeof(resp), MSG_NOSIGNAL);
+    size_t total_bytes = s_resp_batch_count * sizeof(etherdream_response_t);
+    
+#if LOG_PERF
+    int64_t t0 = esp_timer_get_time();
+#endif
+    
+    ssize_t sent = send(sock, s_resp_batch, total_bytes, MSG_NOSIGNAL);
+    
+#if LOG_PERF
+    uint32_t send_elapsed = (uint32_t)(esp_timer_get_time() - t0);
+    s_net_send_time_sum += send_elapsed;
+    s_net_send_count++;
+    if (send_elapsed > s_net_send_time_max) s_net_send_time_max = send_elapsed;
+    s_net_last_send_time = esp_timer_get_time();
+#endif
+    
+    if (sent != (ssize_t)total_bytes) {
+        ESP_LOGW(TAG, "flush: sent=%d expected=%d errno=%d",
+                 (int)sent, (int)total_bytes, errno);
+    }
+    
+    s_resp_batch_count = 0;
+}
+
+static void send_response(int sock, uint8_t resp_code, uint8_t cmd_byte) {
+    // Flush if batch full (safety)
+    if (s_resp_batch_count >= RESP_BATCH_MAX) {
+        flush_responses(sock);
+    }
+    
+    etherdream_response_t* resp = &s_resp_batch[s_resp_batch_count];
+    resp->response = resp_code;
+    resp->command = cmd_byte;
+    fill_status(&resp->status);
+    
+    // Only log non-DATA responses or errors (DATA is too frequent)
+    if (cmd_byte != CMD_DATA || resp_code != RESP_ACK) {
+        ESP_LOGI(TAG, "TX: resp=%c cmd=%c le=%d pb=%d buf=%d rate=%lu",
+                 resp_code, cmd_byte,
+                 resp->status.light_engine_state,
+                 resp->status.playback_state,
+                 resp->status.buffer_fullness,
+                 (unsigned long)resp->status.point_rate);
+    }
+    
+    s_resp_batch_count++;
 }
 
 esp_err_t etherdream_server_init(void) {
@@ -425,6 +489,14 @@ void etherdream_server_loop(void) {
                      (unsigned long)bytes_avg, (unsigned long)s_net_recv_count,
                      (unsigned long)sel_avg, (unsigned long)s_net_loop_count);
             
+            uint32_t send_avg = (s_net_send_count > 0) ? (s_net_send_time_sum / s_net_send_count) : 0;
+            uint32_t gap_avg = (s_net_gap_count > 0) ? (s_net_gap_time_sum / s_net_gap_count) : 0;
+            ESP_LOGI(TAG, "PERF TX: send avg=%luus max=%luus cnt=%lu | gap avg=%luus max=%luus cnt=%lu",
+                     (unsigned long)send_avg, (unsigned long)s_net_send_time_max,
+                     (unsigned long)s_net_send_count,
+                     (unsigned long)gap_avg, (unsigned long)s_net_gap_time_max,
+                     (unsigned long)s_net_gap_count);
+            
             s_net_recv_time_sum = 0;
             s_net_recv_time_max = 0;
             s_net_recv_count = 0;
@@ -432,6 +504,12 @@ void etherdream_server_loop(void) {
             s_net_select_wait_sum = 0;
             s_net_select_count = 0;
             s_net_loop_count = 0;
+            s_net_send_time_sum = 0;
+            s_net_send_time_max = 0;
+            s_net_send_count = 0;
+            s_net_gap_time_sum = 0;
+            s_net_gap_time_max = 0;
+            s_net_gap_count = 0;
             s_net_perf_last_time = now_perf;
         }
     }
@@ -465,7 +543,9 @@ static void send_broadcast(void) {
     etherdream_broadcast_t bcast;
     memset(&bcast, 0, sizeof(bcast));
     
-    esp_read_mac(bcast.mac_address, ESP_MAC_WIFI_STA);
+    // Use our configured Ethernet MAC address
+    uint8_t mac[] = ETH_MAC_ADDR;
+    memcpy(bcast.mac_address, mac, 6);
     
     bcast.hw_revision = ETHERDREAM_HW_REVISION;
     bcast.sw_revision = ETHERDREAM_SW_REVISION;
@@ -534,6 +614,7 @@ static void accept_client(void) {
     
     // Protocol: on connection, DAC immediately sends status like a ping ACK
     send_response(s_client_socket, RESP_ACK, CMD_PING);
+    flush_responses(s_client_socket);
 }
 
 typedef enum {
@@ -615,6 +696,7 @@ static void close_client(void) {
     s_data_points_received = 0;
     s_data_point_buf_len = 0;
     s_batch_count = 0;
+    s_resp_batch_count = 0;
     
     ESP_LOGI(TAG, "Client disconnected");
 }
@@ -657,6 +739,7 @@ static void process_complete_command(int sock, uint8_t cmd, const uint8_t* data,
             break;
             
         case CMD_VERSION: {
+            flush_responses(sock);  // Flush pending before raw send
             char version[32];
             memset(version, 0, sizeof(version));
             snprintf(version, sizeof(version), "ILDAWaveX16-ED v1.0");
@@ -835,39 +918,64 @@ static void feed_rx_data(int sock, const uint8_t* data, size_t len) {
 }
 
 static void handle_client(void) {
+    // Drain all available data from socket (multiple recv until EAGAIN)
+    // This is critical for throughput - don't go back to select() with data waiting
+    while (1) {
 #if LOG_PERF
-    int64_t recv_start = esp_timer_get_time();
+        int64_t recv_start = esp_timer_get_time();
 #endif
-    ssize_t len = recv(s_client_socket, s_rx_buf, sizeof(s_rx_buf), 0);
-    
-    if (len > 0) {
-        feed_rx_data(s_client_socket, s_rx_buf, len);
+        ssize_t len = recv(s_client_socket, s_rx_buf, sizeof(s_rx_buf), 0);
+        
+        if (len > 0) {
 #if LOG_PERF
-        uint32_t recv_elapsed = (uint32_t)(esp_timer_get_time() - recv_start);
-        s_net_recv_time_sum += recv_elapsed;
-        s_net_recv_count++;
-        s_net_recv_bytes_sum += len;
-        if (recv_elapsed > s_net_recv_time_max) s_net_recv_time_max = recv_elapsed;
+            // Measure gap: time from last send() to this recv() returning data
+            if (s_net_last_send_time > 0) {
+                uint32_t gap = (uint32_t)(recv_start - s_net_last_send_time);
+                s_net_gap_time_sum += gap;
+                s_net_gap_count++;
+                if (gap > s_net_gap_time_max) s_net_gap_time_max = gap;
+            }
 #endif
-    } else if (len == 0) {
-        close_client();
-    } else {
-        if (errno != EAGAIN && errno != EWOULDBLOCK) {
-            ESP_LOGW(TAG, "Recv error: errno %d", errno);
+            feed_rx_data(s_client_socket, s_rx_buf, len);
+            flush_responses(s_client_socket);
+#if LOG_PERF
+            uint32_t recv_elapsed = (uint32_t)(esp_timer_get_time() - recv_start);
+            s_net_recv_time_sum += recv_elapsed;
+            s_net_recv_count++;
+            s_net_recv_bytes_sum += len;
+            if (recv_elapsed > s_net_recv_time_max) s_net_recv_time_max = recv_elapsed;
+#endif
+            // Continue loop to check for more data
+        } else if (len == 0) {
+            ESP_LOGW(TAG, "Client closed connection (FIN)");
             close_client();
+            return;
+        } else {
+            // EAGAIN/EWOULDBLOCK means no more data - normal exit
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                return;  // All data drained, go back to select()
+            }
+            // Real error
+            ESP_LOGW(TAG, "Recv error: errno %d (%s)", errno,
+                     errno == ECONNRESET ? "RST" : 
+                     errno == ETIMEDOUT ? "TIMEOUT" : "OTHER");
+            close_client();
+            return;
         }
     }
 }
 
 static void handle_prepare(int sock) {
-    ESP_LOGD(TAG, "CMD: Prepare");
+    ESP_LOGI(TAG, "PREPARE: le=%d pb=%d", s_light_engine_state, s_playback_state);
     
     if (s_light_engine_state != LE_READY) {
+        ESP_LOGW(TAG, "PREPARE NAK: light engine not ready (%d)", s_light_engine_state);
         send_response(sock, RESP_NAK_INVAL, CMD_PREPARE);
         return;
     }
     
     if (s_playback_state != PLAYBACK_IDLE) {
+        ESP_LOGW(TAG, "PREPARE NAK: not idle (pb=%d)", s_playback_state);
         send_response(sock, RESP_NAK_INVAL, CMD_PREPARE);
         return;
     }
@@ -887,20 +995,38 @@ static void handle_begin(int sock, const etherdream_begin_cmd_t* cmd) {
     // Extract low_water_mark - this is the client's target buffer level (500-3000)
     s_client_low_water = cmd->low_water_mark;
     
+    ESP_LOGI(TAG, "BEGIN: low_water=%u point_rate=%lu pb=%d buf=%zu",
+             cmd->low_water_mark, (unsigned long)cmd->point_rate,
+             s_playback_state, frame_buffer_level());
+    
     if (s_playback_state != PLAYBACK_PREPARED) {
+        ESP_LOGW(TAG, "BEGIN NAK: not prepared (pb=%d)", s_playback_state);
         send_response(sock, RESP_NAK_INVAL, CMD_BEGIN);
         return;
     }
     
     if (frame_buffer_level() == 0) {
+        ESP_LOGW(TAG, "BEGIN NAK: buffer empty");
         send_response(sock, RESP_NAK_INVAL, CMD_BEGIN);
         return;
     }
     
     uint32_t rate = cmd->point_rate;
+    
+    // MadMapper sends rate=0xFFFFFFFF meaning "use queued rate".
+    // Try rate queue first, then fall back to current rate.
     if (rate == 0 || rate > ETHERDREAM_MAX_POINT_RATE) {
-        send_response(sock, RESP_NAK_INVAL, CMD_BEGIN);
-        return;
+        if (!rate_queue_empty()) {
+            rate = rate_queue_pop();
+            ESP_LOGI(TAG, "BEGIN: using queued rate=%lu", (unsigned long)rate);
+        } else if (s_point_rate > 0) {
+            rate = s_point_rate;
+            ESP_LOGI(TAG, "BEGIN: using current rate=%lu", (unsigned long)rate);
+        } else {
+            ESP_LOGW(TAG, "BEGIN NAK: invalid rate=%lu, no fallback", (unsigned long)rate);
+            send_response(sock, RESP_NAK_INVAL, CMD_BEGIN);
+            return;
+        }
     }
     
     if (rate < SCAN_RATE_MIN_HZ) rate = SCAN_RATE_MIN_HZ;
