@@ -1,7 +1,3 @@
-/**
- * @file ota_handler.c
- * @brief OTA (Over-The-Air) firmware update handler for ESP32
- */
 
 #include "ota_handler.h"
 #include "esp_log.h"

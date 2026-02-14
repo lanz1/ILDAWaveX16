@@ -1,9 +1,3 @@
-/**
- * @file dac80508.c
- * @brief DAC80508 8-channel 16-bit SPI DAC driver
- * 
- * Uses direct SPI register access for maximum speed (~1µs per write)
- */
 
 #include "dac80508.h"
 #include "esp_log.h"
@@ -38,9 +32,7 @@ static const char* TAG = "DAC80508";
 
 static spi_device_handle_t s_spi = NULL;
 
-// =============================================================================
 // DIRECT SPI REGISTER ACCESS (bypasses ESP-IDF driver for ~1µs vs ~9µs)
-// =============================================================================
 
 // Pre-computed register addresses for fastest access
 static volatile uint32_t* s_spi_cmd_reg;
@@ -116,9 +108,7 @@ static inline void IRAM_ATTR dac_write_direct(uint8_t reg, uint16_t value) {
     GPIO.out_w1ts = (1 << DAC_PIN_CS);
 }
 
-// =============================================================================
 // DAC INITIALIZATION
-// =============================================================================
 
 esp_err_t dac_init(void) {
     ESP_LOGI(TAG, "Initializing DAC80508");
@@ -130,10 +120,12 @@ esp_err_t dac_init(void) {
         .sclk_io_num = DAC_PIN_CLK,
         .quadwp_io_num = -1,
         .quadhd_io_num = -1,
-        .max_transfer_sz = 4,
+        .max_transfer_sz = 32,          // Increased for DMA
     };
     
-    esp_err_t ret = spi_bus_initialize(DAC_SPI_HOST, &bus_cfg, SPI_DMA_DISABLED);
+    // CRITICAL FIX: Enable DMA to reduce ISR blocking time from 10µs to ~2µs
+    // This prevents refill_task starvation at high rates (80 kpps)
+    esp_err_t ret = spi_bus_initialize(DAC_SPI_HOST, &bus_cfg, SPI_DMA_CH_AUTO);
     if (ret != ESP_OK && ret != ESP_ERR_INVALID_STATE) {
         ESP_LOGE(TAG, "SPI bus init failed: %s", esp_err_to_name(ret));
         return ret;
@@ -230,8 +222,6 @@ static inline void dac_write_fast(uint8_t reg, uint16_t value) {
 
 void dac_output_point(const laser_point_t* point) {
     if (!point || !s_spi) return;
-    
-    // Conversione signed→unsigned (no altre trasformazioni per max performance)
     uint16_t x = (uint16_t)((int32_t)point->x + 32768);
     uint16_t y = (uint16_t)((int32_t)point->y + 32768);
     
@@ -240,8 +230,6 @@ void dac_output_point(const laser_point_t* point) {
     uint16_t r = blank ? 0 : point->r;
     uint16_t g = blank ? 0 : point->g;
     uint16_t b = blank ? 0 : point->b;
-    
-    // Try direct register access if ready, else fall back to driver
     if (s_direct_spi_ready) {
         dac_write_direct(DAC_REG_DAC0 + DAC_CH_X, x);
         dac_write_direct(DAC_REG_DAC0 + DAC_CH_Y, y);

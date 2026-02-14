@@ -1,14 +1,3 @@
-/**
- * @file etherdream_server.h
- * @brief Ether Dream (j4cDAC) protocol server
- * 
- * Implements the Ether Dream protocol:
- * - TCP command/data streaming on port 7765
- * - UDP broadcast/discovery on port 7654
- * 
- * Based on j4cDAC reference firmware by Jacob Potter.
- */
-
 #pragma once
 
 #include "esp_err.h"

@@ -1,7 +1,3 @@
-/**
- * @file http_server.c
- * @brief HTTP server with WiFi configuration
- */
 
 #include "http_server.h"
 #include "ota_handler.h"
@@ -69,8 +65,6 @@ static esp_err_t index_handler(httpd_req_t* req) {
     httpd_resp_send(req, INDEX_HTML, strlen(INDEX_HTML));
     return ESP_OK;
 }
-
-// Captive portal: trick devices into thinking there IS internet.
 // Android checks /generate_204 and expects HTTP 204.
 // iOS/macOS check /hotspot-detect.html and expect "Success".
 // Windows checks /connecttest.txt and /ncsi.txt.
@@ -143,8 +137,6 @@ esp_err_t http_server_start(void) {
     
     httpd_uri_t status_uri = { .uri = "/api/status", .method = HTTP_GET, .handler = status_handler };
     httpd_register_uri_handler(s_server, &status_uri);
-    
-    // Captive portal: respond correctly to each platform's connectivity check
     // Android
     httpd_uri_t gen204_uri = { .uri = "/generate_204", .method = HTTP_GET, .handler = captive_204_handler };
     httpd_register_uri_handler(s_server, &gen204_uri);

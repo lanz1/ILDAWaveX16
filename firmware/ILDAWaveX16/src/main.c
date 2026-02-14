@@ -1,12 +1,3 @@
-/**
- * @file main.c
- * @brief ILDAWaveX16 - Simple Ether Dream to Laser DAC
- * 
- * Network interlock:
- *   Boot → init W5500 → if link up → DHCP (10s timeout)
- *     ✓ Got IP → Ethernet only (WiFi off)
- *     ✗ No link / no DHCP → WiFi AP only (Ethernet off)
- */
 
 #include <stdio.h>
 #include <string.h>
@@ -35,9 +26,7 @@ system_config_t g_config = {
 
 system_status_t g_status = {0};
 
-// =============================================================================
 // WiFi AP (fallback when no Ethernet)
-// =============================================================================
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                                int32_t event_id, void* event_data) {
@@ -89,9 +78,7 @@ static void wifi_ap_start(void) {
     ESP_LOGI(TAG, "WiFi AP: %s ch%d 20MHz (http://192.168.4.1)", WIFI_AP_SSID, WIFI_AP_CHANNEL);
 }
 
-// =============================================================================
 // Network interlock: Ethernet first, WiFi AP fallback
-// =============================================================================
 
 static bool network_init(void) {
     // Common: init netif + event loop (needed by both Ethernet and WiFi)
@@ -138,20 +125,48 @@ static bool network_init(void) {
     }
     
     if (!w5500_eth_has_ip()) {
-        ESP_LOGW(TAG, "DHCP timeout → WiFi AP fallback");
-        w5500_eth_stop();
-        wifi_ap_start();
-        return false;
+        ESP_LOGW(TAG, "DHCP timeout → Static IP fallback (192.168.77.1/24)");
+        
+        // Configure static IP
+        esp_netif_t* eth_netif = w5500_eth_get_netif();
+        if (eth_netif) {
+            // Stop DHCP client
+            esp_netif_dhcpc_stop(eth_netif);
+            
+            // Set static IP configuration
+            esp_netif_ip_info_t ip_info = {
+                .ip.addr = ESP_IP4TOADDR(192, 168, 77, 1),
+                .gw.addr = ESP_IP4TOADDR(192, 168, 77, 1),
+                .netmask.addr = ESP_IP4TOADDR(255, 255, 255, 0),
+            };
+            
+            ret = esp_netif_set_ip_info(eth_netif, &ip_info);
+            if (ret == ESP_OK) {
+                ESP_LOGI(TAG, "=== Ethernet mode (Static IP) ===");
+                ESP_LOGI(TAG, "  IP: 192.168.77.1");
+                ESP_LOGI(TAG, "  Netmask: 255.255.255.0");
+                ESP_LOGI(TAG, "  Gateway: 192.168.77.1");
+                return true;
+            } else {
+                ESP_LOGE(TAG, "Failed to set static IP: %s", esp_err_to_name(ret));
+                w5500_eth_stop();
+                wifi_ap_start();
+                return false;
+            }
+        } else {
+            ESP_LOGE(TAG, "Cannot get netif for static IP config");
+            w5500_eth_stop();
+            wifi_ap_start();
+            return false;
+        }
     }
     
-    // Ethernet is active — do NOT start WiFi
-    ESP_LOGI(TAG, "=== Ethernet mode (WiFi OFF) ===");
+    // Ethernet is active with DHCP — do NOT start WiFi
+    ESP_LOGI(TAG, "=== Ethernet mode (DHCP) ===");
     return true;
 }
 
-// =============================================================================
 // Tasks
-// =============================================================================
 
 static void network_task(void* arg) {
     while (1) {
@@ -160,7 +175,6 @@ static void network_task(void* arg) {
 }
 
 void app_main(void) {
-    // Let USB-Serial/JTAG monitor connect before printing boot log
     vTaskDelay(pdMS_TO_TICKS(2000));
     
     ESP_LOGI(TAG, "ILDAWaveX16 Starting...");
@@ -172,8 +186,6 @@ void app_main(void) {
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
-    
-    // Network interlock: Ethernet (DHCP) or WiFi AP — never both
     bool eth_mode = network_init();
     
     if (eth_mode) {

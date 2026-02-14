@@ -1,16 +1,3 @@
-/**
- * @file dac_timer.h
- * @brief Hardware-timed DAC output using GPTimer
- * 
- * This module provides precise, hardware-timed laser point output.
- * It uses a GPTimer ISR that fires at the scan rate frequency.
- * A high-priority refill task on Core 1 keeps the ISR buffer fed
- * from the frame buffer.
- * 
- * Replaces the busy-wait approach in dac_engine for better timing precision
- * and reduced CPU usage.
- */
-
 #pragma once
 
 #include <stdint.h>
@@ -91,6 +78,8 @@ void dac_timer_set_playback_active(bool active);
  * @return true if point flow is enabled
  */
 bool dac_timer_is_playback_active(void);
+
+uint32_t dac_timer_get_underruns(void);
 
 #ifdef __cplusplus
 }

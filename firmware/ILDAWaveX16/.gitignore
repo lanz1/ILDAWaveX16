@@ -4,4 +4,12 @@
 .vscode/launch.json
 .vscode/ipch
 /j4cDAC
-/stanleysdkconfig.ildawavex16
+/stanley
+/bridge
+
+# macOS
+.DS_Store
+
+# Git metadata
+.gitignore
+sdkconfig.ildawavex16

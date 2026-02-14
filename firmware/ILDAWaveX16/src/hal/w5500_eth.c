@@ -1,10 +1,3 @@
-/**
- * @file w5500_eth.c
- * @brief W5500 Ethernet driver — official ESP-IDF API
- * 
- * Clean implementation using standard esp_eth driver.
- * Interrupt-driven via PIN_ETH_INT for low latency.
- */
 
 #include "w5500_eth.h"
 #include "config.h"
@@ -25,17 +18,13 @@ static volatile bool s_got_ip = false;
 static uint32_t s_link_speed = 0;
 static eth_got_ip_cb_t s_got_ip_callback = NULL;
 
-// =============================================================================
 // Callbacks
-// =============================================================================
 
 void w5500_eth_set_got_ip_callback(eth_got_ip_cb_t cb) {
     s_got_ip_callback = cb;
 }
 
-// =============================================================================
 // Event Handlers
-// =============================================================================
 
 static void eth_event_handler(void* arg, esp_event_base_t event_base,
                               int32_t event_id, void* event_data)
@@ -97,9 +86,7 @@ static void ip_event_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
-// =============================================================================
 // Init / Start / Stop
-// =============================================================================
 
 esp_err_t w5500_eth_init(void)
 {
@@ -156,8 +143,6 @@ esp_err_t w5500_eth_init(void)
             spi_device_transmit(test_spi, &vt);
             ESP_LOGI(TAG, "SPI diag: post-reset version=0x%02X (raw: %02X %02X %02X %02X)",
                      ver_rx[3], ver_rx[0], ver_rx[1], ver_rx[2], ver_rx[3]);
-            
-            // Try reading PHYCFGR (0x002E) - should be non-zero if link is up
             uint8_t phy_cmd[4] = {0x00, 0x2E, 0x00, 0x00};
             uint8_t phy_rx[4] = {0};
             spi_transaction_t pt = { .length = 32, .tx_buffer = phy_cmd, .rx_buffer = phy_rx };
@@ -192,8 +177,6 @@ esp_err_t w5500_eth_init(void)
     
     // ── 4. W5500 MAC ────────────────────────────────────────────────────────
     eth_w5500_config_t w5500_config = ETH_W5500_DEFAULT_CONFIG(ETH_SPI_HOST, &spi_devcfg);
-    
-    // Try interrupt first, fallback to polling if GPIO ISR not available
     if (PIN_ETH_INT >= 0) {
         w5500_config.int_gpio_num = PIN_ETH_INT;
         w5500_config.poll_period_ms = 0;

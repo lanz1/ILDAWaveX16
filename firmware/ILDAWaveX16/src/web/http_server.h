@@ -1,8 +1,3 @@
-/**
- * @file http_server.h
- * @brief HTTP server with REST API and embedded web UI
- */
-
 #pragma once
 
 #include "esp_err.h"

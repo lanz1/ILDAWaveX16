@@ -1,8 +1,3 @@
-/**
- * @file w5500_eth.h
- * @brief W5500 Ethernet - High performance, low latency
- */
-
 #pragma once
 
 #include <stdint.h>

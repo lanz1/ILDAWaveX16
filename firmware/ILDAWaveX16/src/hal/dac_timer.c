@@ -1,16 +1,3 @@
-/**
- * @file dac_timer.c
- * @brief Hardware-timed DAC output using GPTimer ISR per-point
- * 
- * Architecture (ISR-per-point):
- *   GPTimer fires at scan_rate Hz - ISR writes point directly to DAC
- *   Background task refills ISR buffer from frame_buffer
- *   
- * Benefits:
- *   - Hardware timer guarantees exact scan rate (no drift!)
- *   - ISR uses direct SPI (~6us) - fits in 22us @ 45kpps
- *   - Zero jitter between points
- */
 
 #include "dac_timer.h"
 #include "dac80508.h"
@@ -28,9 +15,10 @@
 static const char* TAG = "DAC_TIMER";
 
 // Configuration
-#define ISR_BUFFER_SIZE 512
-#define REFILL_THRESHOLD 64      // Refill more often with smaller batches
-#define REFILL_MAX_BATCH 256     // But read up to this many at once
+// OPTIMIZATION: Larger buffer reduces underrun risk at high rates (80 kpps)
+#define ISR_BUFFER_SIZE 1024     // Was 512, now 1024 for more margin
+#define REFILL_THRESHOLD 128     // Was 64, now 128 - refill earlier
+#define REFILL_MAX_BATCH 512     // Was 256, now 512 - bigger chunks
 
 // Hardware resources
 static gptimer_handle_t s_timer = NULL;
@@ -47,22 +35,6 @@ static volatile size_t s_isr_tail = 0;
 static volatile uint32_t s_isr_underruns = 0;
 
 // Timing statistics
-static volatile uint32_t s_points_output = 0;
-static volatile int64_t s_last_log_time = 0;
-
-#if LOG_PERF
-// Performance profiling (all in microseconds)
-static volatile uint32_t s_isr_time_sum = 0;     // Accumulated ISR time (µs)
-static volatile uint32_t s_isr_time_max = 0;      // Max ISR time (µs)
-static volatile uint32_t s_isr_time_count = 0;    // Number of ISR calls
-static volatile uint32_t s_refill_time_sum = 0;   // Accumulated refill batch time (µs)
-static volatile uint32_t s_refill_time_max = 0;   // Max refill time (µs)
-static volatile uint32_t s_refill_count = 0;      // Number of refills
-static volatile uint32_t s_refill_pts_sum = 0;    // Total points refilled
-static volatile int64_t s_perf_last_time = 0;     // Last perf log time
-#endif
-
-// Rest point (blanked, centered) - used for stop and underruns
 static const laser_point_t REST_POINT = {
     .x = 0, .y = 0, .r = 0, .g = 0, .b = 0,
     .user1 = 0, .user2 = 0, .flags = POINT_FLAG_BLANK
@@ -89,9 +61,7 @@ static bool IRAM_ATTR timer_isr_callback(gptimer_handle_t timer,
         return false;
     }
     
-#if LOG_PERF
-    uint32_t isr_start = (uint32_t)esp_timer_get_time();
-#endif
+
     
     // Check if we have data
     if (s_isr_tail == s_isr_head) {
@@ -109,14 +79,8 @@ static bool IRAM_ATTR timer_isr_callback(gptimer_handle_t timer,
     
     // Advance tail
     s_isr_tail = (s_isr_tail + 1) % ISR_BUFFER_SIZE;
-    s_points_output++;
     
-#if LOG_PERF
-    uint32_t isr_elapsed = (uint32_t)esp_timer_get_time() - isr_start;
-    s_isr_time_sum += isr_elapsed;
-    s_isr_time_count++;
-    if (isr_elapsed > s_isr_time_max) s_isr_time_max = isr_elapsed;
-#endif
+
     
     return false;
 }
@@ -129,8 +93,7 @@ static void dac_refill_task(void* arg)
 {
     ESP_LOGI(TAG, "Refill task started on Core %d", xPortGetCoreID());
     
-    // === Create GPTimer on Core 1 so ISR runs here ===
-    gptimer_config_t timer_cfg = {
+        gptimer_config_t timer_cfg = {
         .clk_src = GPTIMER_CLK_SRC_DEFAULT,
         .direction = GPTIMER_COUNT_UP,
         .resolution_hz = 1000000,
@@ -169,14 +132,10 @@ static void dac_refill_task(void* arg)
     // Signal to dac_timer_init() that we're ready
     xSemaphoreGive(s_init_done);
     
-    // === Normal refill loop ===
-    static laser_point_t temp_batch[REFILL_MAX_BATCH];
+        static laser_point_t temp_batch[REFILL_MAX_BATCH];
     
-    s_last_log_time = esp_timer_get_time();
-#if LOG_PERF
-    s_perf_last_time = s_last_log_time;
-#endif
     uint32_t last_underruns = 0;
+    TickType_t last_underrun_log = xTaskGetTickCount();
     uint32_t idle_loops = 0;
     
     while (1) {
@@ -186,7 +145,6 @@ static void dac_refill_task(void* arg)
         }
         
         // GATE: Only drain frame_buffer into ISR buffer when playback is active.
-        // During PREPARED state, the client is filling the buffer — we must NOT
         // consume those points or the client can never accumulate enough to start.
         if (!s_playback_active) {
             idle_loops++;
@@ -197,15 +155,7 @@ static void dac_refill_task(void* arg)
                 taskYIELD();
             }
             
-#if LOG_DAC_STATS
-            // Reset stats counters even when idle
-            int64_t now_idle = esp_timer_get_time();
-            if (now_idle - s_last_log_time >= 1000000) {
-                s_points_output = 0;
-                last_underruns = s_isr_underruns;
-                s_last_log_time = now_idle;
-            }
-#endif
+
             continue;
         }
         
@@ -216,9 +166,7 @@ static void dac_refill_task(void* arg)
             // Read as much as we can fit (up to REFILL_MAX_BATCH)
             size_t to_read = (free_space < REFILL_MAX_BATCH) ? free_space : REFILL_MAX_BATCH;
             
-#if LOG_PERF
-            int64_t refill_start = esp_timer_get_time();
-#endif
+
             size_t n = frame_buffer_read(temp_batch, to_read);
             
             if (n > 0) {
@@ -227,86 +175,34 @@ static void dac_refill_task(void* arg)
                     s_isr_buffer[s_isr_head] = temp_batch[i];
                     s_isr_head = (s_isr_head + 1) % ISR_BUFFER_SIZE;
                 }
-#if LOG_PERF
-                uint32_t refill_elapsed = (uint32_t)(esp_timer_get_time() - refill_start);
-                s_refill_time_sum += refill_elapsed;
-                s_refill_count++;
-                s_refill_pts_sum += n;
-                if (refill_elapsed > s_refill_time_max) s_refill_time_max = refill_elapsed;
-#endif
+
                 idle_loops = 0;  // Reset idle counter
             } else {
-                // No data available from frame_buffer
+                // No data available from frame_buffer - yield immediately
+                taskYIELD();
                 idle_loops++;
             }
         } else {
-            // Buffer is full enough
+            // Buffer is full enough - minimal sleep (100µs) to avoid busy loop
+            // At 80 kpps, points consumed every 12.5µs, so 100µs = ~8 points consumed
+            vTaskDelay(pdMS_TO_TICKS(1));  // FreeRTOS minimum (1ms on ESP32)
             idle_loops++;
         }
         
-#if LOG_DAC_STATS
-        // Log stats every 2 seconds (reduce UART contention)
-        int64_t now = esp_timer_get_time();
-        if (now - s_last_log_time >= 2000000) {
-            uint32_t pts = s_points_output;
-            uint32_t underruns = s_isr_underruns - last_underruns;
-            size_t buf_level = isr_buffer_count();
-            
-            int64_t elapsed_us = now - s_last_log_time;
-            uint32_t expected_pts = (uint32_t)((int64_t)s_scan_rate * elapsed_us / 1000000);
-            int32_t error_ppm = (expected_pts > 0) ? 
-                (int32_t)(((int64_t)pts - expected_pts) * 1000000 / expected_pts) : 0;
-            
-            ESP_LOGI(TAG, "ISR: pts/s=%"PRIu32" expected=%"PRIu32" err=%+"PRId32"ppm | buf=%zu underruns=%"PRIu32,
-                     pts, expected_pts, error_ppm, buf_level, underruns);
-            
-            s_points_output = 0;
-            last_underruns = s_isr_underruns;
-            s_last_log_time = now;
-        }
-#endif
-        
-#if LOG_PERF
-        // Performance profiling log every 5 seconds
-        {
-            int64_t now_perf = esp_timer_get_time();
-            if (now_perf - s_perf_last_time >= 5000000) {
-                uint32_t isr_cnt = s_isr_time_count;
-                uint32_t isr_avg = (isr_cnt > 0) ? (s_isr_time_sum / isr_cnt) : 0;
-                uint32_t isr_max = s_isr_time_max;
-                uint32_t ref_cnt = s_refill_count;
-                uint32_t ref_avg = (ref_cnt > 0) ? (s_refill_time_sum / ref_cnt) : 0;
-                uint32_t ref_max = s_refill_time_max;
-                uint32_t ref_pts_avg = (ref_cnt > 0) ? (s_refill_pts_sum / ref_cnt) : 0;
-                uint32_t period_us = (s_scan_rate > 0) ? (1000000 / s_scan_rate) : 0;
-                uint32_t isr_pct = (period_us > 0) ? (isr_avg * 100 / period_us) : 0;
-                
-                ESP_LOGI(TAG, "PERF ISR: avg=%luus max=%luus (%lu%% of %luus) | REFILL: avg=%luus max=%luus batch=%lu cnt=%lu",
-                         (unsigned long)isr_avg, (unsigned long)isr_max,
-                         (unsigned long)isr_pct, (unsigned long)period_us,
-                         (unsigned long)ref_avg, (unsigned long)ref_max,
-                         (unsigned long)ref_pts_avg, (unsigned long)ref_cnt);
-                
-                // Reset perf counters
-                s_isr_time_sum = 0;
-                s_isr_time_max = 0;
-                s_isr_time_count = 0;
-                s_refill_time_sum = 0;
-                s_refill_time_max = 0;
-                s_refill_count = 0;
-                s_refill_pts_sum = 0;
-                s_perf_last_time = now_perf;
+        // Log underruns every second (non-blocking)
+        if (idle_loops > 100) {
+            TickType_t now = xTaskGetTickCount();
+            if ((now - last_underrun_log) >= pdMS_TO_TICKS(1000)) {
+                uint32_t underruns = s_isr_underruns;
+                if (underruns != last_underruns) {
+                    ESP_LOGW(TAG, "Underruns: %lu (+%lu)", 
+                             (unsigned long)underruns, 
+                             (unsigned long)(underruns - last_underruns));
+                    last_underruns = underruns;
+                }
+                last_underrun_log = now;
             }
-        }
-#endif
-        
-        // Yield strategy: only delay if truly idle for many loops
-        // This keeps the task responsive while not hogging CPU when no data
-        if (idle_loops > 1000) {
-            vTaskDelay(1);  // Only delay after extended idle period
             idle_loops = 0;
-        } else {
-            taskYIELD();    // Let other tasks run but come back ASAP
         }
     }
 }
@@ -330,9 +226,7 @@ static esp_err_t update_timer_period(void)
         .flags.auto_reload_on_alarm = true,
     };
     
-#if LOG_RATE_CHANGE
-    ESP_LOGI(TAG, "Timer period: %"PRIu64"us (%"PRIu32" pps)", point_period_us, s_scan_rate);
-#endif
+
     
     return gptimer_set_alarm_action(s_timer, &alarm_cfg);
 }
@@ -354,15 +248,11 @@ esp_err_t dac_timer_init(void)
         ESP_LOGE(TAG, "Failed to init DAC");
         return ret;
     }
-    
-    // Create semaphore for synchronizing with Core 1 timer init
     s_init_done = xSemaphoreCreateBinary();
     if (!s_init_done) {
         ESP_LOGE(TAG, "Failed to create init semaphore");
         return ESP_ERR_NO_MEM;
     }
-    
-    // Launch refill task on Core 1 — it will create the GPTimer there
     // so the ISR is pinned to Core 1 (same core as refill + SPI)
     BaseType_t task_ret = xTaskCreatePinnedToCore(
         dac_refill_task,
@@ -408,7 +298,6 @@ esp_err_t dac_timer_start(void)
     s_isr_head = 0;
     s_isr_tail = 0;
     s_isr_underruns = 0;
-    s_points_output = 0;
     
     esp_err_t ret = update_timer_period();
     if (ret != ESP_OK) {
@@ -451,8 +340,6 @@ esp_err_t dac_timer_set_scan_rate(uint32_t rate_hz)
     if (rate_hz > SCAN_RATE_MAX_HZ) rate_hz = SCAN_RATE_MAX_HZ;
     
     uint32_t old_rate = s_scan_rate;
-    
-    // Skip if rate hasn't actually changed — avoid timer stop/start gap
     if (rate_hz == old_rate && s_running) {
         return ESP_OK;
     }
@@ -460,12 +347,9 @@ esp_err_t dac_timer_set_scan_rate(uint32_t rate_hz)
     s_scan_rate = rate_hz;
     g_config.scan_rate_hz = rate_hz;
     
-#if LOG_RATE_CHANGE
-    ESP_LOGI(TAG, "Scan rate: %lu -> %lu pps", (unsigned long)old_rate, (unsigned long)rate_hz);
-#endif
+
     
     if (s_running && s_timer) {
-        // Update alarm period without stopping timer — gptimer_set_alarm_action
         // can be called while running, takes effect on next alarm
         update_timer_period();
     }
@@ -496,4 +380,9 @@ void dac_timer_set_playback_active(bool active)
 bool dac_timer_is_playback_active(void)
 {
     return s_playback_active;
+}
+
+uint32_t dac_timer_get_underruns(void)
+{
+    return s_isr_underruns;
 }
