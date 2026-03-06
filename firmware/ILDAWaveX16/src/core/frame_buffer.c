@@ -1,3 +1,13 @@
+/**
+ * @file frame_buffer.c
+ * @brief Lock-free SPSC ring buffer for laser points
+ * 
+ * Single-Producer Single-Consumer (SPSC) lock-free design:
+ *   - Producer (network_task on Core 0): writes via frame_buffer_write()
+ *   - Consumer (dac_refill_task on Core 1): reads via frame_buffer_read()
+ * 
+ * No mutex needed! Uses memory barriers for cross-core synchronization.
+ */
 
 #include "frame_buffer.h"
 #include <string.h>
@@ -121,6 +131,7 @@ size_t frame_buffer_level(void)
 
 void frame_buffer_clear(void)
 {
+    // Reset both to 0 - safe because clear is called when system is idle
     atomic_store_explicit(&tail, 0, memory_order_relaxed);
     atomic_store_explicit(&head, 0, memory_order_release);
 }

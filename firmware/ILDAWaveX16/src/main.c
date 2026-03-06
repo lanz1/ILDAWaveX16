@@ -13,6 +13,7 @@
 
 #include "config.h"
 #include "hal/dac_timer.h"
+#include "hal/dac80508.h"
 #include "hal/w5500_eth.h"
 #include "core/frame_buffer.h"
 #include "input/etherdream_server.h"
@@ -210,7 +211,8 @@ void app_main(void) {
     
     ESP_LOGI(TAG, "Ready - TCP:%d HTTP:%d", ETHERDREAM_TCP_PORT, HTTP_PORT);
     
-    // Status loop
+    // Status loop with pipeline diagnostics
+    uint32_t last_dac_out = 0;
     while (1) {
         g_status.running = dac_timer_is_running();
         g_status.ed_connected = etherdream_server_is_connected();
@@ -219,6 +221,24 @@ void app_main(void) {
         g_status.ed_point_rate = etherdream_server_get_point_rate();
         g_status.free_heap = esp_get_free_heap_size();
         
-        vTaskDelay(pdMS_TO_TICKS(500));
+        // Pipeline diagnostic every 2s
+        dac_timer_diag_t diag;
+        dac_timer_get_diag(&diag);
+        uint32_t dac_out = dac_get_output_count();
+        uint32_t dac_delta = dac_out - last_dac_out;
+        last_dac_out = dac_out;
+        
+        ESP_LOGI(TAG, "PIPE| fb=%zu ed=%d play=%d run=%d | isr_buf=%zu ur=%lu | dac_out=%lu/2s spi=%d direct=%d",
+                 frame_buffer_level(),
+                 g_status.ed_connected,
+                 diag.playback_active,
+                 diag.running,
+                 diag.isr_buf_level,
+                 (unsigned long)diag.underruns,
+                 (unsigned long)dac_delta,
+                 dac_is_spi_initialized(),
+                 dac_is_direct_spi_ready());
+        
+        vTaskDelay(pdMS_TO_TICKS(2000));
     }
 }

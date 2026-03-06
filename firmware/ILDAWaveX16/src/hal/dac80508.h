@@ -1,3 +1,24 @@
+/**
+ * @file dac80508.h
+ * @brief DAC80508 8-channel 16-bit DAC driver
+ * 
+ * Hardware channel mapping (ESP32-S3 → DAC80508 → ILDA):
+ *   DAC OUT6 (pin10) = X axis
+ *   DAC OUT7 (pin11) = Y axis
+ *   DAC OUT3 (pin5)  = Blue
+ *   DAC OUT4 (pin8)  = Green
+ *   DAC OUT5 (pin9)  = Red
+ * 
+ * SPI wiring:
+ *   GPIO11 (SDI)  → DAC pin14 (SDI)
+ *   GPIO10 (CS)   → DAC pin12 (SYNC)
+ *   GPIO12 (SCK)  → DAC pin13 (SCLK)
+ * 
+ * DAC80508 SPI protocol: 24-bit frames, MSB first
+ *   [7-bit addr | R/W] [DATA_HI] [DATA_LO]
+ *   CPOL=0 CPHA=1 → SPI mode 1 per datasheet (SCLK idle low, data latched on falling edge)
+ */
+
 #pragma once
 
 #include <stdint.h>
@@ -23,6 +44,13 @@ extern "C" {
  * @return ESP_OK on success
  */
 esp_err_t dac_init(void);
+
+/** @brief Get total dac_output_point calls */
+uint32_t dac_get_output_count(void);
+/** @brief Check if direct SPI register access is ready */
+bool dac_is_direct_spi_ready(void);
+/** @brief Check if SPI device handle is valid */
+bool dac_is_spi_initialized(void);
 
 /**
  * @brief Write a single DAC register (channel or config)
