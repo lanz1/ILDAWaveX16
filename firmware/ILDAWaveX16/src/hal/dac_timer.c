@@ -31,6 +31,7 @@ static const char* TAG = "DAC_TIMER";
 #define ISR_BUFFER_SIZE 1024
 #define REFILL_THRESHOLD 128     // Refill when 1/8 free — keeps ISR fed
 #define REFILL_MAX_BATCH 256     // But read up to this many at once
+#define TIMER_RESOLUTION_HZ 40000000ULL  // 40 MHz (APB/2) — max HW allows (prescaler >= 2)
 
 // Hardware resources
 static gptimer_handle_t s_timer = NULL;
@@ -133,7 +134,7 @@ static void dac_refill_task(void* arg)
     gptimer_config_t timer_cfg = {
         .clk_src = GPTIMER_CLK_SRC_DEFAULT,
         .direction = GPTIMER_COUNT_UP,
-        .resolution_hz = 1000000,
+        .resolution_hz = TIMER_RESOLUTION_HZ,  // 40 MHz for sub-µs precision
         .intr_priority = 1,
     };
     
@@ -278,7 +279,8 @@ static void dac_refill_task(void* arg)
                 uint32_t ref_avg = (ref_cnt > 0) ? (s_refill_time_sum / ref_cnt) : 0;
                 uint32_t ref_max = s_refill_time_max;
                 uint32_t ref_pts_avg = (ref_cnt > 0) ? (s_refill_pts_sum / ref_cnt) : 0;
-                uint32_t period_us = (s_scan_rate > 0) ? (1000000 / s_scan_rate) : 0;
+                uint64_t period_ticks = (s_scan_rate > 0) ? ((TIMER_RESOLUTION_HZ + s_scan_rate - 1) / s_scan_rate) : 0;
+                uint32_t period_us = (uint32_t)(period_ticks / (TIMER_RESOLUTION_HZ / 1000000));
                 uint32_t isr_pct = (period_us > 0) ? (isr_avg * 100 / period_us) : 0;
                 
                 ESP_LOGI(TAG, "PERF ISR: avg=%luus max=%luus (%lu%% of %luus) | REFILL: avg=%luus max=%luus batch=%lu cnt=%lu",
@@ -316,22 +318,30 @@ static esp_err_t update_timer_period(void)
 {
     if (!s_timer) return ESP_ERR_INVALID_STATE;
     
-    // Timer period = time for ONE point
-    uint64_t point_period_us = 1000000 / s_scan_rate;
+    // Timer period in ticks at TIMER_RESOLUTION_HZ.
+    // Use CEILING division so ISR fires at ≤ declared rate.
+    // At 1 MHz the old code truncated 33.33→33 µs for 30kpps (+1.01% error!).
+    // At 80 MHz with ceiling: 30kpps → ceil(80M/30k) = 2667 ticks → 29989 Hz (-0.037%).
+    uint64_t period_ticks = (TIMER_RESOLUTION_HZ + s_scan_rate - 1) / s_scan_rate;
     
-    if (point_period_us < 10) {
-        ESP_LOGW(TAG, "Scan rate too high, clamping period to 10us");
-        point_period_us = 10;
+    // Clamp: at 100kpps with 80MHz → 800 ticks (12.5µs). Min 100 ticks = 800kHz theoretical max.
+    if (period_ticks < 100) {
+        ESP_LOGW(TAG, "Scan rate too high, clamping period to 100 ticks");
+        period_ticks = 100;
     }
     
     gptimer_alarm_config_t alarm_cfg = {
-        .alarm_count = point_period_us,
+        .alarm_count = period_ticks,
         .reload_count = 0,
         .flags.auto_reload_on_alarm = true,
     };
     
 #if LOG_RATE_CHANGE
-    ESP_LOGI(TAG, "Timer period: %"PRIu64"us (%"PRIu32" pps)", point_period_us, s_scan_rate);
+    // Log actual rate for diagnostics
+    uint32_t actual_hz = (uint32_t)(TIMER_RESOLUTION_HZ / period_ticks);
+    int32_t err_ppm = (int32_t)(((int64_t)actual_hz - (int64_t)s_scan_rate) * 1000000 / (int64_t)s_scan_rate);
+    ESP_LOGI(TAG, "Timer: %"PRIu64" ticks @ 40MHz → %"PRIu32" Hz (requested %"PRIu32", err=%+"PRId32"ppm)",
+             period_ticks, actual_hz, s_scan_rate, err_ppm);
 #endif
     
     return gptimer_set_alarm_action(s_timer, &alarm_cfg);

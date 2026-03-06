@@ -1,3 +1,875 @@
+I (278039) EDREAM: Playback state -> Prepared
+I (278111) EDREAM: RX:5947 pts/s | batch avg=0 min=0 max=0 n=0 | BUF:1024/8192 | rate:0
+W (278347) EDREAM: Rejecting - already connected
+W (278451) EDREAM: Rejecting - already connected
+W (278557) EDREAM: Rejecting - already connected
+I (278637) EDREAM: Client disconnected
+I (278661) EDREAM: Client from 192.168.77.2:58728
+I (278663) EDREAM: Playback state -> Prepared
+W (278974) EDREAM: Rejecting - already connected
+I (278975) MAIN: PIPE| fb=1536 ed=1 play=0 run=1 | isr_buf=0 ur=954143 | dac_out=39242/2s spi=1 direct=1
+W (279079) EDREAM: Rejecting - already connected
+I (279131) EDREAM: RX:2437 pts/s | batch avg=0 min=0 max=0 n=0 | BUF:1536/8192 | rate:0
+I (279137) EDREAM: Client disconnected
+I (279183) EDREAM: Client from 192.168.77.2:58731
+I (279185) EDREAM: Playback state -> Prepared
+I (279204) EDREAM: Playing @ 19500 pps (low_water=0, buf=1014)
+I (280132) EDREAM: RX:20073 pts/s | batch avg=873 min=816 max=1014 n=23 | BUF:870/8192 | rate:19500
+I (280282) DAC_TIMER: ISR: pts/s=20529 expected=39000 err=-473615ppm | buf=0 underruns=18686
+I (280337) EDREAM: Client disconnected
+I (280436) EDREAM: Client from 192.168.77.2:58732
+I (280440) EDREAM: Playback state -> Prepared
+I (280646) EDREAM: Client disconnected
+I (280746) EDREAM: Client from 192.168.77.2:58733
+I (280748) EDREAM: Playback state -> Prepared
+I (280977) MAIN: PIPE| fb=1536 ed=1 play=0 run=1 | isr_buf=0 ur=972479 | dac_out=39248/2s spi=1 direct=1
+W (281057) EDREAM: Rejecting - already connected
+I (281146) EDREAM: RX:4281 pts/s | batch avg=4341 min=1786 max=1786 n=1 | BUF:1786/8192 | rate:0
+I (281147) EDREAM: Client disconnected
+I (281166) EDREAM: Client from 192.168.77.2:58735
+I (281168) EDREAM: Playback state -> Prepared
+W (281475) EDREAM: Rejecting - already connected
+W (281579) EDREAM: Rejecting - already connected
+I (281646) EDREAM: Client disconnected
+I (281683) EDREAM: Client from 192.168.77.2:58738
+I (281685) EDREAM: Playback state -> Prepared
+I (281946) EDREAM: Client disconnected
+I (281992) EDREAM: Client from 192.168.77.2:58739
+I (281994) EDREAM: Playback state -> Prepared
+I (282196) EDREAM: RX:4926 pts/s | batch avg=0 min=0 max=0 n=0 | BUF:1536/8192 | rate:0
+I (282246) EDREAM: Client disconnected
+I (282302) EDREAM: Client from 192.168.77.2:58740
+I (282304) EDREAM: Playback state -> Prepared
+W (282610) EDREAM: Rejecting - already connected
+I (282646) EDREAM: Client disconnected
+I (282716) EDREAM: Client from 192.168.77.2:58742
+I (282718) EDREAM: Playback state -> Prepared
+I (282946) EDREAM: Client disconnected
+I (282977) MAIN: PIPE| fb=1750 ed=0 play=0 run=1 | isr_buf=0 ur=1011695 | dac_out=39216/2s spi=1 direct=1
+I (283024) EDREAM: Client from 192.168.77.2:58743
+I (283026) EDREAM: Playback state -> Prepared
+I (283196) EDREAM: RX:5008 pts/s | batch avg=0 min=0 max=0 n=0 | BUF:1024/8192 | rate:0
+W (283336) EDREAM: Rejecting - already connected
+W (283440) EDREAM: Rejecting - already connected
+I (283546) EDREAM: Client disconnected
+I (283549) EDREAM: Client from 192.168.77.2:58746
+I (283551) EDREAM: Playback state -> Prepared
+W (283858) EDREAM: Rejecting - already connected
+I (283947) EDREAM: Client disconnected
+I (283961) EDREAM: Client from 192.168.77.2:58748
+I (283963) EDREAM: Playback state -> Prepared
+I (284170) EDREAM: Client disconnected
+I (284222) EDREAM: RX:3796 pts/s | batch avg=0 min=0 max=0 n=0 | BUF:1752/8192 | rate:0
+I (284270) EDREAM: Client from 192.168.77.2:58749
+I (284272) EDREAM: Playback state -> Prepared
+W (284578) EDREAM: Rejecting - already connected
+I (284670) EDREAM: Client disconnected
+I (284682) EDREAM: Client from 192.168.77.2:58752
+I (284684) EDREAM: Playback state -> Prepared
+I (284970) EDREAM: Client disconnected
+I (284977) MAIN: PIPE| fb=1724 ed=0 play=0 run=1 | isr_buf=0 ur=1050910 | dac_out=39216/2s spi=1 direct=1
+I (284991) EDREAM: Client from 192.168.77.2:58753
+I (284993) EDREAM: Playback state -> Prepared
+I (285250) EDREAM: RX:5024 pts/s | batch avg=0 min=0 max=0 n=0 | BUF:1536/8192 | rate:0
+W (285299) EDREAM: Rejecting - already connected
+I (285370) EDREAM: Client disconnected
+I (285404) EDREAM: Client from 192.168.77.2:58755
+I (285406) EDREAM: Playback state -> Prepared
+I (285423) EDREAM: Playing @ 19500 pps (low_water=0, buf=987)
+I (286251) EDREAM: RX:18315 pts/s | batch avg=128 min=9 max=987 n=143 | BUF:1043/8192 | rate:19500
+I (286982) MAIN: PIPE| fb=1566 ed=1 play=1 run=1 | isr_buf=978 ur=1059668 | dac_out=39324/2s spi=1 direct=1
+I (287252) EDREAM: RX:19884 pts/s | batch avg=904 min=836 max=902 n=22 | BUF:1231/8192 | rate:19500
+I (287282) DAC_TIMER: ISR: pts/s=36449 expected=39000 err=-65410ppm | buf=984 underruns=2767
+I (288252) EDREAM: RX:19129 pts/s | batch avg=831 min=812 max=910 n=23 | BUF:900/8192 | rate:19500
+I (288982) MAIN: PIPE| fb=1267 ed=1 play=1 run=1 | isr_buf=944 ur=1059668 | dac_out=39207/2s spi=1 direct=1
+I (289252) EDREAM: RX:19927 pts/s | batch avg=866 min=816 max=905 n=23 | BUF:1240/8192 | rate:19500
+I (289282) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=943 underruns=0
+I (290252) EDREAM: RX:19603 pts/s | batch avg=891 min=823 max=923 n=22 | BUF:729/8192 | rate:19500
+I (290982) MAIN: PIPE| fb=1212 ed=1 play=1 run=1 | isr_buf=902 ur=1059668 | dac_out=39216/2s spi=1 direct=1
+I (291253) EDREAM: RX:19443 pts/s | batch avg=846 min=819 max=917 n=23 | BUF:1005/8192 | rate:19500
+I (291282) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=900 underruns=0
+I (292253) EDREAM: RX:19670 pts/s | batch avg=855 min=827 max=890 n=23 | BUF:1086/8192 | rate:19500
+I (292982) MAIN: PIPE| fb=1473 ed=1 play=1 run=1 | isr_buf=992 ur=1059668 | dac_out=39216/2s spi=1 direct=1
+I (293254) EDREAM: RX:19837 pts/s | batch avg=863 min=825 max=925 n=23 | BUF:1354/8192 | rate:19500
+I (293282) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=990 underruns=0
+I (294255) EDREAM: RX:19536 pts/s | batch avg=850 min=814 max=895 n=23 | BUF:1193/8192 | rate:19500
+I (294983) MAIN: PIPE| fb=1285 ed=1 play=1 run=1 | isr_buf=922 ur=1059668 | dac_out=39248/2s spi=1 direct=1
+I (295256) EDREAM: RX:19759 pts/s | batch avg=859 min=812 max=904 n=23 | BUF:1382/8192 | rate:19500
+I (295282) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=953 underruns=0
+I (296257) EDREAM: RX:19673 pts/s | batch avg=894 min=820 max=930 n=22 | BUF:1341/8192 | rate:19500
+I (296984) MAIN: PIPE| fb=1204 ed=1 play=1 run=1 | isr_buf=1003 ur=1059668 | dac_out=39222/2s spi=1 direct=1
+I (297257) EDREAM: RX:19149 pts/s | batch avg=833 min=821 max=905 n=23 | BUF:922/8192 | rate:19500
+I (297282) DAC_TIMER: ISR: pts/s=39210 expected=39000 err=+5384ppm | buf=911 underruns=0
+I (298258) EDREAM: RX:19786 pts/s | batch avg=861 min=823 max=907 n=23 | BUF:1142/8192 | rate:19500
+I (298984) MAIN: PIPE| fb=1448 ed=1 play=1 run=1 | isr_buf=963 ur=1059668 | dac_out=39214/2s spi=1 direct=1
+I (299259) EDREAM: RX:17847 pts/s | batch avg=893 min=814 max=897 n=20 | BUF:0/8192 | rate:19500
+I (299282) DAC_TIMER: ISR: pts/s=38747 expected=39000 err=-6487ppm | buf=0 underruns=463
+I (299370) EDREAM: Client disconnected
+I (299441) EDREAM: Client from 192.168.77.2:58758
+I (299443) EDREAM: Playback state -> Prepared
+I (299460) EDREAM: Playing @ 19500 pps (low_water=0, buf=985)
+I (299667) EDREAM: Client disconnected
+I (299767) EDREAM: Client from 192.168.77.2:58759
+I (299769) EDREAM: Playback state -> Prepared
+W (300076) EDREAM: Rejecting - already connected
+W (300182) EDREAM: Rejecting - already connected
+I (300270) EDREAM: RX:4011 pts/s | batch avg=4056 min=1918 max=1918 n=1 | BUF:1918/8192 | rate:0
+I (300271) EDREAM: Client disconnected
+I (300287) EDREAM: Client from 192.168.77.2:58762
+I (300289) EDREAM: Playback state -> Prepared
+I (300306) EDREAM: Playing @ 19500 pps (low_water=0, buf=983)
+I (300513) EDREAM: Client disconnected
+I (300616) EDREAM: Client from 192.168.77.2:58763
+I (300618) EDREAM: Playback state -> Prepared
+I (300635) EDREAM: Playing @ 19500 pps (low_water=0, buf=984)
+I (300917) EDREAM: Client disconnected
+I (300940) EDREAM: Client from 192.168.77.2:58764
+I (300942) EDREAM: Playback state -> Prepared
+I (300984) MAIN: PIPE| fb=1024 ed=1 play=0 run=1 | isr_buf=0 ur=1087005 | dac_out=39216/2s spi=1 direct=1
+W (301252) EDREAM: Rejecting - already connected
+I (301304) EDREAM: RX:5474 pts/s | batch avg=0 min=0 max=0 n=0 | BUF:1536/8192 | rate:0
+I (301316) EDREAM: Client disconnected
+I (301357) EDREAM: Client from 192.168.77.2:58766
+I (301359) EDREAM: Playback state -> Prepared
+I (301566) EDREAM: Client disconnected
+I (301666) EDREAM: Client from 192.168.77.2:58767
+I (301668) EDREAM: Playback state -> Prepared
+I (301687) EDREAM: Playing @ 19500 pps (low_water=0, buf=976)
+I (301966) EDREAM: Client disconnected
+I (301996) EDREAM: Client from 192.168.77.2:58768
+I (301998) EDREAM: Playback state -> Prepared
+I (302016) EDREAM: Playing @ 19500 pps (low_water=0, buf=976)
+I (302305) EDREAM: RX:11106 pts/s | batch avg=161 min=1 max=976 n=69 | BUF:874/8192 | rate:19500
+I (302985) MAIN: PIPE| fb=1001 ed=1 play=1 run=1 | isr_buf=900 ur=1105276 | dac_out=39247/2s spi=1 direct=1
+I (303282) DAC_TIMER: ISR: pts/s=26799 expected=39000 err=-312846ppm | buf=968 underruns=12416
+I (303306) EDREAM: RX:20215 pts/s | batch avg=97 min=1 max=942 n=208 | BUF:1388/8192 | rate:19500
+I (304306) EDREAM: RX:19417 pts/s | batch avg=882 min=825 max=924 n=22 | BUF:815/8192 | rate:19500
+I (304986) MAIN: PIPE| fb=1164 ed=1 play=1 run=1 | isr_buf=986 ur=1105276 | dac_out=39225/2s spi=1 direct=1
+I (305282) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=933 underruns=0
+I (305306) EDREAM: RX:19362 pts/s | batch avg=841 min=822 max=936 n=23 | BUF:990/8192 | rate:19500
+I (306306) EDREAM: RX:20066 pts/s | batch avg=872 min=826 max=913 n=23 | BUF:1462/8192 | rate:19500
+I (306986) MAIN: PIPE| fb=1027 ed=1 play=1 run=1 | isr_buf=954 ur=1105276 | dac_out=39214/2s spi=1 direct=1
+I (307282) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=899 underruns=0
+I (307306) EDREAM: RX:19494 pts/s | batch avg=886 min=821 max=906 n=22 | BUF:1238/8192 | rate:19500
+I (308307) EDREAM: RX:19281 pts/s | batch avg=839 min=816 max=923 n=23 | BUF:1076/8192 | rate:19500
+I (308986) MAIN: PIPE| fb=1490 ed=1 play=1 run=1 | isr_buf=919 ur=1105276 | dac_out=39215/2s spi=1 direct=1
+I (309282) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=994 underruns=0
+I (309307) EDREAM: RX:19880 pts/s | batch avg=864 min=820 max=923 n=23 | BUF:1238/8192 | rate:19500
+I (310307) EDREAM: RX:19229 pts/s | batch avg=243 min=9 max=911 n=79 | BUF:878/8192 | rate:19500
+I (310986) MAIN: PIPE| fb=1171 ed=1 play=1 run=1 | isr_buf=1010 ur=1105276 | dac_out=39216/2s spi=1 direct=1
+I (311282) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=954 underruns=0
+I (311307) EDREAM: RX:19648 pts/s | batch avg=701 min=7 max=908 n=28 | BUF:860/8192 | rate:19500
+I (312308) EDREAM: RX:19634 pts/s | batch avg=854 min=812 max=885 n=23 | BUF:845/8192 | rate:19500
+I (312986) MAIN: PIPE| fb=1192 ed=1 play=1 run=1 | isr_buf=966 ur=1105276 | dac_out=39218/2s spi=1 direct=1
+I (313283) DAC_TIMER: ISR: pts/s=39226 expected=39017 err=+5356ppm | buf=896 underruns=0
+I (313309) EDREAM: RX:19769 pts/s | batch avg=859 min=818 max=905 n=23 | BUF:862/8192 | rate:19500
+I (314309) EDREAM: RX:19427 pts/s | batch avg=845 min=814 max=905 n=23 | BUF:911/8192 | rate:19500
+I (314986) MAIN: PIPE| fb=1586 ed=1 play=1 run=1 | isr_buf=934 ur=1105276 | dac_out=39213/2s spi=1 direct=1
+I (315283) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=988 underruns=0
+I (315309) EDREAM: RX:19842 pts/s | batch avg=862 min=814 max=906 n=23 | BUF:1164/8192 | rate:19500
+I (316310) EDREAM: RX:19840 pts/s | batch avg=862 min=828 max=911 n=23 | BUF:1416/8192 | rate:19500
+I (316986) MAIN: PIPE| fb=1055 ed=1 play=1 run=1 | isr_buf=1022 ur=1105276 | dac_out=39218/2s spi=1 direct=1
+I (317283) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=952 underruns=0
+I (317310) EDREAM: RX:19147 pts/s | batch avg=871 min=818 max=913 n=22 | BUF:994/8192 | rate:19500
+I (318310) EDREAM: RX:19979 pts/s | batch avg=868 min=821 max=919 n=23 | BUF:1382/8192 | rate:19500
+I (318986) MAIN: PIPE| fb=880 ed=1 play=1 run=1 | isr_buf=988 ur=1105276 | dac_out=39214/2s spi=1 direct=1
+I (319284) DAC_TIMER: ISR: pts/s=39227 expected=39019 err=+5330ppm | buf=897 underruns=0
+I (319311) EDREAM: RX:19079 pts/s | batch avg=124 min=3 max=886 n=154 | BUF:758/8192 | rate:19500
+I (320311) EDREAM: RX:19708 pts/s | batch avg=81 min=1 max=143 n=241 | BUF:878/8192 | rate:19500
+I (320986) MAIN: PIPE| fb=884 ed=1 play=1 run=1 | isr_buf=955 ur=1105276 | dac_out=39216/2s spi=1 direct=1
+I (321284) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=991 underruns=0
+I (321311) EDREAM: RX:19584 pts/s | batch avg=82 min=3 max=135 n=238 | BUF:874/8192 | rate:19500
+I (322312) EDREAM: RX:19570 pts/s | batch avg=82 min=7 max=135 n=237 | BUF:877/8192 | rate:19500
+I (322986) MAIN: PIPE| fb=1001 ed=1 play=1 run=1 | isr_buf=907 ur=1105276 | dac_out=39228/2s spi=1 direct=1
+I (323284) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=955 underruns=0
+I (323312) EDREAM: RX:19607 pts/s | batch avg=81 min=3 max=135 n=241 | BUF:893/8192 | rate:19500
+I (324312) EDREAM: RX:19656 pts/s | batch avg=84 min=8 max=140 n=232 | BUF:883/8192 | rate:19500
+I (324987) MAIN: PIPE| fb=880 ed=1 play=1 run=1 | isr_buf=983 ur=1105276 | dac_out=39226/2s spi=1 direct=1
+I (325285) DAC_TIMER: ISR: pts/s=39229 expected=39020 err=+5356ppm | buf=1022 underruns=0
+I (325312) EDREAM: RX:19635 pts/s | batch avg=83 min=5 max=135 n=235 | BUF:881/8192 | rate:19500
+I (326313) EDREAM: RX:19564 pts/s | batch avg=83 min=7 max=135 n=234 | BUF:878/8192 | rate:19500
+I (326988) MAIN: PIPE| fb=878 ed=1 play=1 run=1 | isr_buf=920 ur=1105276 | dac_out=39239/2s spi=1 direct=1
+I (327285) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=982 underruns=0
+I (327314) EDREAM: RX:19693 pts/s | batch avg=103 min=3 max=926 n=191 | BUF:923/8192 | rate:19500
+I (328315) EDREAM: RX:19964 pts/s | batch avg=868 min=815 max=945 n=23 | BUF:1270/8192 | rate:19500
+I (328989) MAIN: PIPE| fb=1085 ed=1 play=1 run=1 | isr_buf=999 ur=1105276 | dac_out=39228/2s spi=1 direct=1
+I (329285) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=947 underruns=0
+I (329315) EDREAM: RX:19265 pts/s | batch avg=875 min=823 max=921 n=22 | BUF:778/8192 | rate:19500
+I (330315) EDREAM: RX:19604 pts/s | batch avg=852 min=809 max=896 n=23 | BUF:795/8192 | rate:19500
+I (330989) MAIN: PIPE| fb=1577 ed=1 play=1 run=1 | isr_buf=965 ur=1105276 | dac_out=39219/2s spi=1 direct=1
+I (331285) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=913 underruns=0
+I (331316) EDREAM: RX:19951 pts/s | batch avg=868 min=822 max=915 n=23 | BUF:1335/8192 | rate:19500
+I (332317) EDREAM: RX:19230 pts/s | batch avg=875 min=818 max=907 n=22 | BUF:995/8192 | rate:19500
+I (332989) MAIN: PIPE| fb=1273 ed=1 play=1 run=1 | isr_buf=915 ur=1105276 | dac_out=39228/2s spi=1 direct=1
+I (333285) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=1006 underruns=0
+I (333318) EDREAM: RX:19807 pts/s | batch avg=862 min=823 max=919 n=23 | BUF:1103/8192 | rate:19500
+I (334318) EDREAM: RX:19844 pts/s | batch avg=862 min=814 max=942 n=23 | BUF:1360/8192 | rate:19500
+I (334990) MAIN: PIPE| fb=1144 ed=1 play=1 run=1 | isr_buf=1000 ur=1105276 | dac_out=39222/2s spi=1 direct=1
+I (335285) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=967 underruns=0
+I (335318) EDREAM: RX:19104 pts/s | batch avg=868 min=816 max=914 n=22 | BUF:870/8192 | rate:19500
+I (336319) EDREAM: RX:20208 pts/s | batch avg=879 min=829 max=926 n=23 | BUF:1511/8192 | rate:19500
+I (336990) MAIN: PIPE| fb=1333 ed=1 play=1 run=1 | isr_buf=966 ur=1105276 | dac_out=39213/2s spi=1 direct=1
+I (337285) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=930 underruns=0
+I (337320) EDREAM: RX:19097 pts/s | batch avg=868 min=825 max=913 n=22 | BUF:912/8192 | rate:19500
+I (338320) EDREAM: RX:19680 pts/s | batch avg=787 min=540 max=926 n=25 | BUF:1006/8192 | rate:19500
+I (338990) MAIN: PIPE| fb=908 ed=1 play=1 run=1 | isr_buf=920 ur=1105276 | dac_out=39219/2s spi=1 direct=1
+I (339285) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=1015 underruns=0
+I (339321) EDREAM: RX:19639 pts/s | batch avg=378 min=212 max=563 n=52 | BUF:1080/8192 | rate:19500
+I (340322) EDREAM: RX:19490 pts/s | batch avg=221 min=204 max=264 n=88 | BUF:1003/8192 | rate:19500
+I (340990) MAIN: PIPE| fb=906 ed=1 play=1 run=1 | isr_buf=1008 ur=1105276 | dac_out=39213/2s spi=1 direct=1
+I (341285) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=974 underruns=0
+I (341322) EDREAM: RX:19629 pts/s | batch avg=215 min=201 max=234 n=91 | BUF:837/8192 | rate:19500
+I (342323) EDREAM: RX:19635 pts/s | batch avg=223 min=208 max=264 n=88 | BUF:828/8192 | rate:19500
+I (342990) MAIN: PIPE| fb=904 ed=1 play=1 run=1 | isr_buf=964 ur=1105276 | dac_out=39215/2s spi=1 direct=1
+I (343285) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=929 underruns=0
+I (343324) EDREAM: RX:19559 pts/s | batch avg=215 min=203 max=263 n=91 | BUF:977/8192 | rate:19500
+I (344324) EDREAM: RX:19658 pts/s | batch avg=223 min=204 max=264 n=88 | BUF:1051/8192 | rate:19500
+I (344990) MAIN: PIPE| fb=986 ed=1 play=1 run=1 | isr_buf=920 ur=1105276 | dac_out=39218/2s spi=1 direct=1
+I (345285) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=1014 underruns=0
+I (345325) EDREAM: RX:19595 pts/s | batch avg=217 min=206 max=263 n=90 | BUF:952/8192 | rate:19500
+I (346325) EDREAM: RX:19513 pts/s | batch avg=221 min=205 max=263 n=88 | BUF:881/8192 | rate:19500
+I (346991) MAIN: PIPE| fb=1096 ed=1 play=1 run=1 | isr_buf=967 ur=1105276 | dac_out=39250/2s spi=1 direct=1
+I (347285) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=968 underruns=0
+I (347326) EDREAM: RX:19761 pts/s | batch avg=217 min=201 max=262 n=91 | BUF:914/8192 | rate:19500
+I (348327) EDREAM: RX:19579 pts/s | batch avg=222 min=204 max=264 n=88 | BUF:1086/8192 | rate:19500
+I (348992) MAIN: PIPE| fb=1133 ed=1 play=1 run=1 | isr_buf=922 ur=1105276 | dac_out=39221/2s spi=1 direct=1
+I (349285) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=928 underruns=0
+I (349328) EDREAM: RX:19599 pts/s | batch avg=217 min=205 max=263 n=90 | BUF:828/8192 | rate:19500
+I (350329) EDREAM: RX:19574 pts/s | batch avg=220 min=204 max=263 n=89 | BUF:993/8192 | rate:19500
+I (350992) MAIN: PIPE| fb=1092 ed=1 play=1 run=1 | isr_buf=995 ur=1105276 | dac_out=39232/2s spi=1 direct=1
+I (351285) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=1018 underruns=0
+I (351329) EDREAM: RX:19637 pts/s | batch avg=316 min=207 max=383 n=62 | BUF:1044/8192 | rate:19500
+I (352329) EDREAM: RX:19662 pts/s | batch avg=344 min=325 max=384 n=57 | BUF:1116/8192 | rate:19500
+I (352993) MAIN: PIPE| fb=1116 ed=1 play=1 run=1 | isr_buf=960 ur=1105276 | dac_out=39217/2s spi=1 direct=1
+I (353285) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=985 underruns=0
+I (353330) EDREAM: RX:19500 pts/s | batch avg=336 min=323 max=382 n=58 | BUF:909/8192 | rate:19500
+I (354330) EDREAM: RX:19766 pts/s | batch avg=340 min=325 max=383 n=58 | BUF:1087/8192 | rate:19500
+I (354993) MAIN: PIPE| fb=1141 ed=1 play=1 run=1 | isr_buf=924 ur=1105276 | dac_out=39220/2s spi=1 direct=1
+I (355285) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=952 underruns=0
+I (355330) EDREAM: RX:19502 pts/s | batch avg=336 min=322 max=367 n=58 | BUF:1000/8192 | rate:19500
+I (356331) EDREAM: RX:19649 pts/s | batch avg=345 min=324 max=384 n=57 | BUF:1083/8192 | rate:19500
+I (356993) MAIN: PIPE| fb=1078 ed=1 play=1 run=1 | isr_buf=1014 ur=1105276 | dac_out=39211/2s spi=1 direct=1
+I (357285) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=909 underruns=0
+I (357331) EDREAM: RX:19527 pts/s | batch avg=336 min=323 max=382 n=58 | BUF:1022/8192 | rate:19500
+I (358332) EDREAM: RX:19721 pts/s | batch avg=346 min=301 max=384 n=57 | BUF:1048/8192 | rate:19500
+I (358993) MAIN: PIPE| fb=1054 ed=1 play=1 run=1 | isr_buf=973 ur=1105276 | dac_out=39216/2s spi=1 direct=1
+I (359285) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=996 underruns=0
+I (359332) EDREAM: RX:19509 pts/s | batch avg=415 min=356 max=472 n=47 | BUF:892/8192 | rate:19500
+I (360332) EDREAM: RX:19745 pts/s | batch avg=429 min=414 max=473 n=46 | BUF:1128/8192 | rate:19500
+I (360993) MAIN: PIPE| fb=979 ed=1 play=1 run=1 | isr_buf=925 ur=1105276 | dac_out=39221/2s spi=1 direct=1
+I (361285) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=953 underruns=0
+I (361332) EDREAM: RX:19632 pts/s | batch avg=426 min=415 max=457 n=46 | BUF:1175/8192 | rate:19500
+I (362333) EDREAM: RX:19493 pts/s | batch avg=433 min=419 max=473 n=45 | BUF:1096/8192 | rate:19500
+I (362996) MAIN: PIPE| fb=1087 ed=1 play=1 run=1 | isr_buf=956 ur=1105276 | dac_out=39275/2s spi=1 direct=1
+I (363286) DAC_TIMER: ISR: pts/s=39226 expected=39017 err=+5356ppm | buf=899 underruns=0
+I (363334) EDREAM: RX:19503 pts/s | batch avg=278 min=232 max=442 n=70 | BUF:820/8192 | rate:19500
+I (364335) EDREAM: RX:19710 pts/s | batch avg=223 min=204 max=270 n=88 | BUF:945/8192 | rate:19500
+I (364996) MAIN: PIPE| fb=1057 ed=1 play=1 run=1 | isr_buf=922 ur=1105276 | dac_out=39210/2s spi=1 direct=1
+I (365286) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=988 underruns=0
+I (365335) EDREAM: RX:19678 pts/s | batch avg=216 min=201 max=247 n=91 | BUF:972/8192 | rate:19500
+I (366335) EDREAM: RX:19448 pts/s | batch avg=221 min=204 max=264 n=88 | BUF:990/8192 | rate:19500
+I (366996) MAIN: PIPE| fb=962 ed=1 play=1 run=1 | isr_buf=1013 ur=1105276 | dac_out=39218/2s spi=1 direct=1
+I (367286) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=952 underruns=0
+I (367335) EDREAM: RX:19670 pts/s | batch avg=216 min=201 max=263 n=91 | BUF:944/8192 | rate:19500
+I (368336) EDREAM: RX:19547 pts/s | batch avg=224 min=205 max=264 n=87 | BUF:925/8192 | rate:19500
+I (368996) MAIN: PIPE| fb=896 ed=1 play=1 run=1 | isr_buf=970 ur=1105276 | dac_out=39217/2s spi=1 direct=1
+I (369286) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=911 underruns=0
+I (369336) EDREAM: RX:19701 pts/s | batch avg=216 min=206 max=263 n=91 | BUF:1038/8192 | rate:19500
+I (370337) EDREAM: RX:19606 pts/s | batch avg=220 min=204 max=264 n=89 | BUF:1078/8192 | rate:19500
+I (370999) MAIN: PIPE| fb=1091 ed=1 play=1 run=1 | isr_buf=998 ur=1105276 | dac_out=39274/2s spi=1 direct=1
+I (371286) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=997 underruns=0
+I (371338) EDREAM: RX:19514 pts/s | batch avg=217 min=203 max=263 n=90 | BUF:897/8192 | rate:19500
+I (372339) EDREAM: RX:19619 pts/s | batch avg=223 min=204 max=264 n=88 | BUF:948/8192 | rate:19500
+I (373000) MAIN: PIPE| fb=1137 ed=1 play=1 run=1 | isr_buf=922 ur=1105276 | dac_out=39250/2s spi=1 direct=1
+I (373286) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=955 underruns=0
+I (373340) EDREAM: RX:19648 pts/s | batch avg=216 min=204 max=247 n=91 | BUF:1030/8192 | rate:19500
+I (374341) EDREAM: RX:19600 pts/s | batch avg=222 min=205 max=264 n=88 | BUF:778/8192 | rate:19500
+I (375001) MAIN: PIPE| fb=851 ed=1 play=1 run=1 | isr_buf=1003 ur=1105276 | dac_out=39219/2s spi=1 direct=1
+I (375286) DAC_TIMER: ISR: pts/s=39209 expected=39000 err=+5358ppm | buf=911 underruns=0
+I (375341) EDREAM: RX:19737 pts/s | batch avg=214 min=201 max=247 n=92 | BUF:1087/8192 | rate:19500
+I (376341) EDREAM: RX:19590 pts/s | batch avg=222 min=205 max=264 n=88 | BUF:1090/8192 | rate:19500
+I (377002) MAIN: PIPE| fb=1104 ed=1 play=1 run=1 | isr_buf=927 ur=1105276 | dac_out=39249/2s spi=1 direct=1
+I (377286) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=997 underruns=0
+I (377342) EDREAM: RX:19500 pts/s | batch avg=216 min=203 max=246 n=90 | BUF:1024/8192 | rate:19500
+I (378342) EDREAM: RX:19734 pts/s | batch avg=221 min=205 max=264 n=89 | BUF:1171/8192 | rate:19500
+I (379003) MAIN: PIPE| fb=954 ed=1 play=1 run=1 | isr_buf=1009 ur=1105276 | dac_out=39220/2s spi=1 direct=1
+I (379286) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=955 underruns=0
+I (379342) EDREAM: RX:19486 pts/s | batch avg=216 min=202 max=263 n=90 | BUF:942/8192 | rate:19500
+I (380344) EDREAM: RX:19577 pts/s | batch avg=225 min=204 max=264 n=87 | BUF:970/8192 | rate:19500
+I (381005) MAIN: PIPE| fb=1130 ed=1 play=1 run=1 | isr_buf=930 ur=1105276 | dac_out=39255/2s spi=1 direct=1
+I (381287) DAC_TIMER: ISR: pts/s=39227 expected=39018 err=+5356ppm | buf=899 underruns=0
+I (381345) EDREAM: RX:19686 pts/s | batch avg=216 min=203 max=263 n=91 | BUF:1082/8192 | rate:19500
+I (382345) EDREAM: RX:19449 pts/s | batch avg=221 min=204 max=264 n=88 | BUF:943/8192 | rate:19500
+I (383005) MAIN: PIPE| fb=1026 ed=1 play=1 run=1 | isr_buf=897 ur=1105276 | dac_out=39215/2s spi=1 direct=1
+I (383287) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=992 underruns=0
+I (383346) EDREAM: RX:19633 pts/s | batch avg=215 min=202 max=247 n=91 | BUF:879/8192 | rate:19500
+I (384347) EDREAM: RX:19694 pts/s | batch avg=224 min=205 max=264 n=88 | BUF:1005/8192 | rate:19500
+I (385005) MAIN: PIPE| fb=1036 ed=1 play=1 run=1 | isr_buf=971 ur=1105276 | dac_out=39230/2s spi=1 direct=1
+I (385287) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=953 underruns=0
+I (385347) EDREAM: RX:19668 pts/s | batch avg=218 min=204 max=247 n=90 | BUF:845/8192 | rate:19500
+I (386348) EDREAM: RX:19626 pts/s | batch avg=218 min=207 max=263 n=90 | BUF:1017/8192 | rate:19500
+I (387006) MAIN: PIPE| fb=903 ed=1 play=1 run=1 | isr_buf=923 ur=1105276 | dac_out=39221/2s spi=1 direct=1
+I (387287) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=907 underruns=0
+I (387348) EDREAM: RX:19610 pts/s | batch avg=217 min=202 max=263 n=90 | BUF:1043/8192 | rate:19500
+I (388348) EDREAM: RX:19528 pts/s | batch avg=224 min=205 max=264 n=87 | BUF:984/8192 | rate:19500
+I (389008) MAIN: PIPE| fb=1115 ed=1 play=1 run=1 | isr_buf=962 ur=1105276 | dac_out=39263/2s spi=1 direct=1
+I (389287) DAC_TIMER: ISR: pts/s=39207 expected=39000 err=+5307ppm | buf=994 underruns=0
+I (389348) EDREAM: RX:19661 pts/s | batch avg=218 min=205 max=263 n=90 | BUF:819/8192 | rate:19500
+I (390348) EDREAM: RX:19524 pts/s | batch avg=219 min=204 max=260 n=89 | BUF:917/8192 | rate:19500
+I (391008) MAIN: PIPE| fb=1052 ed=1 play=1 run=1 | isr_buf=924 ur=1105276 | dac_out=39210/2s spi=1 direct=1
+I (391287) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=951 underruns=0
+I (391348) EDREAM: RX:19599 pts/s | batch avg=215 min=202 max=263 n=91 | BUF:1005/8192 | rate:19500
+I (392349) EDREAM: RX:19654 pts/s | batch avg=223 min=204 max=264 n=88 | BUF:965/8192 | rate:19500
+I (393008) MAIN: PIPE| fb=1034 ed=1 play=1 run=1 | isr_buf=1014 ur=1105276 | dac_out=39214/2s spi=1 direct=1
+I (393287) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=909 underruns=0
+I (393350) EDREAM: RX:19607 pts/s | batch avg=218 min=206 max=247 n=90 | BUF:1007/8192 | rate:19500
+I (394351) EDREAM: RX:19647 pts/s | batch avg=223 min=205 max=264 n=88 | BUF:987/8192 | rate:19500
+I (395008) MAIN: PIPE| fb=884 ed=1 play=1 run=1 | isr_buf=969 ur=1105276 | dac_out=39219/2s spi=1 direct=1
+I (395287) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=996 underruns=0
+I (395350) EDREAM: RX:19599 pts/s | batch avg=217 min=202 max=263 n=90 | BUF:919/8192 | rate:19500
+I (396351) EDREAM: RX:19451 pts/s | batch avg=221 min=205 max=264 n=88 | BUF:835/8192 | rate:19500
+I (397008) MAIN: PIPE| fb=920 ed=1 play=1 run=1 | isr_buf=920 ur=1105276 | dac_out=39219/2s spi=1 direct=1
+I (397287) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=950 underruns=0
+I (397352) EDREAM: RX:19692 pts/s | batch avg=216 min=206 max=263 n=91 | BUF:960/8192 | rate:19500
+I (398352) EDREAM: RX:19606 pts/s | batch avg=222 min=204 max=264 n=88 | BUF:980/8192 | rate:19500
+I (399009) MAIN: PIPE| fb=930 ed=1 play=1 run=1 | isr_buf=994 ur=1105276 | dac_out=39230/2s spi=1 direct=1
+I (399287) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=911 underruns=0
+I (399352) EDREAM: RX:19554 pts/s | batch avg=217 min=202 max=247 n=90 | BUF:947/8192 | rate:19500
+I (400353) EDREAM: RX:19667 pts/s | batch avg=221 min=205 max=263 n=89 | BUF:917/8192 | rate:19500
+I (401009) MAIN: PIPE| fb=1043 ed=1 play=1 run=1 | isr_buf=954 ur=1105276 | dac_out=39216/2s spi=1 direct=1
+I (401287) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=999 underruns=0
+I (401353) EDREAM: RX:19602 pts/s | batch avg=217 min=203 max=247 n=90 | BUF:853/8192 | rate:19500
+I (402353) EDREAM: RX:19712 pts/s | batch avg=221 min=205 max=264 n=89 | BUF:1059/8192 | rate:19500
+I (403009) MAIN: PIPE| fb=1125 ed=1 play=1 run=1 | isr_buf=913 ur=1105276 | dac_out=39216/2s spi=1 direct=1
+I (403287) DAC_TIMER: ISR: pts/s=39208 expected=39000 err=+5333ppm | buf=957 underruns=0
+I (403353) EDREAM: RX:19483 pts/s | batch avg=216 min=202 max=263 n=90 | BUF:952/8192 | rate:19500
+I (403522) EDREAM: Client disconnected
+I (404389) EDREAM: RX:3163 pts/s | batch avg=0 min=0 max=0 n=0 | BUF:901/8192 | rate:0
+I (405009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1133464 | dac_out=39213/2s spi=1 direct=1
+I (407009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1172679 | dac_out=39216/2s spi=1 direct=1
+I (409009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1211895 | dac_out=39215/2s spi=1 direct=1
+I (411009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1251111 | dac_out=39216/2s spi=1 direct=1
+I (413009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1290327 | dac_out=39216/2s spi=1 direct=1
+I (415009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1329542 | dac_out=39215/2s spi=1 direct=1
+I (417009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1368758 | dac_out=39216/2s spi=1 direct=1
+I (419009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1407974 | dac_out=39216/2s spi=1 direct=1
+I (421009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1447189 | dac_out=39215/2s spi=1 direct=1
+I (423009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1486405 | dac_out=39216/2s spi=1 direct=1
+I (425009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1525621 | dac_out=39216/2s spi=1 direct=1
+I (427009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1564836 | dac_out=39215/2s spi=1 direct=1
+I (429009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1604052 | dac_out=39216/2s spi=1 direct=1
+I (431009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1643268 | dac_out=39216/2s spi=1 direct=1
+I (433009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1682483 | dac_out=39216/2s spi=1 direct=1
+I (435009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1721699 | dac_out=39215/2s spi=1 direct=1
+I (437009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1760915 | dac_out=39216/2s spi=1 direct=1
+I (439009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1800130 | dac_out=39216/2s spi=1 direct=1
+I (441009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1839346 | dac_out=39215/2s spi=1 direct=1
+I (443009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1878562 | dac_out=39216/2s spi=1 direct=1
+I (445009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1917778 | dac_out=39216/2s spi=1 direct=1
+I (447009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1956993 | dac_out=39215/2s spi=1 direct=1
+I (449009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=1996209 | dac_out=39216/2s spi=1 direct=1
+I (451009) MAIN: PIPE| fb=901 ed=0 play=0 run=1 | isr_buf=0 ur=2035425 | dac_out=39216/2s spi=1 direct=1
+I (451119) EDREAM: Client from 192.168.77.2:58809
+I (451121) EDREAM: Playback state -> Prepared
+I (451257) DAC_TIMER: Scan rate: 19500 -> 20000 pps
+I (451257) DAC_TIMER: Timer period: 50us (20000 pps)
+I (451289) EDREAM: RX:4598 pts/s | batch avg=80 min=40 max=80 n=57 | BUF:4520/8192 | rate:20000
+I (451331) EDREAM: Playing @ 20000 pps (low_water=0, buf=6240)
+I (452290) EDREAM: RX:18343 pts/s | batch avg=79 min=40 max=80 n=231 | BUF:2860/8192 | rate:20000
+I (453009) MAIN: PIPE| fb=2976 ed=1 play=1 run=1 | isr_buf=924 ur=2041788 | dac_out=39903/2s spi=1 direct=1
+I (453288) DAC_TIMER: ISR: pts/s=39126 expected=40000 err=-21850ppm | buf=970 underruns=874
+I (453290) EDREAM: RX:20080 pts/s | batch avg=80 min=80 max=80 n=251 | BUF:2944/8192 | rate:20000
+I (454290) EDREAM: RX:20000 pts/s | batch avg=80 min=80 max=80 n=250 | BUF:2960/8192 | rate:20000
+I (455009) MAIN: PIPE| fb=2896 ed=1 play=1 run=1 | isr_buf=1005 ur=2041788 | dac_out=40000/2s spi=1 direct=1
+I (455288) DAC_TIMER: ISR: pts/s=39992 expected=40000 err=-200ppm | buf=934 underruns=0
+I (455290) EDREAM: RX:20015 pts/s | batch avg=79 min=5 max=80 n=253 | BUF:2867/8192 | rate:20000
+I (456291) EDREAM: RX:19959 pts/s | batch avg=76 min=4 max=80 n=262 | BUF:2894/8192 | rate:20000
+I (457009) MAIN: PIPE| fb=2883 ed=1 play=1 run=1 | isr_buf=994 ur=2041788 | dac_out=40006/2s spi=1 direct=1
+I (457288) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=934 underruns=0
+I (457292) EDREAM: RX:20025 pts/s | batch avg=75 min=3 max=80 n=265 | BUF:2892/8192 | rate:20000
+I (458293) EDREAM: RX:20014 pts/s | batch avg=75 min=3 max=80 n=264 | BUF:2875/8192 | rate:20000
+I (459009) MAIN: PIPE| fb=2947 ed=1 play=1 run=1 | isr_buf=961 ur=2041788 | dac_out=39994/2s spi=1 direct=1
+I (459288) DAC_TIMER: ISR: pts/s=39996 expected=40003 err=-174ppm | buf=899 underruns=0
+I (459293) EDREAM: RX:20012 pts/s | batch avg=76 min=2 max=80 n=262 | BUF:2966/8192 | rate:20000
+I (460293) EDREAM: RX:20019 pts/s | batch avg=76 min=1 max=80 n=263 | BUF:2927/8192 | rate:20000
+I (461009) MAIN: PIPE| fb=2970 ed=1 play=1 run=1 | isr_buf=925 ur=2041788 | dac_out=40000/2s spi=1 direct=1
+I (461288) DAC_TIMER: ISR: pts/s=39991 expected=40000 err=-225ppm | buf=1003 underruns=0
+I (461293) EDREAM: RX:20014 pts/s | batch avg=77 min=4 max=80 n=259 | BUF:2949/8192 | rate:20000
+I (462293) EDREAM: RX:19996 pts/s | batch avg=76 min=3 max=80 n=261 | BUF:2897/8192 | rate:20000
+I (463010) MAIN: PIPE| fb=2909 ed=1 play=1 run=1 | isr_buf=981 ur=2041788 | dac_out=40035/2s spi=1 direct=1
+I (463288) DAC_TIMER: ISR: pts/s=39991 expected=40000 err=-225ppm | buf=955 underruns=0
+I (463294) EDREAM: RX:19922 pts/s | batch avg=76 min=3 max=80 n=262 | BUF:2886/8192 | rate:20000
+I (464295) EDREAM: RX:20019 pts/s | batch avg=76 min=15 max=80 n=261 | BUF:2862/8192 | rate:20000
+I (465013) MAIN: PIPE| fb=2966 ed=1 play=1 run=1 | isr_buf=943 ur=2041788 | dac_out=40050/2s spi=1 direct=1
+I (465288) DAC_TIMER: ISR: pts/s=39991 expected=40000 err=-225ppm | buf=967 underruns=0
+I (465295) EDREAM: RX:20023 pts/s | batch avg=76 min=11 max=80 n=261 | BUF:2929/8192 | rate:20000
+I (466295) EDREAM: RX:20047 pts/s | batch avg=76 min=4 max=80 n=261 | BUF:2873/8192 | rate:20000
+I (467013) MAIN: PIPE| fb=2974 ed=1 play=1 run=1 | isr_buf=1021 ur=2041788 | dac_out=39998/2s spi=1 direct=1
+I (467289) DAC_TIMER: ISR: pts/s=40012 expected=40021 err=-224ppm | buf=1022 underruns=0
+I (467295) EDREAM: RX:19867 pts/s | batch avg=76 min=3 max=80 n=260 | BUF:2903/8192 | rate:20000
+I (468295) EDREAM: RX:20131 pts/s | batch avg=75 min=2 max=80 n=268 | BUF:2883/8192 | rate:20000
+I (469013) MAIN: PIPE| fb=2871 ed=1 play=1 run=1 | isr_buf=1021 ur=2041788 | dac_out=39997/2s spi=1 direct=1
+I (469289) DAC_TIMER: ISR: pts/s=39992 expected=40000 err=-200ppm | buf=1022 underruns=0
+I (469295) EDREAM: RX:19971 pts/s | batch avg=70 min=2 max=80 n=282 | BUF:3005/8192 | rate:20000
+I (470295) EDREAM: RX:19982 pts/s | batch avg=72 min=1 max=80 n=277 | BUF:2899/8192 | rate:20000
+I (471013) MAIN: PIPE| fb=2970 ed=1 play=1 run=1 | isr_buf=929 ur=2041788 | dac_out=40000/2s spi=1 direct=1
+I (471289) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=921 underruns=0
+I (471295) EDREAM: RX:19948 pts/s | batch avg=72 min=1 max=80 n=276 | BUF:2907/8192 | rate:20000
+I (472297) EDREAM: RX:20015 pts/s | batch avg=71 min=2 max=80 n=282 | BUF:2887/8192 | rate:20000
+I (473013) MAIN: PIPE| fb=2936 ed=1 play=1 run=1 | isr_buf=953 ur=2041788 | dac_out=40000/2s spi=1 direct=1
+I (473289) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=969 underruns=0
+I (473297) EDREAM: RX:20068 pts/s | batch avg=72 min=2 max=80 n=278 | BUF:2900/8192 | rate:20000
+I (474298) EDREAM: RX:19983 pts/s | batch avg=72 min=1 max=80 n=275 | BUF:2914/8192 | rate:20000
+I (475015) MAIN: PIPE| fb=2980 ed=1 play=1 run=1 | isr_buf=927 ur=2041788 | dac_out=40046/2s spi=1 direct=1
+I (475289) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=973 underruns=0
+I (475299) EDREAM: RX:19991 pts/s | batch avg=71 min=1 max=80 n=281 | BUF:2973/8192 | rate:20000
+I (476299) EDREAM: RX:20031 pts/s | batch avg=71 min=1 max=80 n=281 | BUF:2870/8192 | rate:20000
+I (477015) MAIN: PIPE| fb=2934 ed=1 play=1 run=1 | isr_buf=930 ur=2041788 | dac_out=39996/2s spi=1 direct=1
+I (477289) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=973 underruns=0
+I (477299) EDREAM: RX:19947 pts/s | batch avg=73 min=1 max=80 n=272 | BUF:2972/8192 | rate:20000
+I (478299) EDREAM: RX:20031 pts/s | batch avg=71 min=2 max=80 n=282 | BUF:2943/8192 | rate:20000
+I (479016) MAIN: PIPE| fb=2978 ed=1 play=1 run=1 | isr_buf=910 ur=2041788 | dac_out=40020/2s spi=1 direct=1
+I (479289) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=980 underruns=0
+I (479299) EDREAM: RX:20004 pts/s | batch avg=71 min=3 max=80 n=281 | BUF:3000/8192 | rate:20000
+I (480299) EDREAM: RX:20026 pts/s | batch avg=73 min=3 max=80 n=271 | BUF:2894/8192 | rate:20000
+I (481016) MAIN: PIPE| fb=3007 ed=1 play=1 run=1 | isr_buf=896 ur=2041788 | dac_out=39999/2s spi=1 direct=1
+I (481289) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=957 underruns=0
+I (481299) EDREAM: RX:19945 pts/s | batch avg=71 min=1 max=80 n=278 | BUF:2866/8192 | rate:20000
+I (482300) EDREAM: RX:19974 pts/s | batch avg=72 min=3 max=80 n=276 | BUF:2912/8192 | rate:20000
+I (483017) MAIN: PIPE| fb=2880 ed=1 play=1 run=1 | isr_buf=1015 ur=2041788 | dac_out=40024/2s spi=1 direct=1
+I (483289) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=965 underruns=0
+I (483301) EDREAM: RX:20002 pts/s | batch avg=70 min=4 max=80 n=286 | BUF:2867/8192 | rate:20000
+I (484302) EDREAM: RX:20076 pts/s | batch avg=72 min=2 max=80 n=278 | BUF:2949/8192 | rate:20000
+I (485017) MAIN: PIPE| fb=2908 ed=1 play=1 run=1 | isr_buf=1010 ur=2041788 | dac_out=40001/2s spi=1 direct=1
+I (485289) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=961 underruns=0
+I (485302) EDREAM: RX:19922 pts/s | batch avg=71 min=4 max=80 n=279 | BUF:2886/8192 | rate:20000
+I (486302) EDREAM: RX:20019 pts/s | batch avg=73 min=7 max=80 n=274 | BUF:2957/8192 | rate:20000
+I (487017) MAIN: PIPE| fb=2867 ed=1 play=1 run=1 | isr_buf=952 ur=2041788 | dac_out=40011/2s spi=1 direct=1
+I (487289) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=981 underruns=0
+I (487303) EDREAM: RX:19990 pts/s | batch avg=71 min=4 max=80 n=280 | BUF:2895/8192 | rate:20000
+I (488303) EDREAM: RX:19923 pts/s | batch avg=72 min=4 max=80 n=273 | BUF:2884/8192 | rate:20000
+I (489019) MAIN: PIPE| fb=2892 ed=1 play=1 run=1 | isr_buf=996 ur=2041788 | dac_out=40034/2s spi=1 direct=1
+I (489289) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=989 underruns=0
+I (489303) EDREAM: RX:20134 pts/s | batch avg=72 min=3 max=80 n=277 | BUF:2956/8192 | rate:20000
+I (490303) EDREAM: RX:19976 pts/s | batch avg=71 min=1 max=80 n=279 | BUF:2872/8192 | rate:20000
+I (491019) MAIN: PIPE| fb=3018 ed=1 play=1 run=1 | isr_buf=900 ur=2041788 | dac_out=39989/2s spi=1 direct=1
+I (491289) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=1013 underruns=0
+I (491303) EDREAM: RX:20020 pts/s | batch avg=70 min=1 max=80 n=284 | BUF:2928/8192 | rate:20000
+I (492303) EDREAM: RX:20000 pts/s | batch avg=73 min=2 max=80 n=271 | BUF:2988/8192 | rate:20000
+I (493020) MAIN: PIPE| fb=2967 ed=1 play=1 run=1 | isr_buf=1008 ur=2041788 | dac_out=40033/2s spi=1 direct=1
+I (493290) DAC_TIMER: ISR: pts/s=40012 expected=40019 err=-174ppm | buf=1022 underruns=0
+I (493304) EDREAM: RX:19930 pts/s | batch avg=71 min=6 max=80 n=279 | BUF:2846/8192 | rate:20000
+I (494304) EDREAM: RX:19938 pts/s | batch avg=71 min=4 max=80 n=277 | BUF:2856/8192 | rate:20000
+I (495021) MAIN: PIPE| fb=2828 ed=1 play=1 run=1 | isr_buf=981 ur=2041788 | dac_out=40007/2s spi=1 direct=1
+I (495290) DAC_TIMER: ISR: pts/s=39992 expected=40000 err=-200ppm | buf=994 underruns=0
+I (495304) EDREAM: RX:20131 pts/s | batch avg=70 min=2 max=80 n=284 | BUF:2868/8192 | rate:20000
+I (496304) EDREAM: RX:19978 pts/s | batch avg=71 min=1 max=80 n=280 | BUF:2965/8192 | rate:20000
+I (497021) MAIN: PIPE| fb=2866 ed=1 play=1 run=1 | isr_buf=1013 ur=2041788 | dac_out=40000/2s spi=1 direct=1
+I (497290) DAC_TIMER: ISR: pts/s=39992 expected=40000 err=-200ppm | buf=902 underruns=0
+I (497304) EDREAM: RX:20029 pts/s | batch avg=72 min=1 max=80 n=277 | BUF:2838/8192 | rate:20000
+I (498304) EDREAM: RX:19983 pts/s | batch avg=72 min=1 max=80 n=276 | BUF:2882/8192 | rate:20000
+I (499021) MAIN: PIPE| fb=2877 ed=1 play=1 run=1 | isr_buf=1014 ur=2041788 | dac_out=40002/2s spi=1 direct=1
+I (499290) DAC_TIMER: ISR: pts/s=39992 expected=40000 err=-200ppm | buf=1013 underruns=0
+I (499304) EDREAM: RX:19952 pts/s | batch avg=70 min=1 max=80 n=284 | BUF:2869/8192 | rate:20000
+I (500305) EDREAM: RX:19983 pts/s | batch avg=72 min=1 max=80 n=276 | BUF:2920/8192 | rate:20000
+I (501023) MAIN: PIPE| fb=2982 ed=1 play=1 run=1 | isr_buf=933 ur=2041788 | dac_out=40050/2s spi=1 direct=1
+I (501290) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=993 underruns=0
+I (501306) EDREAM: RX:20148 pts/s | batch avg=73 min=2 max=80 n=274 | BUF:3040/8192 | rate:20000
+I (502306) EDREAM: RX:19876 pts/s | batch avg=73 min=11 max=80 n=272 | BUF:2884/8192 | rate:20000
+I (502514) EDREAM: CMD: Stop
+I (502514) EDREAM: Playback state -> Idle
+W (502515) EDREAM: Recv error: errno 104
+I (502516) EDREAM: Client disconnected
+I (503023) MAIN: PIPE| fb=2965 ed=0 play=0 run=1 | isr_buf=0 ur=2051015 | dac_out=39988/2s spi=1 direct=1
+I (503333) EDREAM: RX:4090 pts/s | batch avg=0 min=0 max=0 n=0 | BUF:2965/8192 | rate:0
+I (505023) MAIN: PIPE| fb=2965 ed=0 play=0 run=1 | isr_buf=0 ur=2091015 | dac_out=39999/2s spi=1 direct=1
+I (506959) EDREAM: Client from 192.168.77.2:58813
+I (506961) EDREAM: Playback state -> Prepared
+I (507023) MAIN: PIPE| fb=2160 ed=1 play=0 run=1 | isr_buf=0 ur=2131029 | dac_out=40014/2s spi=1 direct=1
+I (507375) EDREAM: Playing @ 20000 pps (low_water=0, buf=6403)
+I (507394) EDREAM: RX:6796 pts/s | batch avg=78 min=3 max=80 n=87 | BUF:5513/8192 | rate:20000
+I (508395) EDREAM: RX:17547 pts/s | batch avg=73 min=1 max=80 n=239 | BUF:3078/8192 | rate:20000
+I (508515) DAC_TIMER: ISR: pts/s=22779 expected=40000 err=-430525ppm | buf=959 underruns=17221
+I (509027) MAIN: PIPE| fb=3083 ed=1 play=1 run=1 | isr_buf=1018 ur=2138086 | dac_out=40072/2s spi=1 direct=1
+I (509395) EDREAM: RX:20018 pts/s | batch avg=71 min=1 max=80 n=279 | BUF:3016/8192 | rate:20000
+I (510396) EDREAM: RX:19985 pts/s | batch avg=74 min=2 max=80 n=270 | BUF:3069/8192 | rate:20000
+I (510515) DAC_TIMER: ISR: pts/s=39992 expected=40000 err=-200ppm | buf=963 underruns=0
+I (511027) MAIN: PIPE| fb=3005 ed=1 play=1 run=1 | isr_buf=997 ur=2138086 | dac_out=39995/2s spi=1 direct=1
+I (511395) EDREAM: RX:19995 pts/s | batch avg=71 min=1 max=80 n=278 | BUF:3036/8192 | rate:20000
+I (512396) EDREAM: RX:20069 pts/s | batch avg=71 min=1 max=80 n=281 | BUF:3066/8192 | rate:20000
+I (512515) DAC_TIMER: ISR: pts/s=39992 expected=40000 err=-200ppm | buf=931 underruns=0
+I (513027) MAIN: PIPE| fb=3081 ed=1 play=1 run=1 | isr_buf=962 ur=2138086 | dac_out=40002/2s spi=1 direct=1
+I (513397) EDREAM: RX:19869 pts/s | batch avg=73 min=1 max=80 n=269 | BUF:2915/8192 | rate:20000
+I (514397) EDREAM: RX:20047 pts/s | batch avg=73 min=2 max=80 n=273 | BUF:2951/8192 | rate:20000
+I (514515) DAC_TIMER: ISR: pts/s=39992 expected=40000 err=-200ppm | buf=1019 underruns=0
+I (515029) MAIN: PIPE| fb=3215 ed=1 play=1 run=1 | isr_buf=899 ur=2138086 | dac_out=40039/2s spi=1 direct=1
+I (515398) EDREAM: RX:20091 pts/s | batch avg=74 min=2 max=80 n=269 | BUF:3015/8192 | rate:20000
+I (516399) EDREAM: RX:20021 pts/s | batch avg=72 min=1 max=80 n=276 | BUF:3076/8192 | rate:20000
+I (516515) DAC_TIMER: ISR: pts/s=39992 expected=40000 err=-200ppm | buf=903 underruns=0
+I (517029) MAIN: PIPE| fb=3140 ed=1 play=1 run=1 | isr_buf=911 ur=2138086 | dac_out=40016/2s spi=1 direct=1
+I (517398) EDREAM: RX:19903 pts/s | batch avg=72 min=1 max=80 n=274 | BUF:2998/8192 | rate:20000
+I (518398) EDREAM: RX:20075 pts/s | batch avg=73 min=1 max=80 n=275 | BUF:3146/8192 | rate:20000
+I (518515) DAC_TIMER: ISR: pts/s=39992 expected=40000 err=-200ppm | buf=1019 underruns=0
+I (519030) MAIN: PIPE| fb=3044 ed=1 play=1 run=1 | isr_buf=995 ur=2138086 | dac_out=40008/2s spi=1 direct=1
+I (519399) EDREAM: RX:19881 pts/s | batch avg=72 min=1 max=80 n=274 | BUF:3002/8192 | rate:20000
+I (520399) EDREAM: RX:20110 pts/s | batch avg=73 min=1 max=80 n=274 | BUF:3144/8192 | rate:20000
+I (520515) DAC_TIMER: ISR: pts/s=39992 expected=40000 err=-200ppm | buf=909 underruns=0
+I (521030) MAIN: PIPE| fb=3096 ed=1 play=1 run=1 | isr_buf=899 ur=2138086 | dac_out=40000/2s spi=1 direct=1
+I (521399) EDREAM: RX:20010 pts/s | batch avg=73 min=2 max=80 n=272 | BUF:3094/8192 | rate:20000
+I (522400) EDREAM: RX:19899 pts/s | batch avg=73 min=3 max=80 n=272 | BUF:2961/8192 | rate:20000
+I (522515) DAC_TIMER: ISR: pts/s=39992 expected=40000 err=-200ppm | buf=1018 underruns=0
+I (523032) MAIN: PIPE| fb=3084 ed=1 play=1 run=1 | isr_buf=964 ur=2138086 | dac_out=40051/2s spi=1 direct=1
+I (523401) EDREAM: RX:19940 pts/s | batch avg=74 min=3 max=80 n=269 | BUF:2989/8192 | rate:20000
+I (524401) EDREAM: RX:20135 pts/s | batch avg=73 min=1 max=80 n=275 | BUF:3080/8192 | rate:20000
+I (524515) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=990 underruns=0
+I (525034) MAIN: PIPE| fb=3218 ed=1 play=1 run=1 | isr_buf=909 ur=2138086 | dac_out=40036/2s spi=1 direct=1
+I (525401) EDREAM: RX:20029 pts/s | batch avg=72 min=1 max=80 n=275 | BUF:3165/8192 | rate:20000
+I (526402) EDREAM: RX:19977 pts/s | batch avg=72 min=2 max=80 n=277 | BUF:3110/8192 | rate:20000
+I (526515) DAC_TIMER: ISR: pts/s=39993 expected=40000 err=-175ppm | buf=990 underruns=0
+I (526615) EDREAM: CMD: Stop
+I (526615) EDREAM: Playback state -> Idle
+W (526616) EDREAM: Recv error: errno 104
+I (526616) EDREAM: Client disconnected
+I (527034) MAIN: PIPE| fb=3125 ed=0 play=0 run=1 | isr_buf=0 ur=2145533 | dac_out=39988/2s spi=1 direct=1
+I (527434) EDREAM: RX:4130 pts/s | batch avg=0 min=0 max=0 n=0 | BUF:3125/8192 | rate:0
+I (529034) MAIN: PIPE| fb=3125 ed=0 play=0 run=1 | isr_buf=0 ur=2185533 | dac_out=39999/2s spi=1 direct=1
+I (530542) EDREAM: Client from 192.168.77.2:58814
+I (530544) EDREAM: Playback state -> Prepared
+I (530628) DAC_TIMER: Scan rate: 20000 -> 30000 pps
+I (530628) DAC_TIMER: Timer period: 33us (30000 pps)
+I (530943) EDREAM: Playing @ 30000 pps (low_water=0, buf=6329)
+I (531034) MAIN: PIPE| fb=4025 ed=1 play=1 run=1 | isr_buf=980 ur=2226986 | dac_out=44186/2s spi=1 direct=1
+I (531494) EDREAM: RX:20336 pts/s | batch avg=76 min=1 max=80 n=266 | BUF:2672/8192 | rate:30000
+I (532495) EDREAM: RX:30111 pts/s | batch avg=72 min=2 max=80 n=414 | BUF:2478/8192 | rate:30000
+I (532515) DAC_TIMER: ISR: pts/s=47621 expected=60000 err=-206316ppm | buf=1019 underruns=11822
+I (533035) MAIN: PIPE| fb=2354 ed=1 play=1 run=1 | isr_buf=999 ur=2226986 | dac_out=60652/2s spi=1 direct=1
+I (533495) EDREAM: RX:30100 pts/s | batch avg=71 min=1 max=80 n=420 | BUF:2370/8192 | rate:30000
+I (534496) EDREAM: RX:30124 pts/s | batch avg=72 min=1 max=80 n=417 | BUF:2158/8192 | rate:30000
+I (534515) DAC_TIMER: ISR: pts/s=60592 expected=60000 err=+9866ppm | buf=957 underruns=0
+I (535045) MAIN: PIPE| fb=1902 ed=1 play=1 run=1 | isr_buf=1016 ur=2226986 | dac_out=60911/2s spi=1 direct=1
+I (535496) EDREAM: RX:30110 pts/s | batch avg=74 min=4 max=80 n=407 | BUF:1884/8192 | rate:30000
+I (536496) EDREAM: RX:30048 pts/s | batch avg=73 min=1 max=80 n=410 | BUF:1675/8192 | rate:30000
+I (536515) DAC_TIMER: ISR: pts/s=60596 expected=60001 err=+9916ppm | buf=1021 underruns=0
+I (537051) MAIN: PIPE| fb=1575 ed=1 play=1 run=1 | isr_buf=910 ur=2226986 | dac_out=60779/2s spi=1 direct=1
+I (537496) EDREAM: RX:30094 pts/s | batch avg=74 min=7 max=80 n=403 | BUF:1433/8192 | rate:30000
+I (538497) EDREAM: RX:30121 pts/s | batch avg=73 min=11 max=80 n=410 | BUF:1218/8192 | rate:30000
+I (538515) DAC_TIMER: ISR: pts/s=60594 expected=60000 err=+9900ppm | buf=959 underruns=0
+I (539055) MAIN: PIPE| fb=1062 ed=1 play=1 run=1 | isr_buf=998 ur=2226986 | dac_out=60712/2s spi=1 direct=1
+I (539496) EDREAM: RX:30029 pts/s | batch avg=73 min=3 max=80 n=408 | BUF:1039/8192 | rate:30000
+I (540496) EDREAM: RX:30080 pts/s | batch avg=74 min=2 max=80 n=405 | BUF:783/8192 | rate:30000
+I (540515) DAC_TIMER: ISR: pts/s=60593 expected=60000 err=+9883ppm | buf=897 underruns=0
+I (541055) MAIN: PIPE| fb=694 ed=1 play=1 run=1 | isr_buf=939 ur=2226986 | dac_out=60614/2s spi=1 direct=1
+I (541496) EDREAM: RX:30089 pts/s | batch avg=74 min=1 max=80 n=405 | BUF:524/8192 | rate:30000
+I (542497) EDREAM: RX:30185 pts/s | batch avg=72 min=1 max=80 n=415 | BUF:422/8192 | rate:30000
+I (542515) DAC_TIMER: ISR: pts/s=60593 expected=60000 err=+9883ppm | buf=975 underruns=0
+I (543060) MAIN: PIPE| fb=215 ed=1 play=1 run=1 | isr_buf=981 ur=2226986 | dac_out=60759/2s spi=1 direct=1
+I (543496) EDREAM: RX:30015 pts/s | batch avg=72 min=8 max=80 n=413 | BUF:101/8192 | rate:30000
+I (544496) EDREAM: RX:30095 pts/s | batch avg=71 min=1 max=80 n=419 | BUF:0/8192 | rate:30000
+I (544515) DAC_TIMER: ISR: pts/s=60593 expected=60000 err=+9883ppm | buf=931 underruns=0
+I (545065) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=772 ur=2226986 | dac_out=60761/2s spi=1 direct=1
+I (545496) EDREAM: RX:30088 pts/s | batch avg=73 min=2 max=80 n=411 | BUF:0/8192 | rate:30000
+I (546496) EDREAM: RX:30109 pts/s | batch avg=72 min=1 max=80 n=418 | BUF:0/8192 | rate:30000
+I (546515) DAC_TIMER: ISR: pts/s=60594 expected=60000 err=+9900ppm | buf=404 underruns=0
+I (547065) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=330 ur=2226986 | dac_out=60610/2s spi=1 direct=1
+I (547496) EDREAM: RX:30019 pts/s | batch avg=73 min=1 max=80 n=407 | BUF:0/8192 | rate:30000
+I (548496) EDREAM: RX:30164 pts/s | batch avg=73 min=3 max=80 n=413 | BUF:0/8192 | rate:30000
+I (548515) DAC_TIMER: ISR: pts/s=60564 expected=60000 err=+9400ppm | buf=38 underruns=29
+I (549065) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=78 ur=2227185 | dac_out=60590/2s spi=1 direct=1
+I (549496) EDREAM: RX:30090 pts/s | batch avg=72 min=2 max=80 n=417 | BUF:0/8192 | rate:30000
+I (550497) EDREAM: RX:30031 pts/s | batch avg=73 min=1 max=80 n=411 | BUF:0/8192 | rate:30000
+I (550515) DAC_TIMER: ISR: pts/s=60149 expected=60000 err=+2483ppm | buf=88 underruns=445
+I (551065) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=97 ur=2227628 | dac_out=60606/2s spi=1 direct=1
+I (551497) EDREAM: RX:30117 pts/s | batch avg=72 min=1 max=80 n=414 | BUF:0/8192 | rate:30000
+I (552497) EDREAM: RX:30054 pts/s | batch avg=74 min=2 max=80 n=406 | BUF:0/8192 | rate:30000
+I (552515) DAC_TIMER: ISR: pts/s=60172 expected=60000 err=+2866ppm | buf=75 underruns=421
+I (553065) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=92 ur=2228057 | dac_out=60609/2s spi=1 direct=1
+I (553497) EDREAM: RX:30098 pts/s | batch avg=72 min=2 max=80 n=417 | BUF:0/8192 | rate:30000
+I (554497) EDREAM: RX:30050 pts/s | batch avg=73 min=1 max=80 n=409 | BUF:0/8192 | rate:30000
+I (554515) DAC_TIMER: ISR: pts/s=60139 expected=60000 err=+2316ppm | buf=96 underruns=455
+I (555066) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=98 ur=2228480 | dac_out=60648/2s spi=1 direct=1
+I (555497) EDREAM: RX:30175 pts/s | batch avg=74 min=2 max=80 n=404 | BUF:0/8192 | rate:30000
+I (556497) EDREAM: RX:30071 pts/s | batch avg=73 min=1 max=80 n=408 | BUF:0/8192 | rate:30000
+I (556515) DAC_TIMER: ISR: pts/s=60181 expected=60000 err=+3016ppm | buf=92 underruns=412
+I (557066) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=73 ur=2228909 | dac_out=60594/2s spi=1 direct=1
+I (557498) EDREAM: RX:30043 pts/s | batch avg=72 min=1 max=80 n=415 | BUF:0/8192 | rate:30000
+I (558498) EDREAM: RX:30155 pts/s | batch avg=71 min=1 max=80 n=421 | BUF:0/8192 | rate:30000
+I (558515) DAC_TIMER: ISR: pts/s=60165 expected=60000 err=+2750ppm | buf=63 underruns=427
+I (559070) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=107 ur=2229335 | dac_out=60751/2s spi=1 direct=1
+I (559498) EDREAM: RX:30096 pts/s | batch avg=75 min=1 max=80 n=400 | BUF:0/8192 | rate:30000
+I (560497) EDREAM: RX:29990 pts/s | batch avg=73 min=7 max=80 n=407 | BUF:0/8192 | rate:30000
+I (560515) DAC_TIMER: ISR: pts/s=60153 expected=60000 err=+2550ppm | buf=44 underruns=441
+I (561076) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=100 ur=2229765 | dac_out=60778/2s spi=1 direct=1
+I (561498) EDREAM: RX:30105 pts/s | batch avg=74 min=1 max=80 n=407 | BUF:0/8192 | rate:30000
+I (562498) EDREAM: RX:30087 pts/s | batch avg=73 min=9 max=80 n=409 | BUF:0/8192 | rate:30000
+I (562515) DAC_TIMER: ISR: pts/s=60172 expected=60000 err=+2866ppm | buf=57 underruns=422
+I (563076) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=71 ur=2230204 | dac_out=60596/2s spi=1 direct=1
+I (563498) EDREAM: RX:30080 pts/s | batch avg=73 min=3 max=80 n=412 | BUF:0/8192 | rate:30000
+I (564498) EDREAM: RX:30126 pts/s | batch avg=74 min=1 max=80 n=406 | BUF:0/8192 | rate:30000
+I (564515) DAC_TIMER: ISR: pts/s=60158 expected=60000 err=+2633ppm | buf=27 underruns=435
+I (565080) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=108 ur=2230640 | dac_out=60740/2s spi=1 direct=1
+I (565498) EDREAM: RX:30110 pts/s | batch avg=72 min=1 max=80 n=413 | BUF:0/8192 | rate:30000
+I (566499) EDREAM: RX:30019 pts/s | batch avg=73 min=2 max=80 n=410 | BUF:0/8192 | rate:30000
+I (566515) DAC_TIMER: ISR: pts/s=60139 expected=60000 err=+2316ppm | buf=93 underruns=455
+I (567082) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=81 ur=2231070 | dac_out=60663/2s spi=1 direct=1
+I (567499) EDREAM: RX:30086 pts/s | batch avg=71 min=1 max=80 n=422 | BUF:0/8192 | rate:30000
+I (568500) EDREAM: RX:30190 pts/s | batch avg=71 min=1 max=80 n=423 | BUF:0/8192 | rate:30000
+I (568515) DAC_TIMER: ISR: pts/s=60196 expected=60000 err=+3266ppm | buf=49 underruns=397
+I (569084) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=111 ur=2231500 | dac_out=60662/2s spi=1 direct=1
+I (569499) EDREAM: RX:30077 pts/s | batch avg=73 min=3 max=80 n=410 | BUF:0/8192 | rate:30000
+I (570499) EDREAM: RX:30001 pts/s | batch avg=72 min=1 max=80 n=411 | BUF:0/8192 | rate:30000
+I (570515) DAC_TIMER: ISR: pts/s=60142 expected=60000 err=+2366ppm | buf=52 underruns=451
+I (571087) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=80 ur=2231935 | dac_out=60700/2s spi=1 direct=1
+I (571499) EDREAM: RX:30136 pts/s | batch avg=75 min=1 max=80 n=400 | BUF:0/8192 | rate:30000
+I (572500) EDREAM: RX:30040 pts/s | batch avg=71 min=2 max=80 n=418 | BUF:0/8192 | rate:30000
+I (572515) DAC_TIMER: ISR: pts/s=60151 expected=60000 err=+2516ppm | buf=33 underruns=442
+I (573091) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=120 ur=2232372 | dac_out=60736/2s spi=1 direct=1
+I (573500) EDREAM: RX:30178 pts/s | batch avg=75 min=6 max=80 n=401 | BUF:0/8192 | rate:30000
+I (574501) EDREAM: RX:30068 pts/s | batch avg=72 min=1 max=80 n=417 | BUF:0/8192 | rate:30000
+I (574515) DAC_TIMER: ISR: pts/s=60184 expected=60000 err=+3066ppm | buf=67 underruns=408
+I (575099) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=134 ur=2232821 | dac_out=60854/2s spi=1 direct=1
+I (575500) EDREAM: RX:30015 pts/s | batch avg=73 min=1 max=80 n=411 | BUF:0/8192 | rate:30000
+I (576501) EDREAM: RX:30106 pts/s | batch avg=73 min=1 max=80 n=412 | BUF:0/8192 | rate:30000
+I (576515) DAC_TIMER: ISR: pts/s=60155 expected=60000 err=+2583ppm | buf=63 underruns=438
+I (577100) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=99 ur=2233228 | dac_out=60615/2s spi=1 direct=1
+I (577502) EDREAM: RX:30069 pts/s | batch avg=73 min=1 max=80 n=409 | BUF:0/8192 | rate:30000
+I (578502) EDREAM: RX:30145 pts/s | batch avg=73 min=5 max=80 n=408 | BUF:0/8192 | rate:30000
+I (578515) DAC_TIMER: ISR: pts/s=60171 expected=60000 err=+2850ppm | buf=27 underruns=423
+I (579103) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=117 ur=2233659 | dac_out=60709/2s spi=1 direct=1
+I (579502) EDREAM: RX:30082 pts/s | batch avg=72 min=2 max=80 n=416 | BUF:0/8192 | rate:30000
+I (580503) EDREAM: RX:30068 pts/s | batch avg=74 min=1 max=80 n=403 | BUF:0/8192 | rate:30000
+I (580515) DAC_TIMER: ISR: pts/s=60116 expected=60000 err=+1933ppm | buf=132 underruns=478
+I (581105) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=133 ur=2234110 | dac_out=60670/2s spi=1 direct=1
+I (581502) EDREAM: RX:30055 pts/s | batch avg=73 min=1 max=80 n=408 | BUF:0/8192 | rate:30000
+I (582503) EDREAM: RX:30104 pts/s | batch avg=73 min=1 max=80 n=412 | BUF:0/8192 | rate:30000
+I (582515) DAC_TIMER: ISR: pts/s=60193 expected=60000 err=+3216ppm | buf=92 underruns=401
+I (583110) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=89 ur=2234518 | dac_out=60736/2s spi=1 direct=1
+I (583504) EDREAM: RX:30082 pts/s | batch avg=73 min=1 max=80 n=409 | BUF:0/8192 | rate:30000
+I (584504) EDREAM: RX:30160 pts/s | batch avg=73 min=1 max=80 n=409 | BUF:0/8192 | rate:30000
+I (584515) DAC_TIMER: ISR: pts/s=60175 expected=60000 err=+2916ppm | buf=80 underruns=418
+I (585111) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=119 ur=2234972 | dac_out=60648/2s spi=1 direct=1
+I (585505) EDREAM: RX:30090 pts/s | batch avg=72 min=1 max=80 n=414 | BUF:0/8192 | rate:30000
+I (586505) EDREAM: RX:30064 pts/s | batch avg=72 min=1 max=80 n=412 | BUF:0/8192 | rate:30000
+I (586515) DAC_TIMER: ISR: pts/s=60160 expected=60000 err=+2666ppm | buf=54 underruns=433
+I (587111) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=114 ur=2235401 | dac_out=60594/2s spi=1 direct=1
+I (587506) EDREAM: RX:30105 pts/s | batch avg=72 min=1 max=80 n=417 | BUF:0/8192 | rate:30000
+I (588506) EDREAM: RX:29993 pts/s | batch avg=72 min=2 max=80 n=412 | BUF:0/8192 | rate:30000
+I (588515) DAC_TIMER: ISR: pts/s=60154 expected=60000 err=+2566ppm | buf=117 underruns=438
+I (589114) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=112 ur=2235826 | dac_out=60707/2s spi=1 direct=1
+I (589506) EDREAM: RX:30110 pts/s | batch avg=72 min=1 max=80 n=414 | BUF:0/8192 | rate:30000
+I (590507) EDREAM: RX:30061 pts/s | batch avg=72 min=1 max=80 n=416 | BUF:0/8192 | rate:30000
+I (590515) DAC_TIMER: ISR: pts/s=60136 expected=60000 err=+2266ppm | buf=77 underruns=457
+I (591114) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=97 ur=2236239 | dac_out=60596/2s spi=1 direct=1
+I (591508) EDREAM: RX:30135 pts/s | batch avg=73 min=5 max=80 n=412 | BUF:0/8192 | rate:30000
+I (592508) EDREAM: RX:30061 pts/s | batch avg=73 min=1 max=80 n=411 | BUF:0/8192 | rate:30000
+I (592515) DAC_TIMER: ISR: pts/s=60199 expected=60000 err=+3316ppm | buf=82 underruns=394
+I (593125) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=108 ur=2236693 | dac_out=60952/2s spi=1 direct=1
+I (593508) EDREAM: RX:30069 pts/s | batch avg=72 min=1 max=80 n=413 | BUF:0/8192 | rate:30000
+I (594508) EDREAM: RX:30112 pts/s | batch avg=72 min=1 max=80 n=418 | BUF:0/8192 | rate:30000
+I (594515) DAC_TIMER: ISR: pts/s=60163 expected=60000 err=+2716ppm | buf=87 underruns=431
+I (595129) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=109 ur=2237117 | dac_out=60719/2s spi=1 direct=1
+I (595508) EDREAM: RX:30150 pts/s | batch avg=75 min=3 max=80 n=402 | BUF:0/8192 | rate:30000
+I (596508) EDREAM: RX:30032 pts/s | batch avg=75 min=11 max=80 n=400 | BUF:0/8192 | rate:30000
+I (596515) DAC_TIMER: ISR: pts/s=60171 expected=60000 err=+2850ppm | buf=86 underruns=423
+I (597134) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=108 ur=2237554 | dac_out=60767/2s spi=1 direct=1
+I (597509) EDREAM: RX:30064 pts/s | batch avg=72 min=1 max=80 n=413 | BUF:0/8192 | rate:30000
+I (598510) EDREAM: RX:30085 pts/s | batch avg=73 min=1 max=80 n=407 | BUF:0/8192 | rate:30000
+I (598515) DAC_TIMER: ISR: pts/s=60143 expected=60000 err=+2383ppm | buf=62 underruns=451
+I (599134) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=119 ur=2237988 | dac_out=60604/2s spi=1 direct=1
+I (599510) EDREAM: RX:30096 pts/s | batch avg=73 min=1 max=80 n=410 | BUF:0/8192 | rate:30000
+I (600510) EDREAM: RX:30118 pts/s | batch avg=73 min=1 max=80 n=408 | BUF:0/8192 | rate:30000
+I (600515) DAC_TIMER: ISR: pts/s=60171 expected=60000 err=+2850ppm | buf=92 underruns=422
+I (601134) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=63 ur=2238408 | dac_out=60594/2s spi=1 direct=1
+I (601511) EDREAM: RX:30064 pts/s | batch avg=74 min=2 max=80 n=405 | BUF:0/8192 | rate:30000
+I (602511) EDREAM: RX:30062 pts/s | batch avg=74 min=2 max=80 n=403 | BUF:0/8192 | rate:30000
+I (602515) DAC_TIMER: ISR: pts/s=60154 expected=60000 err=+2566ppm | buf=53 underruns=439
+I (603143) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=87 ur=2238835 | dac_out=60882/2s spi=1 direct=1
+I (603511) EDREAM: RX:30180 pts/s | batch avg=72 min=2 max=80 n=418 | BUF:0/8192 | rate:30000
+I (604512) EDREAM: RX:30000 pts/s | batch avg=72 min=1 max=80 n=417 | BUF:0/8192 | rate:30000
+I (604515) DAC_TIMER: ISR: pts/s=60142 expected=60000 err=+2366ppm | buf=104 underruns=436
+I (605146) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=112 ur=2239277 | dac_out=60723/2s spi=1 direct=1
+I (605512) EDREAM: RX:30099 pts/s | batch avg=74 min=3 max=80 n=405 | BUF:0/8192 | rate:30000
+I (606512) EDREAM: RX:30135 pts/s | batch avg=72 min=1 max=80 n=415 | BUF:0/8192 | rate:30000
+I (606515) DAC_TIMER: ISR: pts/s=60119 expected=60000 err=+1983ppm | buf=96 underruns=425
+I (607151) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=109 ur=2239711 | dac_out=60741/2s spi=1 direct=1
+I (607513) EDREAM: RX:30025 pts/s | batch avg=73 min=1 max=80 n=411 | BUF:0/8192 | rate:30000
+I (608514) EDREAM: RX:30153 pts/s | batch avg=73 min=2 max=80 n=409 | BUF:0/8192 | rate:30000
+I (608515) DAC_TIMER: ISR: pts/s=60126 expected=60000 err=+2100ppm | buf=36 underruns=418
+I (609154) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=106 ur=2240136 | dac_out=60712/2s spi=1 direct=1
+I (609514) EDREAM: RX:30079 pts/s | batch avg=71 min=2 max=80 n=422 | BUF:0/8192 | rate:30000
+I (610514) EDREAM: RX:30041 pts/s | batch avg=73 min=5 max=80 n=408 | BUF:0/8192 | rate:30000
+I (610515) DAC_TIMER: ISR: pts/s=60129 expected=60000 err=+2150ppm | buf=22 underruns=366
+I (611156) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=88 ur=2240561 | dac_out=60667/2s spi=1 direct=1
+I (611514) EDREAM: RX:30074 pts/s | batch avg=73 min=4 max=80 n=410 | BUF:0/8192 | rate:30000
+I (612515) EDREAM: RX:30082 pts/s | batch avg=73 min=1 max=80 n=407 | BUF:0/8192 | rate:30000
+I (612515) DAC_TIMER: ISR: pts/s=60159 expected=60000 err=+2650ppm | buf=28 underruns=327
+I (613159) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=91 ur=2240998 | dac_out=60681/2s spi=1 direct=1
+I (613515) EDREAM: RX:30167 pts/s | batch avg=72 min=5 max=80 n=416 | BUF:0/8192 | rate:30000
+I (614515) EDREAM: RX:30065 pts/s | batch avg=72 min=1 max=80 n=412 | BUF:0/8192 | rate:30000
+I (614515) DAC_TIMER: ISR: pts/s=60147 expected=60000 err=+2450ppm | buf=85 underruns=310
+I (615162) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=104 ur=2241433 | dac_out=60692/2s spi=1 direct=1
+I (615515) EDREAM: RX:30095 pts/s | batch avg=75 min=3 max=80 n=401 | BUF:0/8192 | rate:30000
+I (616515) EDREAM: RX:30068 pts/s | batch avg=72 min=6 max=80 n=413 | BUF:0/8192 | rate:30000
+I (616515) DAC_TIMER: ISR: pts/s=60092 expected=60000 err=+1533ppm | buf=71 underruns=362
+I (617165) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=99 ur=2241867 | dac_out=60703/2s spi=1 direct=1
+I (617515) EDREAM: RX:30119 pts/s | batch avg=75 min=2 max=80 n=401 | BUF:0/8192 | rate:30000
+I (618515) DAC_TIMER: ISR: pts/s=60104 expected=60000 err=+1733ppm | buf=76 underruns=350
+I (618516) EDREAM: RX:30030 pts/s | batch avg=73 min=4 max=80 n=408 | BUF:0/8192 | rate:30000
+I (619167) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=101 ur=2242294 | dac_out=60669/2s spi=1 direct=1
+I (619516) EDREAM: RX:30138 pts/s | batch avg=73 min=1 max=80 n=411 | BUF:0/8192 | rate:30000
+I (620515) DAC_TIMER: ISR: pts/s=60157 expected=60000 err=+2616ppm | buf=53 underruns=436
+I (620516) EDREAM: RX:30088 pts/s | batch avg=72 min=5 max=80 n=413 | BUF:0/8192 | rate:30000
+I (621171) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=92 ur=2242723 | dac_out=60723/2s spi=1 direct=1
+I (621517) EDREAM: RX:30083 pts/s | batch avg=73 min=4 max=80 n=410 | BUF:0/8192 | rate:30000
+I (622515) DAC_TIMER: ISR: pts/s=60149 expected=60000 err=+2483ppm | buf=100 underruns=443
+I (622517) EDREAM: RX:30017 pts/s | batch avg=72 min=1 max=80 n=417 | BUF:0/8192 | rate:30000
+I (623171) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=102 ur=2243162 | dac_out=60607/2s spi=1 direct=1
+I (623517) EDREAM: RX:30184 pts/s | batch avg=72 min=3 max=80 n=419 | BUF:0/8192 | rate:30000
+I (624515) DAC_TIMER: ISR: pts/s=60181 expected=60000 err=+3016ppm | buf=74 underruns=412
+I (624517) EDREAM: RX:30064 pts/s | batch avg=73 min=1 max=80 n=410 | BUF:0/8192 | rate:30000
+I (625172) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=126 ur=2243582 | dac_out=60638/2s spi=1 direct=1
+I (625518) EDREAM: RX:30112 pts/s | batch avg=73 min=3 max=80 n=408 | BUF:0/8192 | rate:30000
+I (626515) DAC_TIMER: ISR: pts/s=60145 expected=60000 err=+2416ppm | buf=112 underruns=447
+I (626518) EDREAM: RX:30086 pts/s | batch avg=72 min=1 max=80 n=417 | BUF:0/8192 | rate:30000
+I (627175) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=119 ur=2244022 | dac_out=60694/2s spi=1 direct=1
+I (627517) EDREAM: RX:30050 pts/s | batch avg=74 min=2 max=80 n=404 | BUF:0/8192 | rate:30000
+I (628515) DAC_TIMER: ISR: pts/s=60174 expected=60000 err=+2900ppm | buf=73 underruns=419
+I (628517) EDREAM: RX:30018 pts/s | batch avg=72 min=1 max=80 n=414 | BUF:0/8192 | rate:30000
+I (629175) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=78 ur=2244454 | dac_out=60610/2s spi=1 direct=1
+I (629517) EDREAM: RX:30150 pts/s | batch avg=73 min=2 max=80 n=409 | BUF:0/8192 | rate:30000
+I (630515) DAC_TIMER: ISR: pts/s=60165 expected=60000 err=+2750ppm | buf=56 underruns=429
+I (630518) EDREAM: RX:30090 pts/s | batch avg=72 min=1 max=80 n=413 | BUF:0/8192 | rate:30000
+I (631175) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=85 ur=2244875 | dac_out=60591/2s spi=1 direct=1
+I (631518) EDREAM: RX:30162 pts/s | batch avg=73 min=3 max=80 n=413 | BUF:0/8192 | rate:30000
+I (632515) DAC_TIMER: ISR: pts/s=60147 expected=60000 err=+2450ppm | buf=59 underruns=445
+I (632517) EDREAM: RX:30002 pts/s | batch avg=73 min=1 max=80 n=409 | BUF:0/8192 | rate:30000
+I (633181) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=102 ur=2245313 | dac_out=60792/2s spi=1 direct=1
+I (633518) EDREAM: RX:30054 pts/s | batch avg=72 min=1 max=80 n=414 | BUF:0/8192 | rate:30000
+I (634515) DAC_TIMER: ISR: pts/s=60154 expected=60000 err=+2566ppm | buf=122 underruns=438
+I (634518) EDREAM: RX:30146 pts/s | batch avg=72 min=1 max=80 n=414 | BUF:0/8192 | rate:30000
+I (635188) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=119 ur=2245758 | dac_out=60836/2s spi=1 direct=1
+I (635518) EDREAM: RX:30131 pts/s | batch avg=74 min=1 max=80 n=403 | BUF:0/8192 | rate:30000
+I (636515) DAC_TIMER: ISR: pts/s=60172 expected=60000 err=+2866ppm | buf=76 underruns=421
+I (636518) EDREAM: RX:30088 pts/s | batch avg=72 min=1 max=80 n=414 | BUF:0/8192 | rate:30000
+I (637195) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=132 ur=2246206 | dac_out=60802/2s spi=1 direct=1
+I (637518) EDREAM: RX:30048 pts/s | batch avg=73 min=5 max=80 n=408 | BUF:0/8192 | rate:30000
+I (638515) DAC_TIMER: ISR: pts/s=60172 expected=60000 err=+2866ppm | buf=67 underruns=421
+I (638518) EDREAM: RX:30049 pts/s | batch avg=74 min=1 max=80 n=404 | BUF:0/8192 | rate:30000
+I (639196) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=107 ur=2246611 | dac_out=60635/2s spi=1 direct=1
+I (639519) EDREAM: RX:30061 pts/s | batch avg=73 min=1 max=80 n=409 | BUF:0/8192 | rate:30000
+I (640515) DAC_TIMER: ISR: pts/s=60153 expected=60000 err=+2550ppm | buf=85 underruns=440
+I (640520) EDREAM: RX:30141 pts/s | batch avg=73 min=2 max=80 n=410 | BUF:0/8192 | rate:30000
+I (641204) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=103 ur=2247042 | dac_out=60853/2s spi=1 direct=1
+I (641520) EDREAM: RX:30110 pts/s | batch avg=73 min=1 max=80 n=411 | BUF:0/8192 | rate:30000
+I (642515) DAC_TIMER: ISR: pts/s=60158 expected=60000 err=+2633ppm | buf=123 underruns=434
+I (642520) EDREAM: RX:30020 pts/s | batch avg=74 min=1 max=80 n=402 | BUF:0/8192 | rate:30000
+I (643204) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=56 ur=2247472 | dac_out=60601/2s spi=1 direct=1
+I (643520) EDREAM: RX:30152 pts/s | batch avg=72 min=2 max=80 n=414 | BUF:0/8192 | rate:30000
+I (644515) DAC_TIMER: ISR: pts/s=60158 expected=60000 err=+2633ppm | buf=56 underruns=434
+I (644520) EDREAM: RX:30033 pts/s | batch avg=71 min=2 max=80 n=419 | BUF:0/8192 | rate:30000
+I (645210) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=114 ur=2247915 | dac_out=60811/2s spi=1 direct=1
+I (645520) EDREAM: RX:30090 pts/s | batch avg=74 min=1 max=80 n=404 | BUF:0/8192 | rate:30000
+I (646515) DAC_TIMER: ISR: pts/s=60154 expected=60000 err=+2566ppm | buf=29 underruns=438
+I (646521) EDREAM: RX:30144 pts/s | batch avg=72 min=1 max=80 n=415 | BUF:0/8192 | rate:30000
+I (647211) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=103 ur=2248337 | dac_out=60636/2s spi=1 direct=1
+I (647521) EDREAM: RX:30083 pts/s | batch avg=71 min=2 max=80 n=418 | BUF:0/8192 | rate:30000
+I (648515) DAC_TIMER: ISR: pts/s=60164 expected=60000 err=+2733ppm | buf=124 underruns=428
+I (648521) EDREAM: RX:30066 pts/s | batch avg=72 min=2 max=80 n=414 | BUF:0/8192 | rate:30000
+I (649214) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=108 ur=2248772 | dac_out=60671/2s spi=1 direct=1
+I (649521) EDREAM: RX:30105 pts/s | batch avg=70 min=2 max=80 n=427 | BUF:0/8192 | rate:30000
+I (650515) DAC_TIMER: ISR: pts/s=60164 expected=60000 err=+2733ppm | buf=87 underruns=429
+I (650522) EDREAM: RX:30056 pts/s | batch avg=71 min=4 max=80 n=420 | BUF:0/8192 | rate:30000
+I (651217) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=102 ur=2249196 | dac_out=60697/2s spi=1 direct=1
+I (651523) EDREAM: RX:30120 pts/s | batch avg=71 min=2 max=80 n=424 | BUF:0/8192 | rate:30000
+I (652515) DAC_TIMER: ISR: pts/s=60162 expected=60000 err=+2700ppm | buf=112 underruns=431
+I (652523) EDREAM: RX:30078 pts/s | batch avg=74 min=2 max=80 n=405 | BUF:0/8192 | rate:30000
+I (653217) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=66 ur=2249634 | dac_out=60609/2s spi=1 direct=1
+I (653523) EDREAM: RX:30052 pts/s | batch avg=72 min=1 max=80 n=417 | BUF:0/8192 | rate:30000
+I (654515) DAC_TIMER: ISR: pts/s=60164 expected=60000 err=+2733ppm | buf=87 underruns=429
+I (654524) EDREAM: RX:30121 pts/s | batch avg=72 min=1 max=80 n=416 | BUF:0/8192 | rate:30000
+I (655218) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=107 ur=2250065 | dac_out=60644/2s spi=1 direct=1
+I (655524) EDREAM: RX:30035 pts/s | batch avg=74 min=1 max=80 n=405 | BUF:0/8192 | rate:30000
+I (656515) DAC_TIMER: ISR: pts/s=60153 expected=60000 err=+2550ppm | buf=140 underruns=440
+I (656524) EDREAM: RX:30149 pts/s | batch avg=72 min=1 max=80 n=416 | BUF:0/8192 | rate:30000
+I (657218) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=109 ur=2250497 | dac_out=60622/2s spi=1 direct=1
+I (657524) EDREAM: RX:30094 pts/s | batch avg=72 min=2 max=80 n=415 | BUF:0/8192 | rate:30000
+I (658515) DAC_TIMER: ISR: pts/s=60170 expected=60000 err=+2833ppm | buf=114 underruns=423
+I (658525) EDREAM: RX:30108 pts/s | batch avg=74 min=2 max=80 n=405 | BUF:0/8192 | rate:30000
+I (659224) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=99 ur=2250923 | dac_out=60779/2s spi=1 direct=1
+I (659525) EDREAM: RX:30074 pts/s | batch avg=73 min=1 max=80 n=410 | BUF:0/8192 | rate:30000
+I (660515) DAC_TIMER: ISR: pts/s=60155 expected=60000 err=+2583ppm | buf=122 underruns=438
+I (660524) EDREAM: RX:30068 pts/s | batch avg=71 min=5 max=80 n=419 | BUF:0/8192 | rate:30000
+I (661230) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=101 ur=2251363 | dac_out=60773/2s spi=1 direct=1
+I (661525) EDREAM: RX:30077 pts/s | batch avg=72 min=3 max=80 n=415 | BUF:0/8192 | rate:30000
+I (662515) DAC_TIMER: ISR: pts/s=60158 expected=60000 err=+2633ppm | buf=76 underruns=436
+I (662526) EDREAM: RX:30137 pts/s | batch avg=74 min=2 max=80 n=404 | BUF:0/8192 | rate:30000
+I (663237) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=111 ur=2251796 | dac_out=60843/2s spi=1 direct=1
+I (663526) EDREAM: RX:30001 pts/s | batch avg=72 min=1 max=80 n=415 | BUF:0/8192 | rate:30000
+I (664515) DAC_TIMER: ISR: pts/s=60173 expected=60000 err=+2883ppm | buf=70 underruns=419
+I (664526) EDREAM: RX:30078 pts/s | batch avg=73 min=1 max=80 n=407 | BUF:0/8192 | rate:30000
+I (665238) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=91 ur=2252252 | dac_out=60612/2s spi=1 direct=1
+I (665526) EDREAM: RX:30187 pts/s | batch avg=74 min=1 max=80 n=407 | BUF:0/8192 | rate:30000
+I (666515) DAC_TIMER: ISR: pts/s=60160 expected=60000 err=+2666ppm | buf=105 underruns=432
+I (666527) EDREAM: RX:29995 pts/s | batch avg=74 min=1 max=80 n=403 | BUF:0/8192 | rate:30000
+I (667257) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=98 ur=2252663 | dac_out=61196/2s spi=1 direct=1
+I (667527) EDREAM: RX:30139 pts/s | batch avg=73 min=1 max=80 n=409 | BUF:0/8192 | rate:30000
+I (668515) DAC_TIMER: ISR: pts/s=60148 expected=60000 err=+2466ppm | buf=76 underruns=445
+I (668528) EDREAM: RX:30102 pts/s | batch avg=73 min=1 max=80 n=412 | BUF:0/8192 | rate:30000
+I (669258) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=113 ur=2253105 | dac_out=60629/2s spi=1 direct=1
+I (669528) EDREAM: RX:30065 pts/s | batch avg=70 min=2 max=80 n=428 | BUF:0/8192 | rate:30000
+I (670515) DAC_TIMER: ISR: pts/s=60174 expected=60000 err=+2900ppm | buf=114 underruns=418
+I (670529) EDREAM: RX:30110 pts/s | batch avg=72 min=1 max=80 n=416 | BUF:0/8192 | rate:30000
+I (671258) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=105 ur=2253526 | dac_out=60596/2s spi=1 direct=1
+I (671528) EDREAM: RX:30027 pts/s | batch avg=73 min=2 max=80 n=409 | BUF:0/8192 | rate:30000
+I (672515) DAC_TIMER: ISR: pts/s=60151 expected=60000 err=+2516ppm | buf=102 underruns=442
+I (672529) EDREAM: RX:30104 pts/s | batch avg=71 min=1 max=80 n=419 | BUF:0/8192 | rate:30000
+I (673262) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=102 ur=2253957 | dac_out=60756/2s spi=1 direct=1
+I (673529) EDREAM: RX:30140 pts/s | batch avg=71 min=3 max=80 n=420 | BUF:0/8192 | rate:30000
+I (674515) DAC_TIMER: ISR: pts/s=60159 expected=60000 err=+2650ppm | buf=91 underruns=434
+I (674530) EDREAM: RX:30055 pts/s | batch avg=72 min=5 max=80 n=412 | BUF:0/8192 | rate:30000
+I (675265) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=97 ur=2254382 | dac_out=60672/2s spi=1 direct=1
+I (675529) EDREAM: RX:30124 pts/s | batch avg=72 min=3 max=80 n=417 | BUF:0/8192 | rate:30000
+I (676515) DAC_TIMER: ISR: pts/s=60163 expected=60000 err=+2716ppm | buf=125 underruns=431
+I (676529) EDREAM: RX:30036 pts/s | batch avg=72 min=3 max=80 n=412 | BUF:0/8192 | rate:30000
+I (677265) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=102 ur=2254814 | dac_out=60625/2s spi=1 direct=1
+I (677529) EDREAM: RX:30076 pts/s | batch avg=73 min=5 max=80 n=409 | BUF:0/8192 | rate:30000
+I (678515) DAC_TIMER: ISR: pts/s=60173 expected=60000 err=+2883ppm | buf=74 underruns=420
+I (678529) EDREAM: RX:30152 pts/s | batch avg=73 min=1 max=80 n=411 | BUF:0/8192 | rate:30000
+I (679271) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=101 ur=2255248 | dac_out=60767/2s spi=1 direct=1
+I (679530) EDREAM: RX:30114 pts/s | batch avg=73 min=5 max=80 n=412 | BUF:0/8192 | rate:30000
+I (680515) DAC_TIMER: ISR: pts/s=60158 expected=60000 err=+2633ppm | buf=96 underruns=435
+I (680530) EDREAM: RX:29989 pts/s | batch avg=72 min=3 max=80 n=413 | BUF:0/8192 | rate:30000
+I (681271) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=69 ur=2255691 | dac_out=60607/2s spi=1 direct=1
+I (681529) EDREAM: RX:30094 pts/s | batch avg=73 min=1 max=80 n=411 | BUF:0/8192 | rate:30000
+I (682515) DAC_TIMER: ISR: pts/s=60156 expected=60000 err=+2600ppm | buf=149 underruns=437
+I (682530) EDREAM: RX:30080 pts/s | batch avg=72 min=1 max=80 n=417 | BUF:0/8192 | rate:30000
+I (683275) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=79 ur=2256114 | dac_out=60730/2s spi=1 direct=1
+I (683530) EDREAM: RX:30131 pts/s | batch avg=74 min=1 max=80 n=404 | BUF:0/8192 | rate:30000
+I (684515) DAC_TIMER: ISR: pts/s=60163 expected=60000 err=+2716ppm | buf=101 underruns=430
+I (684531) EDREAM: RX:30041 pts/s | batch avg=75 min=6 max=80 n=399 | BUF:0/8192 | rate:30000
+I (685277) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=105 ur=2256551 | dac_out=60672/2s spi=1 direct=1
+I (685531) EDREAM: RX:30163 pts/s | batch avg=72 min=5 max=80 n=416 | BUF:0/8192 | rate:30000
+I (686515) DAC_TIMER: ISR: pts/s=60153 expected=60000 err=+2550ppm | buf=108 underruns=440
+I (686531) EDREAM: RX:30070 pts/s | batch avg=72 min=1 max=80 n=413 | BUF:0/8192 | rate:30000
+I (687277) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=102 ur=2256969 | dac_out=60595/2s spi=1 direct=1
+I (687531) EDREAM: RX:30041 pts/s | batch avg=73 min=2 max=80 n=407 | BUF:0/8192 | rate:30000
+I (688515) DAC_TIMER: ISR: pts/s=60168 expected=60000 err=+2800ppm | buf=115 underruns=424
+I (688531) EDREAM: RX:30159 pts/s | batch avg=73 min=2 max=80 n=408 | BUF:0/8192 | rate:30000
+I (689283) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=102 ur=2257409 | dac_out=60797/2s spi=1 direct=1
+I (689531) EDREAM: RX:30041 pts/s | batch avg=73 min=1 max=80 n=407 | BUF:0/8192 | rate:30000
+I (690515) DAC_TIMER: ISR: pts/s=60159 expected=60000 err=+2650ppm | buf=54 underruns=434
+I (690532) EDREAM: RX:30087 pts/s | batch avg=71 min=3 max=80 n=421 | BUF:0/8192 | rate:30000
+I (691284) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=80 ur=2257837 | dac_out=60639/2s spi=1 direct=1
+I (691532) EDREAM: RX:30052 pts/s | batch avg=74 min=14 max=80 n=404 | BUF:0/8192 | rate:30000
+I (692515) DAC_TIMER: ISR: pts/s=60161 expected=60000 err=+2683ppm | buf=145 underruns=432
+I (692533) EDREAM: RX:30166 pts/s | batch avg=75 min=2 max=80 n=397 | BUF:0/8192 | rate:30000
+I (693284) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=102 ur=2258274 | dac_out=60616/2s spi=1 direct=1
+I (693533) EDREAM: RX:30063 pts/s | batch avg=72 min=3 max=80 n=416 | BUF:0/8192 | rate:30000
+I (694515) DAC_TIMER: ISR: pts/s=60162 expected=60000 err=+2700ppm | buf=126 underruns=430
+I (694532) EDREAM: RX:30029 pts/s | batch avg=73 min=4 max=80 n=410 | BUF:0/8192 | rate:30000
+I (695285) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=74 ur=2258701 | dac_out=60618/2s spi=1 direct=1
+I (695532) EDREAM: RX:30140 pts/s | batch avg=74 min=4 max=80 n=406 | BUF:0/8192 | rate:30000
+I (696515) DAC_TIMER: ISR: pts/s=60161 expected=60000 err=+2683ppm | buf=49 underruns=433
+I (696533) EDREAM: RX:30114 pts/s | batch avg=72 min=2 max=80 n=415 | BUF:0/8192 | rate:30000
 I (697288) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=118 ur=2259154 | dac_out=60700/2s spi=1 direct=1
 I (697534) EDREAM: RX:30060 pts/s | batch avg=71 min=2 max=80 n=420 | BUF:0/8192 | rate:30000
 I (698515) DAC_TIMER: ISR: pts/s=60165 expected=60000 err=+2750ppm | buf=138 underruns=428
@@ -6,3 +878,143 @@ I (699291) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=107 ur=2259567 | dac_out
 I (699533) EDREAM: RX:30138 pts/s | batch avg=71 min=1 max=80 n=421 | BUF:0/8192 | rate:30000
 I (700515) DAC_TIMER: ISR: pts/s=60157 expected=60000 err=+2616ppm | buf=144 underruns=435
 I (700533) EDREAM: RX:30121 pts/s | batch avg=74 min=1 max=80 n=404 | BUF:0/8192 | rate:30000
+I (701292) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=125 ur=2259999 | dac_out=60627/2s spi=1 direct=1
+I (701533) EDREAM: RX:30053 pts/s | batch avg=74 min=3 max=80 n=402 | BUF:0/8192 | rate:30000
+I (702515) DAC_TIMER: ISR: pts/s=60162 expected=60000 err=+2700ppm | buf=117 underruns=430
+I (702534) EDREAM: RX:30152 pts/s | batch avg=72 min=1 max=80 n=414 | BUF:0/8192 | rate:30000
+I (703294) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=98 ur=2260426 | dac_out=60670/2s spi=1 direct=1
+I (703533) EDREAM: RX:29984 pts/s | batch avg=72 min=2 max=80 n=413 | BUF:0/8192 | rate:30000
+I (704515) DAC_TIMER: ISR: pts/s=60154 expected=60000 err=+2566ppm | buf=109 underruns=439
+I (704534) EDREAM: RX:30084 pts/s | batch avg=73 min=4 max=80 n=411 | BUF:0/8192 | rate:30000
+I (705296) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=117 ur=2260865 | dac_out=60657/2s spi=1 direct=1
+I (705535) EDREAM: RX:30083 pts/s | batch avg=73 min=8 max=80 n=407 | BUF:0/8192 | rate:30000
+I (706515) DAC_TIMER: ISR: pts/s=60157 expected=60000 err=+2616ppm | buf=102 underruns=435
+I (706535) EDREAM: RX:30173 pts/s | batch avg=73 min=6 max=80 n=410 | BUF:0/8192 | rate:30000
+I (707299) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=111 ur=2261295 | dac_out=60712/2s spi=1 direct=1
+I (707535) EDREAM: RX:30047 pts/s | batch avg=72 min=1 max=80 n=413 | BUF:0/8192 | rate:30000
+I (708515) DAC_TIMER: ISR: pts/s=60170 expected=60000 err=+2833ppm | buf=63 underruns=423
+I (708535) EDREAM: RX:30093 pts/s | batch avg=74 min=1 max=80 n=404 | BUF:0/8192 | rate:30000
+I (709307) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=114 ur=2261731 | dac_out=60849/2s spi=1 direct=1
+I (709535) EDREAM: RX:30084 pts/s | batch avg=73 min=3 max=80 n=412 | BUF:0/8192 | rate:30000
+I (710515) DAC_TIMER: ISR: pts/s=60159 expected=60000 err=+2650ppm | buf=127 underruns=434
+I (710535) EDREAM: RX:30095 pts/s | batch avg=74 min=4 max=80 n=404 | BUF:0/8192 | rate:30000
+I (711308) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=108 ur=2262169 | dac_out=60609/2s spi=1 direct=1
+I (711536) EDREAM: RX:30029 pts/s | batch avg=72 min=1 max=80 n=417 | BUF:0/8192 | rate:30000
+I (712515) DAC_TIMER: ISR: pts/s=60159 expected=60000 err=+2650ppm | buf=131 underruns=434
+I (712536) EDREAM: RX:30128 pts/s | batch avg=74 min=2 max=80 n=403 | BUF:0/8192 | rate:30000
+I (713311) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=115 ur=2262593 | dac_out=60712/2s spi=1 direct=1
+I (713536) EDREAM: RX:30084 pts/s | batch avg=72 min=2 max=80 n=414 | BUF:0/8192 | rate:30000
+I (714515) DAC_TIMER: ISR: pts/s=60154 expected=60000 err=+2566ppm | buf=181 underruns=439
+I (714536) EDREAM: RX:30046 pts/s | batch avg=71 min=3 max=80 n=418 | BUF:0/8192 | rate:30000
+I (715312) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=111 ur=2263024 | dac_out=60623/2s spi=1 direct=1
+I (715536) EDREAM: RX:30077 pts/s | batch avg=73 min=1 max=80 n=408 | BUF:0/8192 | rate:30000
+I (716515) DAC_TIMER: ISR: pts/s=60151 expected=60000 err=+2516ppm | buf=132 underruns=442
+I (716537) EDREAM: RX:30110 pts/s | batch avg=71 min=2 max=80 n=422 | BUF:0/8192 | rate:30000
+I (717312) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=99 ur=2263449 | dac_out=60617/2s spi=1 direct=1
+I (717537) EDREAM: RX:30147 pts/s | batch avg=73 min=1 max=80 n=412 | BUF:0/8192 | rate:30000
+I (718515) DAC_TIMER: ISR: pts/s=60167 expected=60000 err=+2783ppm | buf=109 underruns=425
+I (718537) EDREAM: RX:30060 pts/s | batch avg=73 min=7 max=80 n=409 | BUF:0/8192 | rate:30000
+I (719312) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=74 ur=2263873 | dac_out=60594/2s spi=1 direct=1
+I (719538) EDREAM: RX:30050 pts/s | batch avg=72 min=2 max=80 n=416 | BUF:0/8192 | rate:30000
+I (720515) DAC_TIMER: ISR: pts/s=60170 expected=60000 err=+2833ppm | buf=124 underruns=424
+I (720539) EDREAM: RX:30131 pts/s | batch avg=73 min=1 max=80 n=413 | BUF:0/8192 | rate:30000
+I (721319) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=112 ur=2264315 | dac_out=60821/2s spi=1 direct=1
+I (721539) EDREAM: RX:30099 pts/s | batch avg=73 min=1 max=80 n=409 | BUF:0/8192 | rate:30000
+I (722515) DAC_TIMER: ISR: pts/s=60167 expected=60000 err=+2783ppm | buf=114 underruns=426
+I (722539) EDREAM: RX:30072 pts/s | batch avg=73 min=11 max=80 n=408 | BUF:0/8192 | rate:30000
+I (723320) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=102 ur=2264755 | dac_out=60639/2s spi=1 direct=1
+I (723539) EDREAM: RX:30082 pts/s | batch avg=71 min=3 max=80 n=420 | BUF:0/8192 | rate:30000
+I (724515) DAC_TIMER: ISR: pts/s=60154 expected=60000 err=+2566ppm | buf=86 underruns=439
+I (724539) EDREAM: RX:30115 pts/s | batch avg=73 min=1 max=80 n=407 | BUF:0/8192 | rate:30000
+I (725320) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=110 ur=2265173 | dac_out=60600/2s spi=1 direct=1
+I (725539) EDREAM: RX:30084 pts/s | batch avg=74 min=1 max=80 n=404 | BUF:0/8192 | rate:30000
+I (726515) DAC_TIMER: ISR: pts/s=60158 expected=60000 err=+2633ppm | buf=204 underruns=435
+I (726540) EDREAM: RX:30120 pts/s | batch avg=73 min=4 max=80 n=412 | BUF:0/8192 | rate:30000
+I (727325) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=103 ur=2265604 | dac_out=60767/2s spi=1 direct=1
+I (727540) EDREAM: RX:30051 pts/s | batch avg=72 min=1 max=80 n=414 | BUF:0/8192 | rate:30000
+I (728515) DAC_TIMER: ISR: pts/s=60165 expected=60000 err=+2750ppm | buf=147 underruns=428
+I (728540) EDREAM: RX:30032 pts/s | batch avg=72 min=1 max=80 n=412 | BUF:0/8192 | rate:30000
+I (729325) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=80 ur=2266040 | dac_out=60602/2s spi=1 direct=1
+I (729541) EDREAM: RX:30143 pts/s | batch avg=74 min=1 max=80 n=407 | BUF:0/8192 | rate:30000
+I (730515) DAC_TIMER: ISR: pts/s=60165 expected=60000 err=+2750ppm | buf=107 underruns=429
+I (730540) EDREAM: RX:30101 pts/s | batch avg=73 min=4 max=80 n=410 | BUF:0/8192 | rate:30000
+I (731328) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=113 ur=2266469 | dac_out=60709/2s spi=1 direct=1
+I (731540) EDREAM: RX:30064 pts/s | batch avg=72 min=2 max=80 n=412 | BUF:0/8192 | rate:30000
+I (732515) DAC_TIMER: ISR: pts/s=60152 expected=60000 err=+2533ppm | buf=172 underruns=440
+I (732540) EDREAM: RX:30109 pts/s | batch avg=72 min=1 max=80 n=416 | BUF:0/8192 | rate:30000
+I (733328) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=96 ur=2266896 | dac_out=60589/2s spi=1 direct=1
+I (733540) EDREAM: RX:30077 pts/s | batch avg=73 min=5 max=80 n=411 | BUF:0/8192 | rate:30000
+I (734515) DAC_TIMER: ISR: pts/s=60158 expected=60000 err=+2633ppm | buf=183 underruns=435
+I (734541) EDREAM: RX:30127 pts/s | batch avg=71 min=1 max=80 n=421 | BUF:0/8192 | rate:30000
+I (735330) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=106 ur=2267333 | dac_out=60670/2s spi=1 direct=1
+I (735540) EDREAM: RX:30048 pts/s | batch avg=74 min=1 max=80 n=405 | BUF:0/8192 | rate:30000
+I (736515) DAC_TIMER: ISR: pts/s=60164 expected=60000 err=+2733ppm | buf=112 underruns=429
+I (736541) EDREAM: RX:30037 pts/s | batch avg=72 min=1 max=80 n=412 | BUF:0/8192 | rate:30000
+I (737330) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=63 ur=2267758 | dac_out=60606/2s spi=1 direct=1
+I (737541) EDREAM: RX:30152 pts/s | batch avg=73 min=2 max=80 n=409 | BUF:0/8192 | rate:30000
+I (738515) DAC_TIMER: ISR: pts/s=60161 expected=60000 err=+2683ppm | buf=114 underruns=431
+I (738542) EDREAM: RX:30023 pts/s | batch avg=73 min=1 max=80 n=410 | BUF:0/8192 | rate:30000
+I (739330) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=77 ur=2268187 | dac_out=60603/2s spi=1 direct=1
+I (739542) EDREAM: RX:30172 pts/s | batch avg=74 min=1 max=80 n=405 | BUF:0/8192 | rate:30000
+I (740515) DAC_TIMER: ISR: pts/s=60170 expected=60000 err=+2833ppm | buf=101 underruns=422
+I (740542) EDREAM: RX:30079 pts/s | batch avg=74 min=3 max=80 n=405 | BUF:0/8192 | rate:30000
+I (741331) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=96 ur=2268618 | dac_out=60650/2s spi=1 direct=1
+I (741543) EDREAM: RX:30051 pts/s | batch avg=72 min=7 max=80 n=416 | BUF:0/8192 | rate:30000
+I (742515) DAC_TIMER: ISR: pts/s=60159 expected=60000 err=+2650ppm | buf=10 underruns=434
+I (742542) EDREAM: RX:30042 pts/s | batch avg=73 min=1 max=80 n=411 | BUF:0/8192 | rate:30000
+I (743331) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=147 ur=2269082 | dac_out=60592/2s spi=1 direct=1
+I (743542) EDREAM: RX:30140 pts/s | batch avg=73 min=1 max=80 n=410 | BUF:0/8192 | rate:30000
+I (744515) DAC_TIMER: ISR: pts/s=60152 expected=60000 err=+2533ppm | buf=118 underruns=440
+I (744542) EDREAM: RX:30056 pts/s | batch avg=71 min=4 max=80 n=420 | BUF:0/8192 | rate:30000
+I (745333) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=102 ur=2269488 | dac_out=60681/2s spi=1 direct=1
+I (745542) EDREAM: RX:30115 pts/s | batch avg=70 min=1 max=80 n=430 | BUF:0/8192 | rate:30000
+I (746515) DAC_TIMER: ISR: pts/s=60165 expected=60000 err=+2750ppm | buf=74 underruns=428
+I (746543) EDREAM: RX:30118 pts/s | batch avg=72 min=1 max=80 n=417 | BUF:0/8192 | rate:30000
+I (747333) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=111 ur=2269918 | dac_out=60603/2s spi=1 direct=1
+I (747543) EDREAM: RX:30063 pts/s | batch avg=72 min=6 max=80 n=412 | BUF:0/8192 | rate:30000
+I (748515) DAC_TIMER: ISR: pts/s=60162 expected=60000 err=+2700ppm | buf=59 underruns=430
+I (748543) EDREAM: RX:30040 pts/s | batch avg=74 min=14 max=80 n=406 | BUF:0/8192 | rate:30000
+I (749335) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=100 ur=2270347 | dac_out=60676/2s spi=1 direct=1
+I (749543) EDREAM: RX:30104 pts/s | batch avg=72 min=1 max=80 n=416 | BUF:0/8192 | rate:30000
+I (750515) DAC_TIMER: ISR: pts/s=60141 expected=60000 err=+2350ppm | buf=51 underruns=452
+I (750543) EDREAM: RX:30072 pts/s | batch avg=71 min=2 max=80 n=422 | BUF:0/8192 | rate:30000
+I (751341) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=95 ur=2270778 | dac_out=60794/2s spi=1 direct=1
+I (751543) EDREAM: RX:30064 pts/s | batch avg=73 min=4 max=80 n=409 | BUF:0/8192 | rate:30000
+I (752515) DAC_TIMER: ISR: pts/s=60200 expected=60000 err=+3333ppm | buf=17 underruns=393
+I (752543) EDREAM: RX:30133 pts/s | batch avg=70 min=1 max=80 n=427 | BUF:0/8192 | rate:30000
+I (753348) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=115 ur=2271220 | dac_out=60797/2s spi=1 direct=1
+I (753543) EDREAM: RX:30064 pts/s | batch avg=72 min=2 max=80 n=417 | BUF:0/8192 | rate:30000
+I (754516) DAC_TIMER: ISR: pts/s=60151 expected=60000 err=+2516ppm | buf=31 underruns=441
+I (754544) EDREAM: RX:30081 pts/s | batch avg=73 min=2 max=80 n=408 | BUF:0/8192 | rate:30000
+I (755351) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=99 ur=2271652 | dac_out=60695/2s spi=1 direct=1
+I (755544) EDREAM: RX:30098 pts/s | batch avg=74 min=1 max=80 n=404 | BUF:0/8192 | rate:30000
+I (756516) DAC_TIMER: ISR: pts/s=60167 expected=60000 err=+2783ppm | buf=62 underruns=426
+I (756544) EDREAM: RX:30067 pts/s | batch avg=70 min=1 max=80 n=424 | BUF:0/8192 | rate:30000
+I (757356) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=117 ur=2272086 | dac_out=60778/2s spi=1 direct=1
+I (757543) EDREAM: RX:30133 pts/s | batch avg=74 min=6 max=80 n=407 | BUF:0/8192 | rate:30000
+I (758516) DAC_TIMER: ISR: pts/s=60152 expected=60000 err=+2533ppm | buf=75 underruns=441
+I (758543) EDREAM: RX:29975 pts/s | batch avg=73 min=1 max=80 n=408 | BUF:0/8192 | rate:30000
+I (759359) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=105 ur=2272519 | dac_out=60692/2s spi=1 direct=1
+I (759543) EDREAM: RX:30120 pts/s | batch avg=73 min=1 max=80 n=410 | BUF:0/8192 | rate:30000
+I (760516) DAC_TIMER: ISR: pts/s=60168 expected=60000 err=+2800ppm | buf=48 underruns=422
+I (760543) EDREAM: RX:30101 pts/s | batch avg=74 min=10 max=80 n=404 | BUF:0/8192 | rate:30000
+I (761359) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=67 ur=2272940 | dac_out=60590/2s spi=1 direct=1
+I (761543) EDREAM: RX:30125 pts/s | batch avg=72 min=1 max=80 n=413 | BUF:0/8192 | rate:30000
+I (762516) DAC_TIMER: ISR: pts/s=60161 expected=60000 err=+2683ppm | buf=87 underruns=429
+I (762544) EDREAM: RX:30094 pts/s | batch avg=71 min=2 max=80 n=420 | BUF:0/8192 | rate:30000
+I (763371) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=102 ur=2273370 | dac_out=60988/2s spi=1 direct=1
+I (763544) EDREAM: RX:30105 pts/s | batch avg=72 min=1 max=80 n=417 | BUF:0/8192 | rate:30000
+I (764516) DAC_TIMER: ISR: pts/s=60152 expected=60000 err=+2533ppm | buf=49 underruns=438
+I (764543) EDREAM: RX:29971 pts/s | batch avg=72 min=1 max=80 n=413 | BUF:0/8192 | rate:30000
+I (765374) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=104 ur=2273800 | dac_out=60684/2s spi=1 direct=1
+I (765543) EDREAM: RX:30159 pts/s | batch avg=75 min=7 max=80 n=400 | BUF:0/8192 | rate:30000
+I (766516) DAC_TIMER: ISR: pts/s=60159 expected=60000 err=+2650ppm | buf=52 underruns=431
+I (766544) EDREAM: RX:30018 pts/s | batch avg=72 min=2 max=80 n=414 | BUF:0/8192 | rate:30000
+I (767380) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=77 ur=2274240 | dac_out=60797/2s spi=1 direct=1
+I (767544) EDREAM: RX:30144 pts/s | batch avg=70 min=2 max=80 n=428 | BUF:0/8192 | rate:30000
+I (768516) DAC_TIMER: ISR: pts/s=60163 expected=60000 err=+2716ppm | buf=63 underruns=428
+I (768544) EDREAM: RX:30132 pts/s | batch avg=72 min=1 max=80 n=413 | BUF:0/8192 | rate:30000
+I (769382) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=109 ur=2274676 | dac_out=60677/2s spi=1 direct=1
+I (769545) EDREAM: RX:30006 pts/s | batch avg=73 min=4 max=80 n=408 | BUF:0/8192 | rate:30000
+I (770516) DAC_TIMER: ISR: pts/s=60164 expected=60000 err=+2733ppm | buf=72 underruns=427
+I (770545) EDREAM: RX:30140 pts/s | batch avg=73 min=1 max=80 n=410 | BUF:0/8192 | rate:30000
