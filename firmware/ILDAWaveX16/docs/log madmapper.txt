@@ -1,0 +1,8 @@
+I (697288) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=118 ur=2259154 | dac_out=60700/2s spi=1 direct=1
+I (697534) EDREAM: RX:30060 pts/s | batch avg=71 min=2 max=80 n=420 | BUF:0/8192 | rate:30000
+I (698515) DAC_TIMER: ISR: pts/s=60165 expected=60000 err=+2750ppm | buf=138 underruns=428
+I (698533) EDREAM: RX:30030 pts/s | batch avg=73 min=1 max=80 n=409 | BUF:0/8192 | rate:30000
+I (699291) MAIN: PIPE| fb=0 ed=1 play=1 run=1 | isr_buf=107 ur=2259567 | dac_out=60718/2s spi=1 direct=1
+I (699533) EDREAM: RX:30138 pts/s | batch avg=71 min=1 max=80 n=421 | BUF:0/8192 | rate:30000
+I (700515) DAC_TIMER: ISR: pts/s=60157 expected=60000 err=+2616ppm | buf=144 underruns=435
+I (700533) EDREAM: RX:30121 pts/s | batch avg=74 min=1 max=80 n=404 | BUF:0/8192 | rate:30000

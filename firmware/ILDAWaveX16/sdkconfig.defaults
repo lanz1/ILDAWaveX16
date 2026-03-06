@@ -59,6 +59,11 @@ CONFIG_LWIP_USE_ONLY_LWIP_SELECT=y
 # Pin LWIP tcpip_task to Core 0 (keep Core 1 clean for DAC ISR + refill)
 CONFIG_LWIP_TCPIP_TASK_AFFINITY_CPU0=y
 
+# LWIP priority MUST be higher than network_task (19) to avoid priority inversion:
+# tcpip_task must process TCP segments before network_task can recv() them.
+# Default was 18 — network_task (19) would preempt it, causing up to 1ms stalls.
+CONFIG_LWIP_TCPIP_TASK_PRIO=20
+
 # TCP timer optimization (safe - no memory impact)
 CONFIG_LWIP_TCP_TMR_INTERVAL=100
 CONFIG_LWIP_TCP_RTO_TIME=300

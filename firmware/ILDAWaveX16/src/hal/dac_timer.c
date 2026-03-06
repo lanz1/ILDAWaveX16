@@ -28,8 +28,8 @@
 static const char* TAG = "DAC_TIMER";
 
 // Configuration
-#define ISR_BUFFER_SIZE 512
-#define REFILL_THRESHOLD 64      // Refill more often with smaller batches
+#define ISR_BUFFER_SIZE 1024
+#define REFILL_THRESHOLD 128     // Refill when 1/8 free — keeps ISR fed
 #define REFILL_MAX_BATCH 256     // But read up to this many at once
 
 // Hardware resources

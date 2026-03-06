@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build ILDAWaveX16",
+			"type": "shell",
+			"command": "pio run 2>&1 | tail -30",
+			"group": "build"
+		},
+		{
+			"label": "Build ILDAWaveX16",
+			"type": "shell",
+			"command": "pio run 2>&1 | tail -15",
+			"group": "build"
+		}
+	]
+}

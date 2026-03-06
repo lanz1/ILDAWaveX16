@@ -164,6 +164,11 @@ static volatile uint32_t s_points_received = 0;
 static volatile uint32_t s_measured_pps = 0;
 static uint32_t s_meter_last_time = 0;
 
+// Batch size tracking (per rate meter interval)
+static volatile uint32_t s_data_cmds_received = 0;  // Number of complete 'd' commands
+static volatile uint16_t s_batch_size_min = UINT16_MAX;
+static volatile uint16_t s_batch_size_max = 0;
+
 #define TCP_RX_BUF_SIZE     (3 + 1000 * 18 + 16)
 static uint8_t s_rx_buf[TCP_RX_BUF_SIZE];
 
@@ -370,13 +375,22 @@ void etherdream_server_loop(void) {
                 s_measured_pps = (s_points_received * 1000) / elapsed_ms;
 #if LOG_RX_METER
                 size_t real_level = frame_buffer_level();
-                ESP_LOGI(TAG, "RX:%lu pts/s | BUF:%zu/%d | rate:%lu",
+                uint32_t cmds = s_data_cmds_received;
+                uint32_t avg_batch = (cmds > 0) ? (s_points_received / cmds) : 0;
+                ESP_LOGI(TAG, "RX:%lu pts/s | batch avg=%lu min=%u max=%u n=%lu | BUF:%zu/%d | rate:%lu",
                          (unsigned long)s_measured_pps,
+                         (unsigned long)avg_batch,
+                         (s_batch_size_min == UINT16_MAX) ? 0 : s_batch_size_min,
+                         s_batch_size_max,
+                         (unsigned long)cmds,
                          real_level, FRAME_BUFFER_SIZE,
                          (unsigned long)s_point_rate);
 #endif
             }
             s_points_received = 0;
+            s_data_cmds_received = 0;
+            s_batch_size_min = UINT16_MAX;
+            s_batch_size_max = 0;
         }
         if (!s_connected) s_measured_pps = 0;
         s_meter_last_time = now;
@@ -396,8 +410,9 @@ void etherdream_server_loop(void) {
         if (s_client_socket > maxfd) maxfd = s_client_socket;
     }
     
-    // Adaptive timeout: 1ms when playing (responsive), 50ms when idle (save CPU)
-    uint32_t timeout_us = (s_playback_state == PLAYBACK_PLAYING) ? 1000 : 50000;
+    // Adaptive timeout: 100µs when playing (fast recv), 50ms when idle (save CPU)
+    // Was 1ms — too slow: causes up to 1ms latency per batch, starving buffer
+    uint32_t timeout_us = (s_playback_state == PLAYBACK_PLAYING) ? 100 : 50000;
     struct timeval tv = { .tv_sec = 0, .tv_usec = timeout_us };
     
 #if LOG_PERF
@@ -611,6 +626,9 @@ static void close_client(void) {
     s_playback_state = PLAYBACK_IDLE;
     s_point_rate = 0;
     s_measured_pps = 0;
+    s_data_cmds_received = 0;
+    s_batch_size_min = UINT16_MAX;
+    s_batch_size_max = 0;
     s_rx_state = RX_STATE_COMMAND;
     s_cmd_buf_len = 0;
     s_data_npoints = 0;
@@ -819,6 +837,11 @@ static void feed_rx_data(int sock, const uint8_t* data, size_t len) {
                 
                 if (s_data_points_received >= s_data_npoints) {
                     flush_point_batch();
+                    
+                    // Track batch stats for rate meter
+                    s_data_cmds_received++;
+                    if (s_data_npoints < s_batch_size_min) s_batch_size_min = s_data_npoints;
+                    if (s_data_npoints > s_batch_size_max) s_batch_size_max = s_data_npoints;
                     
                     if (s_playback_state == PLAYBACK_PREPARED || 
                         s_playback_state == PLAYBACK_PLAYING) {
