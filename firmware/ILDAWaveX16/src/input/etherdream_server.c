@@ -529,6 +529,13 @@ static void accept_client(void) {
     int nodelay = 1;
     setsockopt(s_client_socket, IPPROTO_TCP, TCP_NODELAY, &nodelay, sizeof(nodelay));
     
+    // SO_LINGER with timeout=0: on close() send RST instead of graceful FIN.
+    // This avoids TIME_WAIT (2×TCP_MSL = 2s with our config) which would
+    // accumulate zombie PCBs during rapid reconnect storms, exhausting
+    // LWIP's MAX_ACTIVE_TCP=16 pool.
+    struct linger so_linger = { .l_onoff = 1, .l_linger = 0 };
+    setsockopt(s_client_socket, SOL_SOCKET, SO_LINGER, &so_linger, sizeof(so_linger));
+    
     // Non-blocking for select() integration
     int flags = fcntl(s_client_socket, F_GETFL, 0);
     fcntl(s_client_socket, F_SETFL, flags | O_NONBLOCK);
@@ -803,9 +810,9 @@ static void feed_rx_data(int sock, const uint8_t* data, size_t len) {
                     if (s_data_point_buf_len >= 18) {
                         etherdream_point_t* ep = (etherdream_point_t*)s_data_point_buf;
                         add_point_to_batch(ep);
-                        s_data_points_received++;
                         s_points_received++;
                         s_point_count++;
+                        s_data_points_received++;
                         s_data_point_buf_len = 0;
                     }
                 }
@@ -821,10 +828,10 @@ static void feed_rx_data(int sock, const uint8_t* data, size_t len) {
                 for (size_t i = 0; i < complete_points; i++) {
                     etherdream_point_t* ep = (etherdream_point_t*)&data[pos];
                     add_point_to_batch(ep);
-                    pos += 18;
-                    s_data_points_received++;
                     s_points_received++;
                     s_point_count++;
+                    pos += 18;
+                    s_data_points_received++;
                 }
                 
                 // Leftover partial point bytes -> save for next recv

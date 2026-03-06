@@ -46,7 +46,11 @@ CONFIG_LWIP_MAX_SOCKETS=12
 CONFIG_LWIP_SO_REUSE=y
 CONFIG_LWIP_SO_RCVBUF=y
 CONFIG_LWIP_TCP_SND_BUF_DEFAULT=32768
-CONFIG_LWIP_TCP_WND_DEFAULT=32768
+# TCP window: limit to 14 KB so the sender never has more than ~10 TCP segments
+# in flight.  The W5500 MACRAW RX buffer is 16 KB; at MSS=1440, 11 segments
+# produce ~16.4 KB of Ethernet frames which overflows the chip.  14 KB keeps
+# the burst under 10 segments (~14.9 KB) with comfortable margin.
+CONFIG_LWIP_TCP_WND_DEFAULT=14336
 CONFIG_LWIP_TCP_RECVMBOX_SIZE=64
 CONFIG_LWIP_UDP_RECVMBOX_SIZE=32
 
@@ -67,6 +71,14 @@ CONFIG_LWIP_TCPIP_TASK_PRIO=20
 # TCP timer optimization (safe - no memory impact)
 CONFIG_LWIP_TCP_TMR_INTERVAL=100
 CONFIG_LWIP_TCP_RTO_TIME=300
+
+# Reduce TIME_WAIT duration: default TCP_MSL=60000 → TIME_WAIT=120 seconds.
+# During disconnect/reconnect storms Liberation opens 10+ connections in 5s,
+# each one sits in TIME_WAIT exhausting the 16-PCB pool.
+# With SO_LINGER(0) we send RST instead of FIN, but as a safety net reduce
+# MSL to 1s (TIME_WAIT = 2s) and FIN_WAIT to 2s.
+CONFIG_LWIP_TCP_MSL=1000
+CONFIG_LWIP_TCP_FIN_WAIT_TIMEOUT=2000
 
 # Ethernet (W5500 via SPI)
 CONFIG_ETH_USE_SPI_ETHERNET=y

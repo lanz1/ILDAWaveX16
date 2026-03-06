@@ -189,7 +189,15 @@ esp_err_t w5500_eth_init(void)
     
     eth_mac_config_t mac_config = ETH_MAC_DEFAULT_CONFIG();
     mac_config.rx_task_stack_size = 4096;
-    mac_config.rx_task_prio = 15;
+    // CRITICAL: rx_task must be HIGHER priority than both tcpip_task (20) and
+    // network_task (19).  At priority 15 (the default) it gets preempted while
+    // our server processes a large batch, so frames pile up inside the W5500's
+    // 16 KB MACRAW RX buffer.  An 878-point batch = 11 TCP segments =
+    // ~16.4 KB of Ethernet frames → overflow → dropped segment → TCP retransmit
+    // after 200-300 ms → client times out → disconnect.
+    // At priority 22 the ISR wakes rx_task immediately, it reads the frame
+    // from SPI in ~30 µs, hands it to LWIP, and returns — no starvation.
+    mac_config.rx_task_prio = 22;
     
     esp_eth_mac_t* mac = esp_eth_mac_new_w5500(&w5500_config, &mac_config);
     if (!mac) {
