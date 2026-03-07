@@ -27,6 +27,8 @@ system_config_t g_config = {
 
 system_status_t g_status = {0};
 
+static esp_netif_t* s_active_netif = NULL;
+
 // WiFi AP (fallback when no Ethernet)
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
@@ -53,7 +55,7 @@ static void wifi_ap_start(void) {
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID,
                                                         &wifi_event_handler, NULL, NULL));
     
-    esp_netif_create_default_wifi_ap();
+    s_active_netif = esp_netif_create_default_wifi_ap();
     
     wifi_config_t ap_config = {
         .ap = {
@@ -117,6 +119,7 @@ static bool network_init(void) {
         return false;
     }
     
+    s_active_netif = w5500_eth_get_netif();
     ESP_LOGI(TAG, "Link up! Waiting for DHCP (%d ms timeout)...", ETH_DHCP_TIMEOUT_MS);
     
     // Wait for DHCP IP (max ETH_DHCP_TIMEOUT_MS)
@@ -176,8 +179,6 @@ static void network_task(void* arg) {
 }
 
 void app_main(void) {
-    vTaskDelay(pdMS_TO_TICKS(2000));
-    
     ESP_LOGI(TAG, "ILDAWaveX16 Starting...");
     ESP_LOGI(TAG, "  Buffer: %d points", FRAME_BUFFER_SIZE);
     
@@ -187,6 +188,13 @@ void app_main(void) {
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK(ret);
+    
+    // PRIORITY: Initialize DAC first — all outputs to safe state before anything else.
+    // This ensures laser safety: no random DAC output during network init (5-15s).
+    // 200ms delay: DAC80508 needs time for power-on reset (POR) after supply ramp.
+    vTaskDelay(pdMS_TO_TICKS(200));
+    dac_init();
+    
     bool eth_mode = network_init();
     
     if (eth_mode) {
@@ -195,10 +203,11 @@ void app_main(void) {
         ESP_LOGI(TAG, "Mode: WiFi AP (%s)", WIFI_AP_SSID);
     }
     
-    // Use hardware-timed DAC output (GPTimer + SPI queue)
+    // GPTimer + refill task (dac_init() already done above, will skip re-init)
     dac_timer_init();
     
     etherdream_server_init();
+    etherdream_server_set_network(s_active_netif, eth_mode);
     etherdream_server_start();
     http_server_init();
     http_server_start();

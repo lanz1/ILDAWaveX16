@@ -12,6 +12,7 @@
 #include "esp_timer.h"
 #include "lwip/sockets.h"
 #include "lwip/netdb.h"
+#include "esp_netif.h"
 #include <string.h>
 #include <errno.h>
 
@@ -158,6 +159,8 @@ static volatile int s_rate_queue_tail = 0;
 
 static int s_broadcast_socket = -1;
 static uint32_t s_last_broadcast_time = 0;
+static esp_netif_t* s_netif = NULL;
+static bool s_eth_mode = false;
 
 #define RATE_METER_INTERVAL_MS  500
 static volatile uint32_t s_points_received = 0;
@@ -271,6 +274,23 @@ esp_err_t etherdream_server_init(void) {
     return ESP_OK;
 }
 
+void etherdream_server_set_network(esp_netif_t* netif, bool eth_mode) {
+    s_netif = netif;
+    s_eth_mode = eth_mode;
+    if (netif) {
+        esp_netif_ip_info_t ip_info;
+        if (esp_netif_get_ip_info(netif, &ip_info) == ESP_OK && ip_info.ip.addr != 0) {
+            esp_ip4_addr_t bcast_ip = { .addr = ip_info.ip.addr | ~ip_info.netmask.addr };
+            ESP_LOGI(TAG, "Network: %s, broadcast → " IPSTR,
+                     eth_mode ? "Ethernet" : "WiFi AP",
+                     IP2STR(&bcast_ip));
+        } else {
+            ESP_LOGI(TAG, "Network: %s (IP not yet assigned)",
+                     eth_mode ? "Ethernet" : "WiFi AP");
+        }
+    }
+}
+
 esp_err_t etherdream_server_start(void) {
     ESP_LOGI(TAG, "Starting Ether Dream TCP server on port %d...", ETHERDREAM_TCP_PORT);
     
@@ -315,6 +335,24 @@ esp_err_t etherdream_server_start(void) {
     } else {
         int broadcast = 1;
         setsockopt(s_broadcast_socket, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast));
+        
+        // Bind to local interface IP so broadcast goes out on the right
+        // interface.  On WiFi AP, INADDR_ANY can mis-route UDP broadcast.
+        if (s_netif) {
+            esp_netif_ip_info_t ip_info;
+            if (esp_netif_get_ip_info(s_netif, &ip_info) == ESP_OK && ip_info.ip.addr != 0) {
+                struct sockaddr_in bind_addr = {
+                    .sin_family = AF_INET,
+                    .sin_port = htons(0),  // any source port
+                    .sin_addr.s_addr = ip_info.ip.addr,
+                };
+                if (bind(s_broadcast_socket, (struct sockaddr*)&bind_addr, sizeof(bind_addr)) < 0) {
+                    ESP_LOGW(TAG, "UDP bind to " IPSTR " failed: errno %d", IP2STR(&ip_info.ip), errno);
+                } else {
+                    ESP_LOGI(TAG, "UDP broadcast bound to " IPSTR, IP2STR(&ip_info.ip));
+                }
+            }
+        }
         
         // Set non-blocking
         flags = fcntl(s_broadcast_socket, F_GETFL, 0);
@@ -476,13 +514,21 @@ uint32_t etherdream_server_get_measured_pps(void) {
     return s_measured_pps;
 }
 
+static bool s_broadcast_logged = false;
+
 static void send_broadcast(void) {
     etherdream_broadcast_t bcast;
     memset(&bcast, 0, sizeof(bcast));
     
-    // Use configured MAC - works for both Ethernet and WiFi modes
-    uint8_t mac[] = ETH_MAC_ADDR;
-    memcpy(bcast.mac_address, mac, 6);
+    // Use real MAC of the active interface for unique DAC identity.
+    // On Ethernet this is our custom ETH_MAC_ADDR; on WiFi it's the
+    // chip's built-in SoftAP MAC.  If netif not available, fall back.
+    if (s_netif) {
+        esp_netif_get_mac(s_netif, bcast.mac_address);
+    } else {
+        uint8_t mac[] = ETH_MAC_ADDR;
+        memcpy(bcast.mac_address, mac, 6);
+    }
     
     bcast.hw_revision = ETHERDREAM_HW_REVISION;
     bcast.sw_revision = ETHERDREAM_SW_REVISION;
@@ -491,14 +537,35 @@ static void send_broadcast(void) {
     
     fill_status(&bcast.status);
     
+    // Use subnet-directed broadcast (e.g. 192.168.4.255) instead of
+    // limited broadcast (255.255.255.255).  On ESP32 WiFi AP the limited
+    // broadcast is often not forwarded to connected stations, so clients
+    // never see the Ether Dream discovery packet.
+    uint32_t bcast_addr = htonl(INADDR_BROADCAST);  // fallback: 255.255.255.255
+    if (s_netif) {
+        esp_netif_ip_info_t ip_info;
+        if (esp_netif_get_ip_info(s_netif, &ip_info) == ESP_OK && ip_info.ip.addr != 0) {
+            bcast_addr = ip_info.ip.addr | ~ip_info.netmask.addr;
+        }
+    }
+    
     struct sockaddr_in dest = {
         .sin_family = AF_INET,
         .sin_port = htons(ETHERDREAM_UDP_PORT),
-        .sin_addr.s_addr = htonl(INADDR_BROADCAST),
+        .sin_addr.s_addr = bcast_addr,
     };
     
-    sendto(s_broadcast_socket, &bcast, sizeof(bcast), 0,
-           (struct sockaddr*)&dest, sizeof(dest));
+    int sent = sendto(s_broadcast_socket, &bcast, sizeof(bcast), 0,
+                      (struct sockaddr*)&dest, sizeof(dest));
+    if (!s_broadcast_logged) {
+        s_broadcast_logged = true;
+        esp_ip4_addr_t dest_ip = { .addr = bcast_addr };
+        ESP_LOGI(TAG, "First broadcast: %d bytes → " IPSTR ":%d MAC=%02X:%02X:%02X:%02X:%02X:%02X %s",
+                 sent, IP2STR(&dest_ip), ETHERDREAM_UDP_PORT,
+                 bcast.mac_address[0], bcast.mac_address[1], bcast.mac_address[2],
+                 bcast.mac_address[3], bcast.mac_address[4], bcast.mac_address[5],
+                 (sent > 0) ? "OK" : "FAIL");
+    }
 }
 
 static void accept_client(void) {
@@ -540,9 +607,16 @@ static void accept_client(void) {
     int flags = fcntl(s_client_socket, F_GETFL, 0);
     fcntl(s_client_socket, F_SETFL, flags | O_NONBLOCK);
     
-    // Large receive buffer for batch data
-    int rcvbuf = 65536;
-    setsockopt(s_client_socket, SOL_SOCKET, SO_RCVBUF, &rcvbuf, sizeof(rcvbuf));
+    // Receive buffer: on WiFi we can use a larger TCP window because there's
+    // no W5500 16KB MACRAW buffer limit.  The 14KB CONFIG_LWIP_TCP_WND_DEFAULT
+    // in sdkconfig protects Ethernet; here we override per-socket for WiFi.
+    if (!s_eth_mode) {
+        int rcvbuf = 32768;
+        setsockopt(s_client_socket, SOL_SOCKET, SO_RCVBUF, &rcvbuf, sizeof(rcvbuf));
+    } else {
+        int rcvbuf = 16384;
+        setsockopt(s_client_socket, SOL_SOCKET, SO_RCVBUF, &rcvbuf, sizeof(rcvbuf));
+    }
     
     // Reset all protocol state for new client
     s_playback_state = PLAYBACK_IDLE;

@@ -38,6 +38,7 @@ static const char* TAG = "DAC80508";
 #define DAC_SPI_SPEED_HZ  (50 * 1000 * 1000)  // 50 MHz
 
 static spi_device_handle_t s_spi = NULL;
+static bool s_initialized = false;
 
 // =============================================================================
 // DIRECT SPI REGISTER ACCESS (bypasses ESP-IDF driver for ~1µs vs ~9µs)
@@ -122,6 +123,10 @@ static inline void IRAM_ATTR dac_write_direct(uint8_t reg, uint16_t value) {
 // =============================================================================
 
 esp_err_t dac_init(void) {
+    if (s_initialized) {
+        ESP_LOGI(TAG, "DAC80508 already initialized");
+        return ESP_OK;
+    }
     ESP_LOGI(TAG, "Initializing DAC80508");
     
     // Initialize SPI bus
@@ -167,7 +172,11 @@ esp_err_t dac_init(void) {
     // CONFIG: Power on all channels, internal reference
     dac_write_register(DAC_REG_CONFIG, 0x0000);
     
-    // Initialize all outputs to mid-scale
+    // Initialize outputs to safe state:
+    // X/Y = 32768 (mid-scale = center position for galvanometers)
+    //   ILDA signed 0 → unsigned 32768. DAC value 0 would slam galvos to
+    //   extreme negative, potentially triggering amplifier protection lockout.
+    // RGB = 0 (laser off)
     dac_write_register(DAC_REG_DAC0 + DAC_CH_X, 32768);
     dac_write_register(DAC_REG_DAC0 + DAC_CH_Y, 32768);
     dac_write_register(DAC_REG_DAC0 + DAC_CH_RED, 0);
@@ -201,7 +210,8 @@ esp_err_t dac_init(void) {
     // Initialize direct SPI registers
     init_direct_spi();
 
-    ESP_LOGI(TAG, "DAC80508 ready");
+    s_initialized = true;
+    ESP_LOGI(TAG, "DAC80508 ready — XY centered, RGB off");
     return ESP_OK;
 }
 

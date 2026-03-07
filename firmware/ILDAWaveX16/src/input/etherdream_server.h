@@ -12,6 +12,7 @@
 #pragma once
 
 #include "esp_err.h"
+#include "esp_netif.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -24,6 +25,13 @@ extern "C" {
  * @return ESP_OK on success
  */
 esp_err_t etherdream_server_init(void);
+
+/**
+ * @brief Set network interface and mode for broadcast/tuning
+ * @param netif Active network interface (WiFi AP or Ethernet)
+ * @param eth_mode true if Ethernet, false if WiFi
+ */
+void etherdream_server_set_network(esp_netif_t* netif, bool eth_mode);
 
 /**
  * @brief Start Ether Dream server (TCP + UDP broadcast)
